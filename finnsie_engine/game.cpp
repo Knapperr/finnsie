@@ -55,8 +55,10 @@ namespace finnsie {
 		//	glm::vec3 color, bool solid, float rotation, Texture sprite);
 
 		g_resourceManager->GenerateTexture(001, "content/sprites/enemy.png", true);
-		GameObject* enemy = new GameObject("Enemy", glm::vec2((Width - 64) / 2, (Height - 64) / 2), glm::vec2(64, 64),
+		GameObject enemy = InitGameObject("Enemy", glm::vec2((Width - 64) / 2, (Height - 64) / 2), glm::vec2(64, 64),
 						 glm::vec2(0,0), glm::vec3(1.0f, 1.0f, 1.0f), true, 0.0f, g_resourceManager->GetTexture(001));
+
+
 
 		gameObjects.push_back(enemy);
 
@@ -72,7 +74,8 @@ namespace finnsie {
 
 		for (auto& itObj : gameObjects)
 		{
-			itObj->Draw(*renderer);
+			//itObj->Draw(*renderer);
+			Draw(&itObj, *renderer);
 		}
 	}
 

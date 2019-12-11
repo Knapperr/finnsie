@@ -18,12 +18,13 @@ namespace finnsie {
 		float Rotation;
 		bool Destroyed;
 		Texture Sprite;
-
-		GameObject(std::string, glm::vec2 pos, glm::vec2 size, glm::vec2 velocity, 
-				   glm::vec3 color, bool solid, float rotation, Texture sprite);
-		void Draw(SpriteRenderer &renderer);
 	};
 
+	GameObject InitGameObject(std::string name, glm::vec2 pos, glm::vec2 size, 
+							  glm::vec2 velocity, glm::vec3 color, bool solid, 
+							  float rotation, Texture sprite);
+
+	void Draw(GameObject* obj, SpriteRenderer& renderer);
 }
 
 #endif

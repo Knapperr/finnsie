@@ -7,8 +7,9 @@
 
 namespace finnsie {
 
-	struct Shader
+	class Shader
 	{
+	public:
 		unsigned int id;
 	};
 

@@ -1,18 +1,13 @@
 
 /*
 	TODO:
-		- [ ] Get the code cleaned up to this point
-
-		- [ ] Create a Game Layer like handmade hero pass the input and memory to the game 
-			  - want to keep this platform separated
-
-		- [ ] Separate the systems. Pull process input into a game manager or class
-		Don't just never use objects? just minimal C
-		use more classes? (Not sure about malloc and free but also don't want 
-						   to get too object oriented) Only use classes when 
-						   necessary) C with a bit of C++?
-
-		
+		DEC 10 2019
+		- [ ] Change Texture and Shader back to less object oriented code. 
+			  These don't need to be objects they are simply structs that have functions 
+			  run on them because they are data
+		- [ ] Pass the input to the games update function
+		- [ ] Not everything needs to be a class but some things are okay
+			  Game is much easier to code as a class same with ResourceManager
 */
 #include "global.h"
 
@@ -68,78 +63,7 @@ glm::vec3 g_cameraEye = glm::vec3(0.0, 0.0, +4.0f);
 static void error_callback(int error, const char* description);
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
-// Renderer logic
-//void InitRenderData(unsigned int *quadVAO)
-//{
-//	unsigned int VBO;
-//	float vertices[] =
-//	{
-//		// Pos      // Tex
-//		0.0f, 1.0f, 0.0f, 1.0f,
-//		1.0f, 0.0f, 1.0f, 0.0f,
-//		0.0f, 0.0f, 0.0f, 0.0f,																															
-//
-//		0.0f, 1.0f, 0.0f, 1.0f,
-//		1.0f, 1.0f, 1.0f, 1.0f,
-//		1.0f, 0.0f, 1.0f, 0.0f
-//	};
-//
-//	glGenVertexArrays(1, quadVAO);
-//	glGenBuffers(1, &VBO);
-//
-//	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-//
-//	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-//	glBindVertexArray(*quadVAO);
-//	glEnableVertexAttribArray(0);
-//	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-//	glBindBuffer(GL_ARRAY_BUFFER, 0);
-//	glBindVertexArray(0);
-//}
-
-// TODO: renderer.h
-// Renderer logic
-//void DrawGameObject(GameObject* gameObject, Shader* shader, glm::vec2 size,
-//	float rotate, glm::vec3 color)
-//void DrawGameObject(GameObject* gameObject, Shader *shader, unsigned int *quadVAO)
-//{
-//	// this takes in a sprite renderer
-//	// renderer.DrawSprite(sprite, pos, size, rotation, color)
-//	// this function is below
-//	glUseProgram(shader->id);
-//	glm::mat4 model = glm::mat4(1.0f);
-//	model = glm::translate(model, glm::vec3(gameObject->pos, 0.0f));
-//
-//	model = glm::translate(model, glm::vec3(0.5f * gameObject->size.x, 0.0f * gameObject->size.y, 0.0f));
-//	model = glm::rotate(model, gameObject->rotation, glm::vec3(0.0f, 0.0f, 1.0f));
-//	model = glm::translate(model, glm::vec3(-0.5f * gameObject->size.x, -0.5f * gameObject->size.y, 0.0f));
-//
-//	model = glm::scale(model, glm::vec3(gameObject->size, 1.0f));
-//
-//	int modelLoc = glGetUniformLocation(shader->id, "model");
-//	int spriteColorLoc = glGetUniformLocation(shader->id, "spriteColor");
-//	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-//	glUniform3f(spriteColorLoc, gameObject->color.x, gameObject->color.y, gameObject->color.z);
-//
-//	//glUniformMatrix4fv(glGetUniformLocation(shader->id, "model"), 1, GL_FALSE, glm::value_ptr(model));
-//	//glUniform3f(glGetUniformLocation(shader->id, "spriteColor"), gameObject->color.x, gameObject->color.y, gameObject->color.z);
-//
-//	// Bind(&texture);
-//	//Bind(&gameObject->sprite);
-//	glBindTexture(GL_TEXTURE_2D, gameObject->sprite.id);
-//
-//
-//	// After init the render data
-//	glBindVertexArray(*quadVAO);
-//	glDrawArrays(GL_TRIANGLES, 0, 6);
-//	glBindVertexArray(0);
-//}
-
-// TODO: object_manager.h
-//GameObject enemy;
-
-
-// TODO game.h
+// Pass input to our game object
 bool g_keys[1024];
 bool g_keysProcessed[1024];
 void ProcessInput(float dt)
@@ -213,35 +137,8 @@ int main(int argc, char** argv)
 	game = new Game(SCREEN_WIDTH, SCREEN_HEIGHT, window);
 	game->Init();
 
-	// This is part of sprite_renderer
-	// the renderer class will have this
-	//unsigned int quadVAO;
-	//InitRenderData(&quadVAO);
-
-	//_renderer = new SpriteRenderer(g_resourceManager->GetShader("sprite"));
-	//Room* firstRoom = new Room(this->Width, this->Height, "fileName.txt");
-	//_rooms.push_back(firstRoom);
-
-
-
-	// GenerateTexture is inside LoadTextureFromFile
-	// NOTE(Cole): in the old code generateTexture on the resource manager is creating 
-	// the texture callng loadFromFile then Generate is being called on the texture
-	// it shoves it in a map after
-	//Texture enemyTexture = LoadTextureFromFile("content/sprites/enemy.png", true); 
-	//enemy = {};
-	//enemy.name = "Enemy";
-	//enemy.size = glm::vec2(64, 64);
-	//enemy.pos = glm::vec2((SCREEN_WIDTH - 64) / 2, (SCREEN_HEIGHT - 64) / 2);
-	//enemy.sprite = enemyTexture;
-	//enemy.color = glm::vec3(1.0f, 1.0f, 1.0f);
-
-
 	float deltaTime = 0.0f;
 	float lastFrame = 0.0f;
-
-	// TODO: INIT GAME OBJ here!!
-
 
 	while (!glfwWindowShouldClose(window))
 	{

@@ -16,7 +16,7 @@ namespace finnsie {
 		unsigned int Width;
 		unsigned int Height;
 		
-		std::vector<GameObject*> gameObjects;
+		std::vector<GameObject> gameObjects;
 
 		Game(unsigned int width, unsigned int height, GLFWwindow* window);
 		~Game();
