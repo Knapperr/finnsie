@@ -5,13 +5,17 @@
 #include <glm/glm.hpp>
 #include <string>
 
-struct Shader
-{
-	unsigned int id;
-};
+namespace finnsie {
 
-Shader& UseShader(Shader* shader);
-void BuildShaders(Shader* shader, const char* vertexText, const char* fragmentText, const char* geometryText = NULL);
-void CheckCompileErrors(unsigned int shader, std::string type);
+	struct Shader
+	{
+		unsigned int id;
+	};
+
+	Shader& UseShader(Shader* shader);
+	void BuildShader(Shader* shader, const char* vertexText, const char* fragmentText, const char* geometryText = NULL);
+	void CheckCompileErrors(unsigned int shader, std::string type);
+
+}
 
 #endif
