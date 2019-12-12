@@ -42,6 +42,12 @@
     <ClCompile Include="game_object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="renderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader_manager.h">
@@ -65,9 +71,17 @@
     <ClInclude Include="game_object.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="renderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="vert_sprite.glsl" />
     <None Include="frag_sprite.glsl" />
+    <None Include="frag_color.glsl" />
+    <None Include="vert_color.glsl" />
   </ItemGroup>
 </Project>

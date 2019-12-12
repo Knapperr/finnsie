@@ -16,7 +16,7 @@ namespace finnsie {
 		glDeleteVertexArrays(1, &this->quadVAO);
 	}
 
-	void SpriteRenderer::DrawGameObject(Texture sprite, glm::vec2 pos, glm::vec2 size, glm::vec3 color, float rotation)
+	void SpriteRenderer::Draw2DGameObject(Texture2D sprite, glm::vec2 pos, glm::vec2 size, glm::vec3 color, float rotation)
 	{
 		glUseProgram(this->shader.id);
 		glm::mat4 model = glm::mat4(1.0f);

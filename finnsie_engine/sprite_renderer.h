@@ -11,7 +11,7 @@ namespace finnsie {
 	public:
 		SpriteRenderer(Shader& shader);
 		~SpriteRenderer();
-		void DrawGameObject(Texture sprite, glm::vec2 pos, glm::vec2 size, glm::vec3 color, float rotation);
+		void Draw2DGameObject(Texture2D sprite, glm::vec2 pos, glm::vec2 size, glm::vec3 color, float rotation);
 
 	private:
 		Shader shader;

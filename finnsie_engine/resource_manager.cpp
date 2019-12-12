@@ -5,7 +5,7 @@
 
 namespace finnsie {
 	
-	Texture ResourceManager::GenerateTexture(int lookupId, const char* file, bool alpha)
+	Texture2D ResourceManager::GenerateTexture(int lookupId, const char* file, bool alpha)
 	{
 		textures[lookupId] = loadTextureFromFile(file, alpha);
 		return textures[lookupId];
@@ -19,7 +19,7 @@ namespace finnsie {
 		return shaders[lookupId];
 	}
 
-	Texture& ResourceManager::GetTexture(int lookupId)
+	Texture2D& ResourceManager::GetTexture(int lookupId)
 	{
 		return textures[lookupId];
 	}
@@ -42,10 +42,10 @@ namespace finnsie {
 		}
 	}
 
-	Texture ResourceManager::loadTextureFromFile(const char* file, bool alpha)
+	Texture2D ResourceManager::loadTextureFromFile(const char* file, bool alpha)
 	{
 		// Init texture
-		Texture texture = {};
+		Texture2D texture = {};
 		texture.internalFormat = GL_RGB;
 		texture.imageFormat = GL_RGB;
 		texture.wrapS = GL_REPEAT;

@@ -3,7 +3,7 @@
 
 namespace finnsie {
 
-	struct Texture
+	struct Texture2D
 	{
 		unsigned int id;
 		unsigned int width;
@@ -18,8 +18,8 @@ namespace finnsie {
 		unsigned int filterMax;
 	};
 
-	void Generate(Texture* texture, unsigned int width, unsigned int height, unsigned char* data);
-	void Bind(Texture* texture);
+	void Generate(Texture2D* texture, unsigned int width, unsigned int height, unsigned char* data);
+	void Bind(Texture2D* texture);
 
 }
 #endif

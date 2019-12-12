@@ -4,7 +4,7 @@
 
 namespace finnsie {
 
-	void Generate(Texture* texture, unsigned int width, unsigned int height, unsigned char* data)
+	void Generate(Texture2D* texture, unsigned int width, unsigned int height, unsigned char* data)
 	{
 		texture->width = width;
 		texture->height = height;
@@ -25,7 +25,7 @@ namespace finnsie {
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-	void Bind(Texture* texture)
+	void Bind(Texture2D* texture)
 	{
 		glBindTexture(GL_TEXTURE_2D, texture->id);
 	}

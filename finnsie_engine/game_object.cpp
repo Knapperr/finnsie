@@ -4,7 +4,7 @@ namespace finnsie {
 
 	GameObject InitGameObject(std::string name, glm::vec2 pos, glm::vec2 size, 
 							  glm::vec2 velocity, glm::vec3 color, bool solid, 
-							  float rotation, Texture sprite)
+							  float rotation, Texture2D sprite)
 	{
 		GameObject obj = {};
 		obj.Name = name;
@@ -20,7 +20,7 @@ namespace finnsie {
 
 	void Draw(GameObject* obj, SpriteRenderer& renderer)
 	{
-		renderer.DrawGameObject(obj->Sprite, obj->Pos, obj->Size, obj->Color, obj->Rotation);
+		renderer.Draw2DGameObject(obj->Sprite, obj->Pos, obj->Size, obj->Color, obj->Rotation);
 	}
 
 }
