@@ -2,14 +2,11 @@
 
 #include "global.h"
 
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
 namespace finnsie {
 
 	Renderer::Renderer()
 	{
-		initRenderCubeData();
+		this->color = glm::vec3(0.1f, 0.5f, 0.31f);
 	}
 
 	Renderer::~Renderer()
@@ -22,9 +19,20 @@ namespace finnsie {
 	{
 		// NOTE: Activate shader first
 		glUseProgram(shaderId);
-		glUniform3f(glGetUniformLocation(shaderId, "objectColor"), 0.4f, 0.5f, 0.31f);
+
+		this->color.x += 0.01f;
+
+		if (this->color.x > 1.0f)
+		{
+			this->color.x = 0.0f;
+		}
+
+		//glUniform3f(glGetUniformLocation(shaderId, "objectColor"), 1.0f, 0.5f, 0.31f);
+		glUniform3f(glGetUniformLocation(shaderId, "objectColor"), this->color.x, this->color.y, this->color.z);
 		glUniform3f(glGetUniformLocation(shaderId, "lightColor"), 1.0f, 1.0f, 1.0f);
 		
+
+
 
 		glm::mat4 model = glm::mat4(1.0f);
 		int modelLoc = glGetUniformLocation(shaderId, "model");
@@ -34,52 +42,60 @@ namespace finnsie {
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
 
-	void Renderer::initRenderCubeData()
+	void Renderer::DrawLamp(unsigned int shaderI)
 	{
-		unsigned int VBO;
+
+
+
+	}
+
+
+	void Renderer::InitRenderCubeData()
+	{
 		float vertices[] = {
-			-0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
-			 0.5f,  0.5f, -0.5f,
-			 0.5f,  0.5f, -0.5f,
-			-0.5f,  0.5f, -0.5f,
-			-0.5f, -0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
+		 0.5f, -0.5f, -0.5f,
+		 0.5f,  0.5f, -0.5f,
+		 0.5f,  0.5f, -0.5f,
+		-0.5f,  0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
 
-			-0.5f, -0.5f,  0.5f,
-			 0.5f, -0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f,  0.5f,
-			-0.5f, -0.5f,  0.5f,
+		-0.5f, -0.5f,  0.5f,
+		 0.5f, -0.5f,  0.5f,
+		 0.5f,  0.5f,  0.5f,
+		 0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f,  0.5f,
+		-0.5f, -0.5f,  0.5f,
 
-			-0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f, -0.5f,
-			-0.5f, -0.5f, -0.5f,
-			-0.5f, -0.5f, -0.5f,
-			-0.5f, -0.5f,  0.5f,
-			-0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
+		-0.5f, -0.5f,  0.5f,
+		-0.5f,  0.5f,  0.5f,
 
-			 0.5f,  0.5f,  0.5f,
-			 0.5f,  0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
+		 0.5f,  0.5f,  0.5f,
+		 0.5f,  0.5f, -0.5f,
+		 0.5f, -0.5f, -0.5f,
+		 0.5f, -0.5f, -0.5f,
+		 0.5f, -0.5f,  0.5f,
+		 0.5f,  0.5f,  0.5f,
 
-			-0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f, -0.5f,
-			 0.5f, -0.5f,  0.5f,
-			 0.5f, -0.5f,  0.5f,
-			-0.5f, -0.5f,  0.5f,
-			-0.5f, -0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
+		 0.5f, -0.5f, -0.5f,
+		 0.5f, -0.5f,  0.5f,
+		 0.5f, -0.5f,  0.5f,
+		-0.5f, -0.5f,  0.5f,
+		-0.5f, -0.5f, -0.5f,
 
-			-0.5f,  0.5f, -0.5f,
-			 0.5f,  0.5f, -0.5f,
-			 0.5f,  0.5f,  0.5f,
-			 0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f,  0.5f,
-			-0.5f,  0.5f, -0.5f,
+		-0.5f,  0.5f, -0.5f,
+		 0.5f,  0.5f, -0.5f,
+		 0.5f,  0.5f,  0.5f,
+		 0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f, -0.5f,
 		};
+
 
 		// Texture
 		//float vertices[] = {
@@ -127,9 +143,9 @@ namespace finnsie {
 		//};
 
 		glGenVertexArrays(1, &this->cubeVAO);
-		glGenBuffers(1, &VBO);
+		glGenBuffers(1, &this->VBO);
 		
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 		
 		glBindVertexArray(this->cubeVAO);
@@ -146,17 +162,20 @@ namespace finnsie {
 		//glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 		//glEnableVertexAttribArray(1);
 
+	}
+
+	void Renderer::InitRenderLampData()
+	{
+		// NOTE: We dont need to define the vertices
+		//		 again because the VBO is the same and the lamp is a cube
 
 		//second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube)
-		//unsigned int lightVAO;
-		//glGenVertexArrays(1, &lightVAO);
-		//glBindVertexArray(lightVAO);
-
+		glGenVertexArrays(1, &this->lampVAO);
+		glBindVertexArray(this->lampVAO);
 		//// we only need to bind to the VBO (to link it with glVertexAttribPointer), no need to fill it; the VBO's data already contains all we need (it's already bound, but we do it again for educational purposes)
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-		//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-		//glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
 
 	}
 }

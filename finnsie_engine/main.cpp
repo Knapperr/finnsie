@@ -167,6 +167,7 @@ int main(int argc, char** argv)
 	Shader cubeShader = ::g_resourceManager->GenerateShader(001, "vert_color.glsl", "frag_color.glsl", NULL);
 
 	Renderer* renderer = new Renderer();
+	renderer->InitRenderCubeData();
 
 	while (!glfwWindowShouldClose(window))
 	{

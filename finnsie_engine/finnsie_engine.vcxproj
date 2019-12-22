@@ -156,8 +156,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="frag_color.glsl" />
+    <None Include="frag_lamp.glsl" />
     <None Include="frag_sprite.glsl" />
     <None Include="vert_color.glsl" />
+    <None Include="vert_lamp.glsl" />
     <None Include="vert_sprite.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

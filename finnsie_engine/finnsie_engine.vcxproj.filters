@@ -83,5 +83,7 @@
     <None Include="frag_sprite.glsl" />
     <None Include="frag_color.glsl" />
     <None Include="vert_color.glsl" />
+    <None Include="frag_lamp.glsl" />
+    <None Include="vert_lamp.glsl" />
   </ItemGroup>
 </Project>
