@@ -26,7 +26,7 @@
 #include "game.h"
 
 
-void processInput(GLFWwindow* window);
+#include "render_helpers.h"
 
 using namespace finnsie;
 
@@ -51,6 +51,8 @@ struct Fin_Vertex
 	float x, y;
 	float r, g, b;
 };
+
+void processInput(GLFWwindow* window);
 
 const unsigned int SCREEN_WIDTH = 1080;
 const unsigned int SCREEN_HEIGHT = 720;
@@ -165,10 +167,47 @@ int main(int argc, char** argv)
 	// NOTE: FOR 3D
 	::g_resourceManager = new ResourceManager();
 	Shader cubeShader = ::g_resourceManager->GenerateShader(001, "vert_color.glsl", "frag_color.glsl", NULL);
+	Shader lampShader = ::g_resourceManager->GenerateShader(002, "vert_lamp.glsl", "frag_lamp.glsl", NULL);
 
-	Renderer* renderer = new Renderer();
-	renderer->InitRenderCubeData();
+	//Renderer* renderer = new Renderer();
+	//
+	//if (!renderer->LoadVertices("vertices.txt"))
+	//{
+	//	std::cout << "Failed to load vertices\n";
+	//	return EXIT_FAILURE;
+	//}
 
+
+
+	std::vector<float> vertices;
+	if (!LoadVertices(vertices, "vertices.txt"))
+	{
+		std::cout << "Failed to load vertices\n";
+		return EXIT_FAILURE;
+	}
+
+	//renderer->InitRenderData();
+	//renderer->InitRenderCubeData();
+	//renderer->InitRenderLampData();
+
+	
+	// FROM RENDER_HELPERS
+	// -------------------------------------------------------
+	//unsigned int VBO = 0;
+	//unsigned int cubeVAO = 0;
+	//unsigned int lampVAO = 0;
+	//InitRenderData(VBO, cubeVAO, lampVAO);
+
+	//glm::vec3 lampPos = glm::vec3(1.2f, 1.0f, 2.0f);
+	//glm::vec3 color = glm::vec3(0.1f, 0.5f, 0.31f);;
+	//float colorChange = 0.01f;
+
+	// -------------------------------------------------------
+
+	int projLoc = glGetUniformLocation(cubeShader.id, "projection");
+	int viewLoc = glGetUniformLocation(cubeShader.id, "view");
+	int lampProjLoc = glGetUniformLocation(lampShader.id, "projection");
+	int lampViewLoc = glGetUniformLocation(lampShader.id, "view");
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
@@ -188,15 +227,24 @@ int main(int argc, char** argv)
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), 
 											   (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT,
 											    0.1f, 100.0f);
-
 		glm::mat4 view = camera.GetViewMatrix();
-		int projLoc = glGetUniformLocation(cubeShader.id, "projection");
-		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-		int viewLoc = glGetUniformLocation(cubeShader.id, "view");
+		// cube 
+		// ------------------------------------------------------
+		glUseProgram(cubeShader.id);
+		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+		//DrawCube(cubeShader.id, cubeVAO, color, colorChange);
 
 		renderer->DrawCube(cubeShader.id);
+
+		// lamp 
+		// -------------------------------------------------------
+		glUseProgram(lampShader.id);
+		glUniformMatrix4fv(lampProjLoc, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(lampViewLoc, 1, GL_FALSE, glm::value_ptr(view));
+		//DrawLamp(lampShader.id, lampVAO, lampPos);
+		renderer->DrawLamp(lampShader.id);
 
 		// NOTE: FOR 2D
 		// DRAW

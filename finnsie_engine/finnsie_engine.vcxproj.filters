@@ -86,4 +86,7 @@
     <None Include="frag_lamp.glsl" />
     <None Include="vert_lamp.glsl" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="vertices.txt" />
+  </ItemGroup>
 </Project>

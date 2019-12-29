@@ -3,6 +3,7 @@
 
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <vector>
 
 namespace finnsie {
 
@@ -13,16 +14,21 @@ namespace finnsie {
 	public:
 		Renderer();
 		~Renderer();
-		void InitRenderCubeData();
+		void InitRenderData();
 		void DrawCube(unsigned int shaderId);
+		void DrawLamp(unsigned int shaderId);
+		bool LoadVertices(const char* vertices);
 
 		void InitRenderLampData();
-		void DrawLamp(unsigned int shaderId);
 	private:
+		std::vector<float> verticesVector;
 		unsigned int VBO;
 		unsigned int cubeVAO;
 		unsigned int lampVAO;
+
+		glm::vec3 lampPos;
 		glm::vec3 color;
+		float colorChange;
 	};
 
 }
