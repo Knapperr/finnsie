@@ -26,6 +26,15 @@ bool LoadVertices(std::vector<float>& vertices, const char* vertFile)
 	return true;
 }
 
+// Basic Lighting - https://learnopengl.com/Lighting/Basic-Lighting
+// -------------------------------------
+
+
+
+
+// Basic Color - https://learnopengl.com/Lighting/Colors
+// -----------------------------------------------------
+
 void DrawCube(unsigned int shaderId, unsigned int cubeVAO, glm::vec3& color, float& colorChange)
 {
 	// NOTE: CANT DO THIS HERE  Activate shader first
