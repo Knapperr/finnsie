@@ -166,8 +166,8 @@ int main(int argc, char** argv)
 
 	// NOTE: FOR 3D
 	::g_resourceManager = new ResourceManager();
-	Shader cubeShader = ::g_resourceManager->GenerateShader(001, "vert_color.glsl", "frag_color.glsl", NULL);
-	Shader lampShader = ::g_resourceManager->GenerateShader(002, "vert_lamp.glsl", "frag_lamp.glsl", NULL);
+	Shader cubeShader = ::g_resourceManager->GenerateShader(001, "vert_basic_lighting.glsl", "frag_basic_lighting.glsl", NULL);
+	Shader lightShader = ::g_resourceManager->GenerateShader(002, "vert_lamp.glsl", "frag_lamp.glsl", NULL);
 
 	//Renderer* renderer = new Renderer();
 	//
@@ -178,7 +178,7 @@ int main(int argc, char** argv)
 	//}
 
 	std::vector<float> vertices;
-	if (!LoadVertices(vertices, "vertices.txt"))
+	if (!LoadVertices(vertices, "basic_lighting_vertices.txt"))
 	{
 		std::cout << "Failed to load vertices\n";
 		return EXIT_FAILURE;
@@ -193,10 +193,11 @@ int main(int argc, char** argv)
 	// -------------------------------------------------------
 	unsigned int VBO = 0;
 	unsigned int cubeVAO = 0;
-	unsigned int lampVAO = 0;
-	InitRenderData(vertices, VBO, cubeVAO, lampVAO);
+	unsigned int lightVAO = 0;
+	InitBasicLightingData(vertices, VBO, cubeVAO, lightVAO);
 
-	glm::vec3 lampPos = glm::vec3(1.2f, 1.0f, 2.0f);
+	glm::vec3 lampPos = glm::vec3(2.2f, 1.0f, 2.0f);
+	float lampXMove = 0.1f;
 	glm::vec3 color = glm::vec3(0.1f, 0.5f, 0.31f);;
 	float colorChange = 0.01f;
 
@@ -204,8 +205,8 @@ int main(int argc, char** argv)
 
 	int projLoc = glGetUniformLocation(cubeShader.id, "projection");
 	int viewLoc = glGetUniformLocation(cubeShader.id, "view");
-	int lampProjLoc = glGetUniformLocation(lampShader.id, "projection");
-	int lampViewLoc = glGetUniformLocation(lampShader.id, "view");
+	int lightProjLoc = glGetUniformLocation(lightShader.id, "projection");
+	int lightViewLoc = glGetUniformLocation(lightShader.id, "view");
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
@@ -232,15 +233,30 @@ int main(int argc, char** argv)
 		glUseProgram(cubeShader.id);
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-		DrawCube(cubeShader.id, cubeVAO, color, colorChange);
+
+		DrawBasicLightCube(cubeShader.id, cubeVAO, lampPos, camera.Position);
 
 
 		// lamp 
 		// -------------------------------------------------------
-		glUseProgram(lampShader.id);
-		glUniformMatrix4fv(lampProjLoc, 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(lampViewLoc, 1, GL_FALSE, glm::value_ptr(view));
-		DrawLamp(lampShader.id, lampVAO, lampPos);
+		glUseProgram(lightShader.id);
+		glUniformMatrix4fv(lightProjLoc, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(lightViewLoc, 1, GL_FALSE, glm::value_ptr(view));
+		DrawBasicLightLamp(lightShader.id, lightVAO, lampPos);
+
+		// Move the lamp pos
+		//lampPos.x = 1.0f + sin(glfwGetTime()) * 2.0f;
+		//lampPos.y = sin(glfwGetTime() / 2.0f) * 1.0f;
+
+		lampPos.x -= lampXMove * deltaTime;
+		if (lampPos.x < -1.8f)
+		{
+			lampXMove = -1.0f;
+		}
+		else if (lampPos.x > 1.8f)
+		{
+			lampXMove = 1.0f;
+		}
 
 		// NOTE: FOR 2D
 		// DRAW

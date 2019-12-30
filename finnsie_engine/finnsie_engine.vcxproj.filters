@@ -88,6 +88,8 @@
     <None Include="vert_color.glsl" />
     <None Include="frag_lamp.glsl" />
     <None Include="vert_lamp.glsl" />
+    <None Include="vert_basic_lighting.glsl" />
+    <None Include="frag_basic_lighting.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="vertices.txt" />

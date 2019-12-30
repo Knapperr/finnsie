@@ -27,8 +27,108 @@ bool LoadVertices(std::vector<float>& vertices, const char* vertFile)
 }
 
 // Basic Lighting - https://learnopengl.com/Lighting/Basic-Lighting
-// -------------------------------------
+// ----------------------------------------------------------------------
 
+void DrawBasicLightCube(unsigned int shaderId, unsigned int cubeVAO, glm::vec3& lightPos, glm::vec3& cameraPos)
+{
+	glUniform3f(glGetUniformLocation(shaderId, "objectColor"), 1.0f, 0.5f, 0.31f);
+	glUniform3f(glGetUniformLocation(shaderId, "lightColor"), 1.0f, 1.0f, 1.0f);
+	glUniform3f(glGetUniformLocation(shaderId, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
+	glUniform3f(glGetUniformLocation(shaderId, "viewPos"), cameraPos.x, cameraPos.y, cameraPos.z);
+
+	glm::mat4 model = glm::mat4(1.0f);
+	int modelLoc = glGetUniformLocation(shaderId, "model");
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+	// render
+	glBindVertexArray(cubeVAO);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+}
+
+void DrawBasicLightLamp(unsigned int shaderId, unsigned int lampVAO, glm::vec3 lightPos)
+{
+	int modelLoc = glGetUniformLocation(shaderId, "model");
+	glm::mat4 model = glm::mat4(1.0f);
+
+	model = glm::translate(model, lightPos);
+	model = glm::scale(model, glm::vec3(0.2f));
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+	glBindVertexArray(lampVAO);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+}
+
+void InitBasicLightingData(std::vector<float>& vertices, unsigned int& VBO, unsigned int& cubeVAO, unsigned int& lightVAO)
+{
+	glGenVertexArrays(1, &cubeVAO);
+	glGenBuffers(1, &VBO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertices), &vertices[0], GL_STATIC_DRAW);
+
+	glBindVertexArray(cubeVAO);
+
+	// Position Attribute
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	// Normal Attribute
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+
+	// Configure the light's VAO (VBO is the same because the vertices are the same (both are cubes) ) 
+	glGenVertexArrays(1, &lightVAO);
+	glBindVertexArray(lightVAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	// update the lamps position attribute's stride to refelct the updated buffer data
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	// READ FROM FILE
+	//float vertices[] = {
+	//-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	// 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	// 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	// 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	//-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	//-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+
+	//-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+	// 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+	// 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+	// 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+	//-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+	//-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+
+	//-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+	//-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+	//-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+	//-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+	//-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+	//-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+
+	// 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+	// 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+	// 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+	// 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+	// 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+	// 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+
+	//-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+	// 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+	// 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+	// 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+	//-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+	//-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+
+	//-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+	// 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+	// 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+	// 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+	//-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+	//-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+	//};
+}
 
 
 
@@ -81,96 +181,6 @@ void DrawLamp(unsigned int shaderId, unsigned int lampVAO, glm::vec3& lampPos)
 
 void InitRenderData(std::vector<float>& vertices, unsigned int& VBO, unsigned int& cubeVAO, unsigned int& lampVAO)
 {
-	//float vertices[] = {
-	//-0.5f, -0.5f, -0.5f,
-	// 0.5f, -0.5f, -0.5f,
-	// 0.5f,  0.5f, -0.5f,
-	// 0.5f,  0.5f, -0.5f,
-	//-0.5f,  0.5f, -0.5f,
-	//-0.5f, -0.5f, -0.5f,
-
-	//-0.5f, -0.5f,  0.5f,
-	// 0.5f, -0.5f,  0.5f,
-	// 0.5f,  0.5f,  0.5f,
-	// 0.5f,  0.5f,  0.5f,
-	//-0.5f,  0.5f,  0.5f,
-	//-0.5f, -0.5f,  0.5f,
-
-	//-0.5f,  0.5f,  0.5f,
-	//-0.5f,  0.5f, -0.5f,
-	//-0.5f, -0.5f, -0.5f,
-	//-0.5f, -0.5f, -0.5f,
-	//-0.5f, -0.5f,  0.5f,
-	//-0.5f,  0.5f,  0.5f,
-
-	// 0.5f,  0.5f,  0.5f,
-	// 0.5f,  0.5f, -0.5f,
-	// 0.5f, -0.5f, -0.5f,
-	// 0.5f, -0.5f, -0.5f,
-	// 0.5f, -0.5f,  0.5f,
-	// 0.5f,  0.5f,  0.5f,
-
-	//-0.5f, -0.5f, -0.5f,
-	// 0.5f, -0.5f, -0.5f,
-	// 0.5f, -0.5f,  0.5f,
-	// 0.5f, -0.5f,  0.5f,
-	//-0.5f, -0.5f,  0.5f,
-	//-0.5f, -0.5f, -0.5f,
-
-	//-0.5f,  0.5f, -0.5f,
-	// 0.5f,  0.5f, -0.5f,
-	// 0.5f,  0.5f,  0.5f,
-	// 0.5f,  0.5f,  0.5f,
-	//-0.5f,  0.5f,  0.5f,
-	//-0.5f,  0.5f, -0.5f,
-	//};
-
-
-	// Texture
-	//float vertices[] = {
-	//	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-	//	 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-	//	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	//	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	//	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-	//	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-
-	//	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	//	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-	//	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-	//	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-	//	-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-	//	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-
-	//	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	//	-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	//	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	//	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	//	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	//	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-	//	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	//	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	//	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	//	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	//	 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	//	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-	//	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	//	 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-	//	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-	//	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-	//	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	//	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-	//	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-	//	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	//	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	//	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	//	-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-	//	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-	//};
-
 	glGenVertexArrays(1, &cubeVAO);
 	glGenBuffers(1, &VBO);
 
@@ -195,14 +205,50 @@ void InitRenderData(std::vector<float>& vertices, unsigned int& VBO, unsigned in
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
+	// READ FROM FILE
+	//float vertices[] = {
+	//-0.5f, -0.5f, -0.5f,
+	// 0.5f, -0.5f, -0.5f,
+	// 0.5f,  0.5f, -0.5f,
+	// 0.5f,  0.5f, -0.5f,
+	//-0.5f,  0.5f, -0.5f,
+	//-0.5f, -0.5f, -0.5f,
 
-	// NOTE: THIS WAS 5 BEFORE because its based off of the vertices with texture coords
-	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	//-0.5f, -0.5f,  0.5f,
+	// 0.5f, -0.5f,  0.5f,
+	// 0.5f,  0.5f,  0.5f,
+	// 0.5f,  0.5f,  0.5f,
+	//-0.5f,  0.5f,  0.5f,
+	//-0.5f, -0.5f,  0.5f,
 
-	// Texture coord attributes
-	//glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	//glEnableVertexAttribArray(1);
+	//-0.5f,  0.5f,  0.5f,
+	//-0.5f,  0.5f, -0.5f,
+	//-0.5f, -0.5f, -0.5f,
+	//-0.5f, -0.5f, -0.5f,
+	//-0.5f, -0.5f,  0.5f,
+	//-0.5f,  0.5f,  0.5f,
 
+	// 0.5f,  0.5f,  0.5f,
+	// 0.5f,  0.5f, -0.5f,
+	// 0.5f, -0.5f, -0.5f,
+	// 0.5f, -0.5f, -0.5f,
+	// 0.5f, -0.5f,  0.5f,
+	// 0.5f,  0.5f,  0.5f,
+
+	//-0.5f, -0.5f, -0.5f,
+	// 0.5f, -0.5f, -0.5f,
+	// 0.5f, -0.5f,  0.5f,
+	// 0.5f, -0.5f,  0.5f,
+	//-0.5f, -0.5f,  0.5f,
+	//-0.5f, -0.5f, -0.5f,
+
+	//-0.5f,  0.5f, -0.5f,
+	// 0.5f,  0.5f, -0.5f,
+	// 0.5f,  0.5f,  0.5f,
+	// 0.5f,  0.5f,  0.5f,
+	//-0.5f,  0.5f,  0.5f,
+	//-0.5f,  0.5f, -0.5f,
+	//};
 }
 
 #endif
