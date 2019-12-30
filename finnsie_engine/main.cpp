@@ -177,8 +177,6 @@ int main(int argc, char** argv)
 	//	return EXIT_FAILURE;
 	//}
 
-
-
 	std::vector<float> vertices;
 	if (!LoadVertices(vertices, "vertices.txt"))
 	{
@@ -193,14 +191,14 @@ int main(int argc, char** argv)
 	
 	// FROM RENDER_HELPERS
 	// -------------------------------------------------------
-	//unsigned int VBO = 0;
-	//unsigned int cubeVAO = 0;
-	//unsigned int lampVAO = 0;
-	//InitRenderData(VBO, cubeVAO, lampVAO);
+	unsigned int VBO = 0;
+	unsigned int cubeVAO = 0;
+	unsigned int lampVAO = 0;
+	InitRenderData(vertices, VBO, cubeVAO, lampVAO);
 
-	//glm::vec3 lampPos = glm::vec3(1.2f, 1.0f, 2.0f);
-	//glm::vec3 color = glm::vec3(0.1f, 0.5f, 0.31f);;
-	//float colorChange = 0.01f;
+	glm::vec3 lampPos = glm::vec3(1.2f, 1.0f, 2.0f);
+	glm::vec3 color = glm::vec3(0.1f, 0.5f, 0.31f);;
+	float colorChange = 0.01f;
 
 	// -------------------------------------------------------
 
@@ -234,17 +232,15 @@ int main(int argc, char** argv)
 		glUseProgram(cubeShader.id);
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-		//DrawCube(cubeShader.id, cubeVAO, color, colorChange);
+		DrawCube(cubeShader.id, cubeVAO, color, colorChange);
 
-		renderer->DrawCube(cubeShader.id);
 
 		// lamp 
 		// -------------------------------------------------------
 		glUseProgram(lampShader.id);
 		glUniformMatrix4fv(lampProjLoc, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(lampViewLoc, 1, GL_FALSE, glm::value_ptr(view));
-		//DrawLamp(lampShader.id, lampVAO, lampPos);
-		renderer->DrawLamp(lampShader.id);
+		DrawLamp(lampShader.id, lampVAO, lampPos);
 
 		// NOTE: FOR 2D
 		// DRAW
@@ -282,16 +278,16 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
 	if (firstMouse)
 	{
-		lastX = xpos;
-		lastY = ypos;
+		lastX = (float)xpos;
+		lastY = (float)ypos;
 		firstMouse = false;
 	}
 
-	float xoffset = xpos - lastX;
-	float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+	float xoffset = (float)xpos - lastX;
+	float yoffset = lastY - (float)ypos; // reversed since y-coordinates go from bottom to top
 
-	lastX = xpos;
-	lastY = ypos;
+	lastX = (float)xpos;
+	lastY = (float)ypos;
 
 	camera.ProcessMouseMovement(xoffset, yoffset);
 }

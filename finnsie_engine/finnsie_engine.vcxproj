@@ -149,6 +149,7 @@
     <ClInclude Include="game_object.h" />
     <ClInclude Include="global.h" />
     <ClInclude Include="renderer.h" />
+    <ClInclude Include="render_helpers.h" />
     <ClInclude Include="resource_manager.h" />
     <ClInclude Include="shader_manager.h" />
     <ClInclude Include="sprite_renderer.h" />
@@ -163,6 +164,7 @@
     <None Include="vert_sprite.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="basic_lighting_vertices.txt" />
     <Text Include="vertices.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
