@@ -58,7 +58,7 @@ const unsigned int SCREEN_WIDTH = 1080;
 const unsigned int SCREEN_HEIGHT = 720;
 
 // NOTE: 2D has its own game for now
-//Game* game;
+Game* game;
 ResourceManager* g_resourceManager;
 
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -161,8 +161,8 @@ int main(int argc, char** argv)
 	// NOTE: FOR 2D
 	// Init game 
 	// -------------------------------------------------------------------------- 
-	//game = new Game(SCREEN_WIDTH, SCREEN_HEIGHT, window);
-	//game->Init();
+	game = new Game(SCREEN_WIDTH, SCREEN_HEIGHT, window);
+	game->Init();
 
 	// NOTE: FOR 3D
 	::g_resourceManager = new ResourceManager();
