@@ -18,10 +18,11 @@ namespace finnsie {
 		void DrawCube(unsigned int shaderId);
 		void DrawLamp(unsigned int shaderId);
 		bool LoadVertices(const char* vertices);
-
+		bool LoadIndices(const char* indices);
 		void InitRenderLampData();
 	private:
 		std::vector<float> verticesVector;
+		std::vector<float> indicesVector;
 		unsigned int VBO;
 		unsigned int cubeVAO;
 		unsigned int lampVAO;

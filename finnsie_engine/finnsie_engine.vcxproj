@@ -168,6 +168,8 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="basic_lighting_vertices.txt" />
+    <Text Include="textureindices.txt" />
+    <Text Include="texturevert.txt" />
     <Text Include="vertices.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

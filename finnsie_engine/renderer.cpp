@@ -64,7 +64,6 @@ namespace finnsie {
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
 
-
 	bool Renderer::LoadVertices(const char* vertices)
 	{
 		std::ifstream verticesFile(vertices);
@@ -84,6 +83,31 @@ namespace finnsie {
 		return true;
 	}
 
+	bool Renderer::LoadIndices(const char* indices)
+	{
+		std::ifstream indicesFile(indices);
+
+		if (!indicesFile.is_open())
+		{
+			return false;
+		}
+
+		float num = 0;
+		while (indicesFile >> num)
+		{
+			indicesVector.push_back(num);
+		}
+
+		indicesFile.close();
+		return true;
+	}
+
+	void Renderer::InitRenderData()
+	{
+
+	}
+
+	/*
 	void Renderer::InitRenderData()
 	{
 		glGenVertexArrays(1, &this->cubeVAO);
@@ -120,6 +144,7 @@ namespace finnsie {
 		//glEnableVertexAttribArray(1);
 
 	}
+	*/
 
 	void Renderer::InitRenderLampData()
 	{

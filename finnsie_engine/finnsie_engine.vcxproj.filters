@@ -94,5 +94,7 @@
   <ItemGroup>
     <Text Include="vertices.txt" />
     <Text Include="basic_lighting_vertices.txt" />
+    <Text Include="texturevert.txt" />
+    <Text Include="textureindices.txt" />
   </ItemGroup>
 </Project>
