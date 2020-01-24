@@ -209,6 +209,11 @@ int main(int argc, char** argv)
 	//unsigned int cubeVAO = 0;
 	//unsigned int lightVAO = 0;
 	//InitBasicLightingData(vertices, VBO, cubeVAO, lightVAO);
+	unsigned int VBO, VAO, EBO;
+	InitRenderTextureData(vertices, indices, VBO, VAO, EBO);
+
+
+
 
 	glm::vec3 lampPos = glm::vec3(2.2f, 1.0f, 2.0f);
 	float lampXMove = 0.1f;
