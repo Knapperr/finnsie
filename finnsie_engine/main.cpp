@@ -166,8 +166,10 @@ int main(int argc, char** argv)
 
 	// NOTE: FOR 3D
 	::g_resourceManager = new ResourceManager();
-	Shader cubeShader = ::g_resourceManager->GenerateShader(001, "vert_basic_lighting.glsl", "frag_basic_lighting.glsl", NULL);
-	Shader lightShader = ::g_resourceManager->GenerateShader(002, "vert_lamp.glsl", "frag_lamp.glsl", NULL);
+	//Shader cubeShader = ::g_resourceManager->GenerateShader(001, "vert_basic_lighting.glsl", "frag_basic_lighting.glsl", NULL);
+	//Shader lightShader = ::g_resourceManager->GenerateShader(002, "vert_lamp.glsl", "frag_lamp.glsl", NULL);
+	Shader shader = ::g_resourceManager->GenerateShader(001, "vert_text.glsl", "frag_text.glsl", NULL);
+
 
 	//Renderer* renderer = new Renderer();
 	//
@@ -177,13 +179,25 @@ int main(int argc, char** argv)
 	//	return EXIT_FAILURE;
 	//}
 
+	//std::vector<float> vertices;
+	//if (!LoadVertices(vertices, "basic_lighting_vertices.txt"))
+	//{
+	//	std::cout << "Failed to load vertices\n";
+	//	return EXIT_FAILURE;
+	//}
+
 	std::vector<float> vertices;
-	if (!LoadVertices(vertices, "basic_lighting_vertices.txt"))
+	std::vector<float> indices;
+	if (!LoadVertices(vertices, "texturevert.txt"))
 	{
 		std::cout << "Failed to load vertices\n";
 		return EXIT_FAILURE;
 	}
-
+	if (!LoadIndices(indices, "textureindices.txt"))
+	{
+		std::cout << "Failed to load indices\n";
+		return EXIT_FAILURE;
+	}
 	//renderer->InitRenderData();
 	//renderer->InitRenderCubeData();
 	//renderer->InitRenderLampData();
@@ -191,10 +205,10 @@ int main(int argc, char** argv)
 	
 	// FROM RENDER_HELPERS
 	// -------------------------------------------------------
-	unsigned int VBO = 0;
-	unsigned int cubeVAO = 0;
-	unsigned int lightVAO = 0;
-	InitBasicLightingData(vertices, VBO, cubeVAO, lightVAO);
+	//unsigned int VBO = 0;
+	//unsigned int cubeVAO = 0;
+	//unsigned int lightVAO = 0;
+	//InitBasicLightingData(vertices, VBO, cubeVAO, lightVAO);
 
 	glm::vec3 lampPos = glm::vec3(2.2f, 1.0f, 2.0f);
 	float lampXMove = 0.1f;

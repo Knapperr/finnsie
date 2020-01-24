@@ -161,10 +161,12 @@
     <None Include="frag_color.glsl" />
     <None Include="frag_lamp.glsl" />
     <None Include="frag_sprite.glsl" />
+    <None Include="frag_text.glsl" />
     <None Include="vert_basic_lighting.glsl" />
     <None Include="vert_color.glsl" />
     <None Include="vert_lamp.glsl" />
     <None Include="vert_sprite.glsl" />
+    <None Include="vert_text.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="basic_lighting_vertices.txt" />

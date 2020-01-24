@@ -102,12 +102,7 @@ namespace finnsie {
 		return true;
 	}
 
-	void Renderer::InitRenderData()
-	{
-
-	}
-
-	/*
+	
 	void Renderer::InitRenderData()
 	{
 		glGenVertexArrays(1, &this->cubeVAO);
@@ -144,7 +139,7 @@ namespace finnsie {
 		//glEnableVertexAttribArray(1);
 
 	}
-	*/
+	
 
 	void Renderer::InitRenderLampData()
 	{

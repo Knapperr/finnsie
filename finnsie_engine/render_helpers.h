@@ -26,6 +26,26 @@ bool LoadVertices(std::vector<float>& vertices, const char* vertFile)
 	return true;
 }
 
+bool LoadIndices(std::vector<float>& indices, const char* indFile)
+{
+	std::ifstream indicesFile(indFile);
+
+	if (!indicesFile.is_open())
+	{
+		return false;
+	}
+
+	float num = 0;
+	while (indicesFile >> num)
+	{
+		indices.push_back(num);
+	}
+
+	indicesFile.close();
+	return true;
+}
+
+
 // Basic Lighting - https://learnopengl.com/Lighting/Basic-Lighting
 // ----------------------------------------------------------------------
 
@@ -161,6 +181,48 @@ void DrawCube(unsigned int shaderId, unsigned int cubeVAO, glm::vec3& color, flo
 
 	glBindVertexArray(cubeVAO);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
+}
+
+void DrawLamp(unsigned int shaderId, unsigned int lampVAO, glm::vec3& lampPos)
+{
+	// NOTE: Activate shader first
+	// CANT DO THIS HERE
+	//glUseProgram(shaderId);
+
+	glm::mat4 model = glm::mat4(1.0f);
+	model = glm::translate(model, lampPos);
+	model = glm::scale(model, glm::vec3(0.2f));
+	int modelLoc = glGetUniformLocation(shaderId, "model");
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+	glBindVertexArray(lampVAO);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+}
+
+void InitRenderTextureData(std::vector<float>& vertices, std::vector<float>&indices, unsigned int& VBO, unsigned int& VAO, unsigned int& EBO)
+{
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
+
+	glBindVertexArray(VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertices), &vertices[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(indices), &vertices[0], GL_STATIC_DRAW);
+
+	// position
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	// color
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+	// texture coords
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
+
 }
 
 void DrawLamp(unsigned int shaderId, unsigned int lampVAO, glm::vec3& lampPos)
