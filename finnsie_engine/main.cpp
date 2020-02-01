@@ -210,9 +210,7 @@ int main(int argc, char** argv)
 	//unsigned int lightVAO = 0;
 	//InitBasicLightingData(vertices, VBO, cubeVAO, lightVAO);
 	unsigned int VBO, VAO, EBO;
-	InitRenderTextureData(vertices, indices, VBO, VAO, EBO);
-
-
+	InitRenderTextureData(vertices, shader.id, VBO, VAO);
 
 
 	glm::vec3 lampPos = glm::vec3(2.2f, 1.0f, 2.0f);
@@ -221,11 +219,16 @@ int main(int argc, char** argv)
 	float colorChange = 0.01f;
 
 	// -------------------------------------------------------
+	// I do this outside because i dont want to be calling getuniformlocation in the game loop
+	int projLoc = glGetUniformLocation(shader.id, "projection");
+	int viewLoc = glGetUniformLocation(shader.id, "view");
+	int modelLoc = glGetUniformLocation(shader.id, "model");
 
-	int projLoc = glGetUniformLocation(cubeShader.id, "projection");
-	int viewLoc = glGetUniformLocation(cubeShader.id, "view");
-	int lightProjLoc = glGetUniformLocation(lightShader.id, "projection");
-	int lightViewLoc = glGetUniformLocation(lightShader.id, "view");
+
+	//int projLoc = glGetUniformLocation(cubeShader.id, "projection");
+	//int viewLoc = glGetUniformLocation(cubeShader.id, "view");
+	//int lightProjLoc = glGetUniformLocation(lightShader.id, "projection");
+	//int lightViewLoc = glGetUniformLocation(lightShader.id, "view");
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
@@ -247,35 +250,50 @@ int main(int argc, char** argv)
 											    0.1f, 100.0f);
 		glm::mat4 view = camera.GetViewMatrix();
 
-		// cube 
-		// ------------------------------------------------------
-		glUseProgram(cubeShader.id);
+		// Cube with Texture
+		// -----------------------------------------
+		glUseProgram(shader.id);
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
-		DrawBasicLightCube(cubeShader.id, cubeVAO, lampPos, camera.Position);
+		// This is where drawing of the cube starts <-- place in function
+		glBindVertexArray(VAO);
+		glm::mat4 model = glm::mat4(1.0f); // initialize matrix to indentity matrix first!
+		//model = glm::translate(model, cubePositions[i]);
+		// NOTE: modelLoc outside of the loop
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 
+		// -----------------------------------------
+
+		// cube 
+		// ------------------------------------------------------
+		//glUseProgram(cubeShader.id);
+		//glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+		//glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+		//DrawBasicLightCube(cubeShader.id, cubeVAO, lampPos, camera.Position);
 
 		// lamp 
 		// -------------------------------------------------------
-		glUseProgram(lightShader.id);
-		glUniformMatrix4fv(lightProjLoc, 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(lightViewLoc, 1, GL_FALSE, glm::value_ptr(view));
-		DrawBasicLightLamp(lightShader.id, lightVAO, lampPos);
+		//glUseProgram(lightShader.id);
+		//glUniformMatrix4fv(lightProjLoc, 1, GL_FALSE, glm::value_ptr(projection));
+		//glUniformMatrix4fv(lightViewLoc, 1, GL_FALSE, glm::value_ptr(view));
+		//DrawBasicLightLamp(lightShader.id, lightVAO, lampPos);
 
 		// Move the lamp pos
 		//lampPos.x = 1.0f + sin(glfwGetTime()) * 2.0f;
 		//lampPos.y = sin(glfwGetTime() / 2.0f) * 1.0f;
 
-		lampPos.x -= lampXMove * deltaTime;
-		if (lampPos.x < -1.8f)
-		{
-			lampXMove = -1.0f;
-		}
-		else if (lampPos.x > 1.8f)
-		{
-			lampXMove = 1.0f;
-		}
+		//lampPos.x -= lampXMove * deltaTime;
+		//if (lampPos.x < -1.8f)
+		//{
+		//	lampXMove = -1.0f;
+		//}
+		//else if (lampPos.x > 1.8f)
+		//{
+		//	lampXMove = 1.0f;
+		//}
+		// ----------------------------------------------------
 
 		// NOTE: FOR 2D
 		// DRAW

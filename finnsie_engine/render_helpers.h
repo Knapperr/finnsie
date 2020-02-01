@@ -6,6 +6,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <fstream>
 #include <vector>
+#include <stb_image/stb_image.h>
 
 bool LoadVertices(std::vector<float>& vertices, const char* vertFile)
 {
@@ -199,7 +200,7 @@ void DrawLamp(unsigned int shaderId, unsigned int lampVAO, glm::vec3& lampPos)
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
-void InitRenderTextureData(std::vector<float>& vertices, unsigned int& VBO, unsigned int& VAO)
+void InitRenderTextureData(std::vector<float>& vertices, unsigned int shaderId, unsigned int& VBO, unsigned int& VAO)
 {
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -218,24 +219,37 @@ void InitRenderTextureData(std::vector<float>& vertices, unsigned int& VBO, unsi
 	glEnableVertexAttribArray(1);
 
 	// load and create a texture
-	 
+	unsigned int texture1;
+	glGenTextures(1, &texture1);
+	glBindTexture(GL_TEXTURE_2D, texture1);
 
-}
+	// Set wrapping params
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-void DrawLamp(unsigned int shaderId, unsigned int lampVAO, glm::vec3& lampPos)
-{
-	// NOTE: Activate shader first
-	// CANT DO THIS HERE
-	//glUseProgram(shaderId);
+	// Set filtering params
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, lampPos);
-	model = glm::scale(model, glm::vec3(0.2f));
-	int modelLoc = glGetUniformLocation(shaderId, "model");
-	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+	// load the image 
+	int width, height, nrChannels;
+	stbi_set_flip_vertically_on_load(true);
+	unsigned char *data = stbi_load("content/textures/wall.jpg", &width, &height, &nrChannels, 0);
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "Failed to load texture\n";
+	}
+	// make sure to free up the data
+	stbi_image_free(data); 
 
-	glBindVertexArray(lampVAO);
-	glDrawArrays(GL_TRIANGLES, 0, 36);
+	// Need to tell the shader where the texture belongs
+	glUseProgram(shaderId);
+	glUniform1i(glGetUniformLocation(shaderId, "texture1"), 0);
 }
 
 void InitRenderData(std::vector<float>& vertices, unsigned int& VBO, unsigned int& cubeVAO, unsigned int& lampVAO)
