@@ -8,7 +8,7 @@
 		- [ ] Not everything needs to be a class but some things are okay
 			  Game is much easier to code as a class same with ResourceManager
 
-
+		- [ ] Vertices manager VAO manager?
 		- [ ] read up on InitRenderTextureData 
 */
 #include "global.h"
@@ -34,6 +34,9 @@
 using namespace finnsie;
 
 #define PI32 3.14159265359f
+#define internal static 
+#define local_persist static 
+#define global_variable static
 
 typedef int8_t int8;
 typedef int16_t int16;
@@ -68,10 +71,6 @@ Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = SCREEN_WIDTH / 2.0f;
 float lastY = SCREEN_HEIGHT / 2.0f;
 bool firstMouse = true;
-
-float deltaTime = 0.0f;
-float lastFrame = 0.0f;
-
 
 float g_playerXPos = 0;
 float g_velocity = 300.0f;
@@ -110,6 +109,13 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 //		//enemy.pos.y += velocity;
 //	}
 //}
+
+struct DeltaTime 
+{
+	float time;
+	float lastFrame; 
+};
+global_variable DeltaTime dt;
 
 int main(int argc, char** argv)
 {
@@ -167,28 +173,34 @@ int main(int argc, char** argv)
 	game = new Game(SCREEN_WIDTH, SCREEN_HEIGHT, window);
 	game->Init();
 
-	// NOTE: FOR 3D
+	
 	::g_resourceManager = new ResourceManager();
-	//Shader cubeShader = ::g_resourceManager->GenerateShader(001, "vert_basic_lighting.glsl", "frag_basic_lighting.glsl", NULL);
-	//Shader lightShader = ::g_resourceManager->GenerateShader(002, "vert_lamp.glsl", "frag_lamp.glsl", NULL);
+	
+	// Init the cube with texture
+	// --------------------------
 	Shader shader = ::g_resourceManager->GenerateShader(001, "vert_text.glsl", "frag_text.glsl", NULL);
 
 	std::vector<float> vertices;
-	std::vector<float> indices;
 	if (!LoadVertices(vertices, "texturevert.txt"))
 	{
 		std::cout << "Failed to load vertices\n";
 		return EXIT_FAILURE;
 	}
-	if (!LoadIndices(indices, "textureindices.txt"))
+	unsigned int VBO, VAO;
+	InitRenderTextureData(vertices, shader.id, VBO, VAO);
+
+	vertices.clear();
+	if (!LoadVertices(vertices, "basic_lighting_vertices.txt"))
 	{
-		std::cout << "Failed to load indices\n";
+		std::cout << "Failed to load vertices\n";
 		return EXIT_FAILURE;
 	}
+	// Init the light
+	Shader lightShader = ::g_resourceManager->GenerateShader(002, "vert_lamp.glsl", "frag_lamp.glsl", NULL);
+	// cant use the same VAO and VBO
+	unsigned int lightVAO, lightVBO;
+	InitLightData(vertices, lightVAO, lightVBO);
 
-
-	unsigned int VBO, VAO, EBO;
-	InitRenderTextureData(vertices, shader.id, VBO, VAO);
 
 	// -------------------------------------------------------
 	// I do this outside because i dont want to be calling getuniformlocation in the game loop
@@ -196,14 +208,19 @@ int main(int argc, char** argv)
 	int viewLoc = glGetUniformLocation(shader.id, "view");
 	int modelLoc = glGetUniformLocation(shader.id, "model");
 
+	glm::vec3 lampPos = glm::vec3(2.2f, 1.0f, 2.0f);
+	float lampXMove = 0.1f;
+	int lightProjLoc = glGetUniformLocation(lightShader.id, "projection");
+	int lightViewLoc = glGetUniformLocation(lightShader.id, "view");
+
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
 
 		// delta time
 		float currentFrame = (float)glfwGetTime();
-		deltaTime = currentFrame - lastFrame;
-		lastFrame = currentFrame;
+		dt.time = currentFrame - dt.lastFrame;
+		dt.lastFrame = currentFrame;
 
 		// Process the input & move the player
 		processInput(window);
@@ -216,6 +233,22 @@ int main(int argc, char** argv)
 											   (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT,
 											    0.1f, 100.0f);
 		glm::mat4 view = camera.GetViewMatrix();
+
+		// lamp
+		glUseProgram(lightShader.id);
+		glUniformMatrix4fv(lightProjLoc, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(lightViewLoc, 1, GL_FALSE, glm::value_ptr(view));
+		DrawLight(lightShader.id, lightVAO, lampPos);
+
+		lampPos.x -= lampXMove * dt.time;
+		if (lampPos.x < -1.8f)
+		{
+			lampXMove = -1.0f;
+		}
+		else if (lampPos.x > 1.8f)
+		{
+			lampXMove = 1.0f;
+		}
 
 		// Cube with Texture
 		// -----------------------------------------
@@ -230,37 +263,6 @@ int main(int argc, char** argv)
 		// NOTE: modelLoc outside of the loop
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-		// -----------------------------------------
-
-		// cube 
-		// ------------------------------------------------------
-		//glUseProgram(cubeShader.id);
-		//glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-		//glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-		//DrawBasicLightCube(cubeShader.id, cubeVAO, lampPos, camera.Position);
-
-		// lamp 
-		// -------------------------------------------------------
-		//glUseProgram(lightShader.id);
-		//glUniformMatrix4fv(lightProjLoc, 1, GL_FALSE, glm::value_ptr(projection));
-		//glUniformMatrix4fv(lightViewLoc, 1, GL_FALSE, glm::value_ptr(view));
-		//DrawBasicLightLamp(lightShader.id, lightVAO, lampPos);
-
-		// Move the lamp pos
-		//lampPos.x = 1.0f + sin(glfwGetTime()) * 2.0f;
-		//lampPos.y = sin(glfwGetTime() / 2.0f) * 1.0f;
-
-		//lampPos.x -= lampXMove * deltaTime;
-		//if (lampPos.x < -1.8f)
-		//{
-		//	lampXMove = -1.0f;
-		//}
-		//else if (lampPos.x > 1.8f)
-		//{
-		//	lampXMove = 1.0f;
-		//}
-		// ----------------------------------------------------
 
 		// NOTE: FOR 2D
 		// DRAW
@@ -283,13 +285,13 @@ void processInput(GLFWwindow* window)
 		glfwSetWindowShouldClose(window, true);
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		camera.ProcessKeyboard(FORWARD, deltaTime);
+		camera.ProcessKeyboard(FORWARD, dt.time);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		camera.ProcessKeyboard(BACKWARD, deltaTime);
+		camera.ProcessKeyboard(BACKWARD, dt.time);
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		camera.ProcessKeyboard(LEFT, deltaTime);
+		camera.ProcessKeyboard(LEFT, dt.time);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		camera.ProcessKeyboard(RIGHT, deltaTime);
+		camera.ProcessKeyboard(RIGHT, dt.time);
 }
 
 // glfw: whenever the mouse moves, this callback is called

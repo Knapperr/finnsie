@@ -10,6 +10,7 @@ uniform sampler2D texture2;
 void main()
 {
 	// linearly interpolate between both textures (80% container, 20% awesomeface)
-	FragColor = texture(texture1, TexCoord);
+	vec4 iceBlueColor = vec4(0.1, 0.3, 0.4, 0.0);
+	FragColor = mix(texture(texture1, TexCoord), iceBlueColor, 0.4);
 	//FragColor = mix(texture(texture1, TexCoord), texture(texture2, TexCoord), 0.2);
 }

@@ -123,6 +123,42 @@ void InitRenderTextureData(std::vector<float>& vertices, unsigned int shaderId, 
 	loadTexture(texture, shaderId, "content/textures/wall.jpg", "texture1");
 }
 
+// LAMP
+void InitLightData(std::vector<float>& vertices, unsigned int& lightVAO, unsigned int& VBO)
+{
+	glGenVertexArrays(1, &lightVAO);
+	glGenBuffers(1, &VBO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertices), &vertices[0], GL_STATIC_DRAW);
+
+	glBindVertexArray(lightVAO);
+
+	// Position Attribute
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	// Normal Attribute
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+}
+
+void DrawLight(unsigned int shaderId, unsigned int lampVAO, glm::vec3& lampPos)
+{
+	// NOTE: Activate shader first
+	// CANT DO THIS HERE
+	//glUseProgram(shaderId);
+
+	glm::mat4 model = glm::mat4(1.0f);
+	model = glm::translate(model, lampPos);
+	model = glm::scale(model, glm::vec3(0.2f));
+	int modelLoc = glGetUniformLocation(shaderId, "model");
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+	glBindVertexArray(lampVAO);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+}
+
+
 // Basic Lighting - https://learnopengl.com/Lighting/Basic-Lighting
 // ----------------------------------------------------------------------
 
@@ -139,19 +175,6 @@ void DrawBasicLightCube(unsigned int shaderId, unsigned int cubeVAO, glm::vec3& 
 
 	// render
 	glBindVertexArray(cubeVAO);
-	glDrawArrays(GL_TRIANGLES, 0, 36);
-}
-
-void DrawBasicLightLamp(unsigned int shaderId, unsigned int lampVAO, glm::vec3 lightPos)
-{
-	int modelLoc = glGetUniformLocation(shaderId, "model");
-	glm::mat4 model = glm::mat4(1.0f);
-
-	model = glm::translate(model, lightPos);
-	model = glm::scale(model, glm::vec3(0.2f));
-	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-
-	glBindVertexArray(lampVAO);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
@@ -181,8 +204,6 @@ void InitBasicLightingData(std::vector<float>& vertices, unsigned int& VBO, unsi
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 }
-
-
 
 // Basic Color - https://learnopengl.com/Lighting/Colors
 // -----------------------------------------------------
@@ -215,21 +236,7 @@ void DrawCube(unsigned int shaderId, unsigned int cubeVAO, glm::vec3& color, flo
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
-void DrawLamp(unsigned int shaderId, unsigned int lampVAO, glm::vec3& lampPos)
-{
-	// NOTE: Activate shader first
-	// CANT DO THIS HERE
-	//glUseProgram(shaderId);
 
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, lampPos);
-	model = glm::scale(model, glm::vec3(0.2f));
-	int modelLoc = glGetUniformLocation(shaderId, "model");
-	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-
-	glBindVertexArray(lampVAO);
-	glDrawArrays(GL_TRIANGLES, 0, 36);
-}
 
 void InitRenderData(std::vector<float>& vertices, unsigned int& VBO, unsigned int& cubeVAO, unsigned int& lampVAO)
 {
