@@ -7,6 +7,9 @@
 		- [ ] Pass the input to the games update function
 		- [ ] Not everything needs to be a class but some things are okay
 			  Game is much easier to code as a class same with ResourceManager
+
+
+		- [ ] read up on InitRenderTextureData 
 */
 #include "global.h"
 
@@ -170,22 +173,6 @@ int main(int argc, char** argv)
 	//Shader lightShader = ::g_resourceManager->GenerateShader(002, "vert_lamp.glsl", "frag_lamp.glsl", NULL);
 	Shader shader = ::g_resourceManager->GenerateShader(001, "vert_text.glsl", "frag_text.glsl", NULL);
 
-
-	//Renderer* renderer = new Renderer();
-	//
-	//if (!renderer->LoadVertices("vertices.txt"))
-	//{
-	//	std::cout << "Failed to load vertices\n";
-	//	return EXIT_FAILURE;
-	//}
-
-	//std::vector<float> vertices;
-	//if (!LoadVertices(vertices, "basic_lighting_vertices.txt"))
-	//{
-	//	std::cout << "Failed to load vertices\n";
-	//	return EXIT_FAILURE;
-	//}
-
 	std::vector<float> vertices;
 	std::vector<float> indices;
 	if (!LoadVertices(vertices, "texturevert.txt"))
@@ -198,25 +185,10 @@ int main(int argc, char** argv)
 		std::cout << "Failed to load indices\n";
 		return EXIT_FAILURE;
 	}
-	//renderer->InitRenderData();
-	//renderer->InitRenderCubeData();
-	//renderer->InitRenderLampData();
 
-	
-	// FROM RENDER_HELPERS
-	// -------------------------------------------------------
-	//unsigned int VBO = 0;
-	//unsigned int cubeVAO = 0;
-	//unsigned int lightVAO = 0;
-	//InitBasicLightingData(vertices, VBO, cubeVAO, lightVAO);
+
 	unsigned int VBO, VAO, EBO;
 	InitRenderTextureData(vertices, shader.id, VBO, VAO);
-
-
-	glm::vec3 lampPos = glm::vec3(2.2f, 1.0f, 2.0f);
-	float lampXMove = 0.1f;
-	glm::vec3 color = glm::vec3(0.1f, 0.5f, 0.31f);;
-	float colorChange = 0.01f;
 
 	// -------------------------------------------------------
 	// I do this outside because i dont want to be calling getuniformlocation in the game loop
@@ -224,11 +196,6 @@ int main(int argc, char** argv)
 	int viewLoc = glGetUniformLocation(shader.id, "view");
 	int modelLoc = glGetUniformLocation(shader.id, "model");
 
-
-	//int projLoc = glGetUniformLocation(cubeShader.id, "projection");
-	//int viewLoc = glGetUniformLocation(cubeShader.id, "view");
-	//int lightProjLoc = glGetUniformLocation(lightShader.id, "projection");
-	//int lightViewLoc = glGetUniformLocation(lightShader.id, "view");
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();

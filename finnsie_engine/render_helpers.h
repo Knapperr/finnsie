@@ -4,6 +4,7 @@
 #include "global.h"
 #include <glm/gtc/matrix_transform.hpp> 
 #include <glm/gtc/type_ptr.hpp>
+#include <iostream>
 #include <fstream>
 #include <vector>
 #include <stb_image/stb_image.h>
@@ -46,6 +47,81 @@ bool LoadIndices(std::vector<float>& indices, const char* indFile)
 	return true;
 }
 
+struct Texture {
+	unsigned int id;
+	unsigned int width;
+	unsigned int height;
+	unsigned int wrapS;
+	unsigned int wrapT;
+	unsigned int minFilter;
+	unsigned int magFilter;
+	unsigned int internalFormat;
+	unsigned int imageFormat;
+};
+
+void loadTexture(Texture texture, unsigned int shaderId, const char* fileLocation, const char* uniformName)
+{
+	int width, height, nrChannels;
+	unsigned char* data = stbi_load(fileLocation, &width, &height, &nrChannels, 0);
+	stbi_set_flip_vertically_on_load(true);
+	if (data)
+	{
+		glGenTextures(1, &texture.id);
+		glBindTexture(GL_TEXTURE_2D, texture.id);
+
+		// Set wrapping params
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, texture.wrapS);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, texture.wrapT);
+
+		// Set filtering params
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, texture.minFilter);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, texture.magFilter);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, texture.internalFormat, width, height, 0, texture.imageFormat, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		// Need to tell the shader where the texture belongs (which is this texture)
+		// not sure if i need to do this here
+		glUseProgram(shaderId);
+		glUniform1i(glGetUniformLocation(shaderId, uniformName), 0);
+	}
+	else
+	{
+		std::cout << "Failed to load texture\n";
+	}
+
+	// make sure to free up the data
+	stbi_image_free(data);
+}
+
+
+void InitRenderTextureData(std::vector<float>& vertices, unsigned int shaderId, unsigned int& VBO, unsigned int& VAO)
+{
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+
+	glBindVertexArray(VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertices), &vertices[0], GL_STATIC_DRAW);
+
+	// position
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	// texture coords
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+
+	Texture texture = {};
+	texture.wrapS = GL_REPEAT;
+	texture.wrapT = GL_REPEAT;
+	texture.minFilter = GL_LINEAR;
+	texture.magFilter = GL_LINEAR;
+	texture.internalFormat = GL_RGB;
+	texture.imageFormat = GL_RGB;
+	loadTexture(texture, shaderId, "content/textures/wall.jpg", "texture1");
+}
 
 // Basic Lighting - https://learnopengl.com/Lighting/Basic-Lighting
 // ----------------------------------------------------------------------
@@ -104,51 +180,6 @@ void InitBasicLightingData(std::vector<float>& vertices, unsigned int& VBO, unsi
 	// update the lamps position attribute's stride to refelct the updated buffer data
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-
-	// READ FROM FILE
-	//float vertices[] = {
-	//-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-	// 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-	// 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-	// 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-	//-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-	//-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-
-	//-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-	// 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-	// 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-	// 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-	//-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-	//-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-
-	//-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-	//-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-	//-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-	//-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-	//-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-	//-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-
-	// 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-	// 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-	// 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-	// 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-	// 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-	// 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-
-	//-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-	// 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-	// 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-	// 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-	//-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-	//-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-
-	//-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-	// 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-	// 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-	// 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-	//-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-	//-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
-	//};
 }
 
 
@@ -200,58 +231,6 @@ void DrawLamp(unsigned int shaderId, unsigned int lampVAO, glm::vec3& lampPos)
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
-void InitRenderTextureData(std::vector<float>& vertices, unsigned int shaderId, unsigned int& VBO, unsigned int& VAO)
-{
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-
-	glBindVertexArray(VAO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertices), &vertices[0], GL_STATIC_DRAW);
-
-	// position
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-	
-	// texture coords
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	// load and create a texture
-	unsigned int texture1;
-	glGenTextures(1, &texture1);
-	glBindTexture(GL_TEXTURE_2D, texture1);
-
-	// Set wrapping params
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	// Set filtering params
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	// load the image 
-	int width, height, nrChannels;
-	stbi_set_flip_vertically_on_load(true);
-	unsigned char *data = stbi_load("content/textures/wall.jpg", &width, &height, &nrChannels, 0);
-	if (data)
-	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else
-	{
-		std::cout << "Failed to load texture\n";
-	}
-	// make sure to free up the data
-	stbi_image_free(data); 
-
-	// Need to tell the shader where the texture belongs
-	glUseProgram(shaderId);
-	glUniform1i(glGetUniformLocation(shaderId, "texture1"), 0);
-}
-
 void InitRenderData(std::vector<float>& vertices, unsigned int& VBO, unsigned int& cubeVAO, unsigned int& lampVAO)
 {
 	glGenVertexArrays(1, &cubeVAO);
@@ -277,51 +256,6 @@ void InitRenderData(std::vector<float>& vertices, unsigned int& VBO, unsigned in
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-
-	// READ FROM FILE
-	//float vertices[] = {
-	//-0.5f, -0.5f, -0.5f,
-	// 0.5f, -0.5f, -0.5f,
-	// 0.5f,  0.5f, -0.5f,
-	// 0.5f,  0.5f, -0.5f,
-	//-0.5f,  0.5f, -0.5f,
-	//-0.5f, -0.5f, -0.5f,
-
-	//-0.5f, -0.5f,  0.5f,
-	// 0.5f, -0.5f,  0.5f,
-	// 0.5f,  0.5f,  0.5f,
-	// 0.5f,  0.5f,  0.5f,
-	//-0.5f,  0.5f,  0.5f,
-	//-0.5f, -0.5f,  0.5f,
-
-	//-0.5f,  0.5f,  0.5f,
-	//-0.5f,  0.5f, -0.5f,
-	//-0.5f, -0.5f, -0.5f,
-	//-0.5f, -0.5f, -0.5f,
-	//-0.5f, -0.5f,  0.5f,
-	//-0.5f,  0.5f,  0.5f,
-
-	// 0.5f,  0.5f,  0.5f,
-	// 0.5f,  0.5f, -0.5f,
-	// 0.5f, -0.5f, -0.5f,
-	// 0.5f, -0.5f, -0.5f,
-	// 0.5f, -0.5f,  0.5f,
-	// 0.5f,  0.5f,  0.5f,
-
-	//-0.5f, -0.5f, -0.5f,
-	// 0.5f, -0.5f, -0.5f,
-	// 0.5f, -0.5f,  0.5f,
-	// 0.5f, -0.5f,  0.5f,
-	//-0.5f, -0.5f,  0.5f,
-	//-0.5f, -0.5f, -0.5f,
-
-	//-0.5f,  0.5f, -0.5f,
-	// 0.5f,  0.5f, -0.5f,
-	// 0.5f,  0.5f,  0.5f,
-	// 0.5f,  0.5f,  0.5f,
-	//-0.5f,  0.5f,  0.5f,
-	//-0.5f,  0.5f, -0.5f,
-	//};
 }
 
 #endif
