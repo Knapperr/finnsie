@@ -1,14 +1,8 @@
 /*
 	TODO:
-		DEC 10 2019
-		- [ ] Change Texture and Shader back to less object oriented code. 
-			  These don't need to be objects they are simply structs that have functions 
-			  run on them because they are data
-		- [ ] Pass the input to the games update function
-		- [ ] Not everything needs to be a class but some things are okay
-			  Game is much easier to code as a class same with ResourceManager
-
-		- [ ] Vertices manager VAO manager?
+		- [ ] .obj parser (learn how to write one) and then vector of objects and add those to the scene
+		- [ ] game obj
+		- [ ] Vertices manager VAO manager class?
 		- [ ] read up on InitRenderTextureData 
 */
 #include "global.h"
@@ -29,6 +23,7 @@
 #include "game.h"
 
 
+#include "model.h"
 #include "render_helpers.h"
 
 using namespace finnsie;
@@ -157,8 +152,6 @@ int main(int argc, char** argv)
 	}
 
 	// NOTE: OpenGL error checks have been omitted for brevity
-
-
 	// OpenGL Configurations - after loading glad -
 	glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 	//glEnable(GL_CULL_FACE);
@@ -170,36 +163,41 @@ int main(int argc, char** argv)
 	// NOTE: FOR 2D
 	// Init game 
 	// -------------------------------------------------------------------------- 
-	game = new Game(SCREEN_WIDTH, SCREEN_HEIGHT, window);
-	game->Init();
+	//game = new Game(SCREEN_WIDTH, SCREEN_HEIGHT, window);
+	//game->Init();
 
 	
 	::g_resourceManager = new ResourceManager();
 	
 	// Init the cube with texture
 	// --------------------------
+	Model textureCube;
 	Shader shader = ::g_resourceManager->GenerateShader(001, "vert_text.glsl", "frag_text.glsl", NULL);
 
-	std::vector<float> vertices;
-	if (!LoadVertices(vertices, "texturevert.txt"))
+	if (!textureCube.LoadVertices("texturevert.txt"))
 	{
 		std::cout << "Failed to load vertices\n";
 		return EXIT_FAILURE;
 	}
-	unsigned int VBO, VAO;
-	InitRenderTextureData(vertices, shader.id, VBO, VAO);
+	//unsigned int VBO, VAO;
+	//InitRenderTextureData(vertices, shader.id, VBO, VAO);
+	// NOTE: object for creating model cube
+	textureCube.initTextureCubeData(shader.id);
 
-	vertices.clear();
-	if (!LoadVertices(vertices, "basic_lighting_vertices.txt"))
+	// Now again for light model
+	Model lightCube;
+	std::vector<float> vertices;
+	if (!lightCube.LoadVertices("basic_lighting_vertices.txt"))
 	{
 		std::cout << "Failed to load vertices\n";
 		return EXIT_FAILURE;
 	}
 	// Init the light
 	Shader lightShader = ::g_resourceManager->GenerateShader(002, "vert_lamp.glsl", "frag_lamp.glsl", NULL);
+	lightCube.initBasicCubeData(lightShader.id);
 	// cant use the same VAO and VBO
-	unsigned int lightVAO, lightVBO;
-	InitLightData(vertices, lightVAO, lightVBO);
+	//unsigned int lightVAO, lightVBO;
+	//InitLightData(vertices, lightVAO, lightVBO);
 
 
 	// -------------------------------------------------------
@@ -213,8 +211,23 @@ int main(int argc, char** argv)
 	int lightProjLoc = glGetUniformLocation(lightShader.id, "projection");
 	int lightViewLoc = glGetUniformLocation(lightShader.id, "view");
 
+	// world space positions of our cubes
+	glm::vec3 cubePositions[] = {
+		glm::vec3(0.0f,  0.0f,  0.0f),
+		glm::vec3(2.0f,  5.0f, -15.0f),
+		glm::vec3(-1.5f, -2.2f, -2.5f),
+		glm::vec3(-3.8f, -2.0f, -12.3f),
+		glm::vec3(2.4f, -0.4f, -3.5f),
+		glm::vec3(-1.7f,  3.0f, -7.5f),
+		glm::vec3(1.3f, -2.0f, -2.5f),
+		glm::vec3(1.5f,  2.0f, -2.5f),
+		glm::vec3(1.5f,  0.2f, -1.5f),
+		glm::vec3(-1.3f,  1.0f, -1.5f)
+	};
+
 	while (!glfwWindowShouldClose(window))
 	{
+		processInput(window);
 		glfwPollEvents();
 
 		// delta time
@@ -223,7 +236,6 @@ int main(int argc, char** argv)
 		dt.lastFrame = currentFrame;
 
 		// Process the input & move the player
-		processInput(window);
 
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -238,7 +250,18 @@ int main(int argc, char** argv)
 		glUseProgram(lightShader.id);
 		glUniformMatrix4fv(lightProjLoc, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(lightViewLoc, 1, GL_FALSE, glm::value_ptr(view));
-		DrawLight(lightShader.id, lightVAO, lampPos);
+
+		//-------------------------------------------------------------
+		//DrawLight(lightShader.id, lightVAO, lampPos);
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, lampPos);
+		model = glm::scale(model, glm::vec3(0.2f));
+		int modelLoc = glGetUniformLocation(lightShader.id, "model");
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+		glBindVertexArray(lightCube.VAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		//-------------------------------------------------------------
 
 		lampPos.x -= lampXMove * dt.time;
 		if (lampPos.x < -1.8f)
@@ -255,19 +278,20 @@ int main(int argc, char** argv)
 		glUseProgram(shader.id);
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+		//glBindVertexArray(VAO);
+		glBindVertexArray(textureCube.VAO);
+		for (unsigned int i = 0; i < 10; i++)
+		{
+			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::translate(model, cubePositions[i]);
 
-		// This is where drawing of the cube starts <-- place in function
-		glBindVertexArray(VAO);
-		glm::mat4 model = glm::mat4(1.0f); // initialize matrix to indentity matrix first!
-		//model = glm::translate(model, cubePositions[i]);
-		// NOTE: modelLoc outside of the loop
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-
+			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
+		//-------------------------------------------------------------
 		// NOTE: FOR 2D
 		// DRAW
 		//game->Render();
-
 		glfwSwapBuffers(window);
 	}
 	
@@ -281,17 +305,13 @@ int main(int argc, char** argv)
 // Camera input
 void processInput(GLFWwindow* window)
 {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, true);
-
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		camera.ProcessKeyboard(FORWARD, dt.time);
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		camera.ProcessKeyboard(BACKWARD, dt.time);
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		camera.ProcessKeyboard(LEFT, dt.time);
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		camera.ProcessKeyboard(RIGHT, dt.time);
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) { glfwSetWindowShouldClose(window, true); }
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) { camera.ProcessKeyboard(Camera_Movement::FORWARD, dt.time); }
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) { camera.ProcessKeyboard(Camera_Movement::BACKWARD, dt.time); }
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) { camera.ProcessKeyboard(Camera_Movement::LEFT, dt.time); }
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) { camera.ProcessKeyboard(Camera_Movement::RIGHT, dt.time); }
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) { camera.ProcessKeyboard(Camera_Movement::UP, dt.time); }
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) { camera.ProcessKeyboard(Camera_Movement::DOWN, dt.time); }
 }
 
 // glfw: whenever the mouse moves, this callback is called

@@ -13,11 +13,13 @@
 #include <vector>
 
 // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
-enum Camera_Movement {
+enum class Camera_Movement {
 	FORWARD,
 	BACKWARD,
 	LEFT,
-	RIGHT
+	RIGHT,
+	UP,
+	DOWN
 };
 
 // Default camera values
@@ -83,14 +85,20 @@ public:
 	void ProcessKeyboard(Camera_Movement direction, float deltaTime)
 	{
 		float velocity = MovementSpeed * deltaTime;
-		if (direction == FORWARD)
+		if (direction == Camera_Movement::FORWARD)
 			Position += Front * velocity;
-		if (direction == BACKWARD)
+		if (direction == Camera_Movement::BACKWARD)
 			Position -= Front * velocity;
-		if (direction == LEFT)
+		if (direction == Camera_Movement::LEFT)
 			Position -= Right * velocity;
-		if (direction == RIGHT)
+		if (direction == Camera_Movement::RIGHT)
 			Position += Right * velocity;
+		if (direction == Camera_Movement::UP)
+			Position.y += 1.0f * velocity;
+		if (direction == Camera_Movement::DOWN)
+			Position.y -= 1.0f * velocity;
+		// make sure the user stays at the ground level
+		//Position.y = 0.0f; // <-- this one-liner keeps the user at the ground level (xz plane)
 	}
 
 	// Processes input received from a mouse input system. Expects the offset value in both the x and y direction.

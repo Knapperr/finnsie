@@ -47,7 +47,7 @@ bool LoadIndices(std::vector<float>& indices, const char* indFile)
 	return true;
 }
 
-struct Texture {
+struct Texture1 {
 	unsigned int id;
 	unsigned int width;
 	unsigned int height;
@@ -59,7 +59,7 @@ struct Texture {
 	unsigned int imageFormat;
 };
 
-void loadTexture(Texture texture, unsigned int shaderId, const char* fileLocation, const char* uniformName)
+void loadTexture(Texture1 texture, unsigned int shaderId, const char* fileLocation, const char* uniformName)
 {
 	int width, height, nrChannels;
 	unsigned char* data = stbi_load(fileLocation, &width, &height, &nrChannels, 0);
@@ -94,7 +94,6 @@ void loadTexture(Texture texture, unsigned int shaderId, const char* fileLocatio
 	stbi_image_free(data);
 }
 
-
 void InitRenderTextureData(std::vector<float>& vertices, unsigned int shaderId, unsigned int& VBO, unsigned int& VAO)
 {
 	glGenVertexArrays(1, &VAO);
@@ -113,7 +112,7 @@ void InitRenderTextureData(std::vector<float>& vertices, unsigned int shaderId, 
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
-	Texture texture = {};
+	Texture1 texture = {};
 	texture.wrapS = GL_REPEAT;
 	texture.wrapT = GL_REPEAT;
 	texture.minFilter = GL_LINEAR;
