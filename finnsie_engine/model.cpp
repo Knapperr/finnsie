@@ -61,7 +61,7 @@ bool Model::LoadVertices(const char* vertFile)
 	return true;
 }
 
-void Model::createTexture(unsigned int wrapS, unsigned int wrapT, unsigned int minFilter, 
+void Model::CreateTexture(unsigned int wrapS, unsigned int wrapT, unsigned int minFilter, 
 								 unsigned int magFilter, unsigned int internalFormat, unsigned int imageFormat)
 {
 	texture = {};
@@ -73,7 +73,7 @@ void Model::createTexture(unsigned int wrapS, unsigned int wrapT, unsigned int m
 	texture.imageFormat = imageFormat;
 }
 
-void Model::initTextureCubeData(unsigned int shaderId)
+void Model::InitTextureCubeData(unsigned int shaderId)
 {
 	// void InitRenderTextureData(std::vector<float>& vertices, unsigned int shaderId, unsigned int& VBO, unsigned int& VAO)
 	glGenVertexArrays(1, &VAO);
@@ -92,11 +92,11 @@ void Model::initTextureCubeData(unsigned int shaderId)
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
-	createTexture(GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR, GL_RGB, GL_RGB);
+	CreateTexture(GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR, GL_RGB, GL_RGB);
 	loadTexture(texture, shaderId, "content/textures/wall.jpg", "texture1");
 }
 
-void Model::initBasicCubeData(unsigned int shaderId)
+void Model::InitBasicCubeData(unsigned int shaderId)
 {
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);

@@ -22,9 +22,7 @@
 #include "texture_manager.h"
 #include "game.h"
 
-
 #include "model.h"
-#include "render_helpers.h"
 
 using namespace finnsie;
 
@@ -78,32 +76,9 @@ static void error_callback(int error, const char* description);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
-// NOTE: INPUT FOR 2D
-// Pass input to our game object
-//bool g_keys[1024];
-//bool g_keysProcessed[1024];
-//void ProcessInput(float dt)
-//{
-//	// Calculate delta time before adding velocity
-//	float velocity = ::g_velocity * dt;
-//
-//	if (g_keys[GLFW_KEY_A])
-//	{
-//		//enemy.pos.x -= velocity;
-//	}
-//	if (g_keys[GLFW_KEY_D])
-//	{
-//		//enemy.pos.x += velocity;
-//	}
-//	if (g_keys[GLFW_KEY_W])
-//	{
-//		//enemy.pos.y -= velocity;
-//	}
-//	if (g_keys[GLFW_KEY_S])
-//	{
-//		//enemy.pos.y += velocity;
-//	}
-//}
+
+void DrawTextureCube(unsigned int shaderId, Model textureCube, glm::vec3 cubePositions[],
+	int projLoc, int viewLoc, int modelLoc, glm::mat4 projection, glm::mat4 view);
 
 struct DeltaTime 
 {
@@ -165,7 +140,6 @@ int main(int argc, char** argv)
 	// -------------------------------------------------------------------------- 
 	//game = new Game(SCREEN_WIDTH, SCREEN_HEIGHT, window);
 	//game->Init();
-
 	
 	::g_resourceManager = new ResourceManager();
 	
@@ -179,10 +153,7 @@ int main(int argc, char** argv)
 		std::cout << "Failed to load vertices\n";
 		return EXIT_FAILURE;
 	}
-	//unsigned int VBO, VAO;
-	//InitRenderTextureData(vertices, shader.id, VBO, VAO);
-	// NOTE: object for creating model cube
-	textureCube.initTextureCubeData(shader.id);
+	textureCube.InitTextureCubeData(shader.id);
 
 	// Now again for light model
 	Model lightCube;
@@ -194,11 +165,7 @@ int main(int argc, char** argv)
 	}
 	// Init the light
 	Shader lightShader = ::g_resourceManager->GenerateShader(002, "vert_lamp.glsl", "frag_lamp.glsl", NULL);
-	lightCube.initBasicCubeData(lightShader.id);
-	// cant use the same VAO and VBO
-	//unsigned int lightVAO, lightVBO;
-	//InitLightData(vertices, lightVAO, lightVBO);
-
+	lightCube.InitBasicCubeData(lightShader.id);
 
 	// -------------------------------------------------------
 	// I do this outside because i dont want to be calling getuniformlocation in the game loop
@@ -210,7 +177,7 @@ int main(int argc, char** argv)
 	float lampXMove = 0.1f;
 	int lightProjLoc = glGetUniformLocation(lightShader.id, "projection");
 	int lightViewLoc = glGetUniformLocation(lightShader.id, "view");
-
+	int lightModelLoc = glGetUniformLocation(lightShader.id, "model");
 	// world space positions of our cubes
 	glm::vec3 cubePositions[] = {
 		glm::vec3(0.0f,  0.0f,  0.0f),
@@ -247,17 +214,16 @@ int main(int argc, char** argv)
 		glm::mat4 view = camera.GetViewMatrix();
 
 		// lamp
+		//-------------------------------------------------------------
 		glUseProgram(lightShader.id);
 		glUniformMatrix4fv(lightProjLoc, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(lightViewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
-		//-------------------------------------------------------------
 		//DrawLight(lightShader.id, lightVAO, lampPos);
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, lampPos);
 		model = glm::scale(model, glm::vec3(0.2f));
-		int modelLoc = glGetUniformLocation(lightShader.id, "model");
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(lightModelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
 		glBindVertexArray(lightCube.VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -275,19 +241,9 @@ int main(int argc, char** argv)
 
 		// Cube with Texture
 		// -----------------------------------------
-		glUseProgram(shader.id);
-		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-		//glBindVertexArray(VAO);
-		glBindVertexArray(textureCube.VAO);
-		for (unsigned int i = 0; i < 10; i++)
-		{
-			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, cubePositions[i]);
-
-			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}
+		// Move to renderer??
+		DrawTextureCube(shader.id, textureCube, cubePositions, projLoc, 
+						viewLoc, modelLoc, projection, view);
 		//-------------------------------------------------------------
 		// NOTE: FOR 2D
 		// DRAW
@@ -346,6 +302,25 @@ static void error_callback(int error, const char* description)
 	fprintf(stderr, "Error: %s\n", description);
 }
 
+void DrawTextureCube(unsigned int shaderId, Model textureCube, glm::vec3 cubePositions[], 
+					 int projLoc, int viewLoc, int modelLoc, glm::mat4 projection, glm::mat4 view)
+{
+	glUseProgram(shaderId);
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+	//glBindVertexArray(VAO);
+	glBindVertexArray(textureCube.VAO);
+	for (unsigned int i = 0; i < 10; i++)
+	{
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, cubePositions[i]);
+
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+	}
+}
+
+
 //static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 //{
 //	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
@@ -362,5 +337,33 @@ static void error_callback(int error, const char* description)
 //			::g_keys[key] = GL_FALSE;
 //			::g_keysProcessed[key] = GL_FALSE;
 //		}
+//	}
+//}
+
+// IN MAIN
+// NOTE: INPUT FOR 2D
+// Pass input to our game object
+//bool g_keys[1024];
+//bool g_keysProcessed[1024];
+//void ProcessInput(float dt)
+//{
+//	// Calculate delta time before adding velocity
+//	float velocity = ::g_velocity * dt;
+//
+//	if (g_keys[GLFW_KEY_A])
+//	{
+//		//enemy.pos.x -= velocity;
+//	}
+//	if (g_keys[GLFW_KEY_D])
+//	{
+//		//enemy.pos.x += velocity;
+//	}
+//	if (g_keys[GLFW_KEY_W])
+//	{
+//		//enemy.pos.y -= velocity;
+//	}
+//	if (g_keys[GLFW_KEY_S])
+//	{
+//		//enemy.pos.y += velocity;
 //	}
 //}

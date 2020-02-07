@@ -27,11 +27,11 @@ public:
 	Texture texture;
 	std::vector<float> vertices;
 	bool LoadVertices(const char* vertFile);
-	void createTexture(	unsigned int wrapS, unsigned int wrapT, unsigned int minFilter,
+	void CreateTexture(	unsigned int wrapS, unsigned int wrapT, unsigned int minFilter,
 						unsigned int magFilter, unsigned int internalFormat, unsigned int imageFormat );
 	// need to find a way to determine the position and texture coords not based off 
-	void initTextureCubeData(unsigned int shaderId);
-	void initBasicCubeData(unsigned int shaderId);
+	void InitTextureCubeData(unsigned int shaderId);
+	void InitBasicCubeData(unsigned int shaderId);
 };
 
 #endif
