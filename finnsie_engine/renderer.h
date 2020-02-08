@@ -1,6 +1,8 @@
 #ifndef RENDERER_HG_
 #define RENDERER_HG_
 
+#include "model.h"
+
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
@@ -8,18 +10,16 @@
 namespace finnsie {
 
 	class Renderer {
-	// TODO: Currently the renderer 
-
-
 	public:
 		Renderer();
 		~Renderer();
-		void InitRenderData();
 		void DrawCube(unsigned int shaderId);
-		void DrawLamp(unsigned int shaderId);
-		bool LoadVertices(const char* vertices);
-		bool LoadIndices(const char* indices);
-		void InitRenderLampData();
+
+		void DrawTextureCube(unsigned int shaderId, Model textureCube, glm::vec3 cubePositions[],
+							 int projLoc, int viewLoc, int modelLoc, glm::mat4 projection, glm::mat4 view);
+		void DrawLamp(unsigned int shaderId, Model lightCube, unsigned int lightModelLoc,
+					  unsigned int lightProjLoc, unsigned int lightViewLoc, glm::mat4 projection, 
+					  glm::mat4 view, glm::vec3 lampPos);
 	private:
 		std::vector<float> verticesVector;
 		std::vector<float> indicesVector;

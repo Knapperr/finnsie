@@ -1,7 +1,6 @@
 #include "renderer.h"
 
 #include "global.h"
-
 #include <fstream>
 
 namespace finnsie {
@@ -48,104 +47,37 @@ namespace finnsie {
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
 
-	void Renderer::DrawLamp(unsigned int shaderId)
+	void Renderer::DrawTextureCube(unsigned int shaderId, Model textureCube, glm::vec3 cubePositions[],
+		int projLoc, int viewLoc, int modelLoc, glm::mat4 projection, glm::mat4 view)
 	{
-		// NOTE: Activate shader first
-		// CANT DO THIS HERE
-		//glUseProgram(shaderId);
-		
+		glUseProgram(shaderId);
+		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+		glBindVertexArray(textureCube.VAO);
+		for (unsigned int i = 0; i < 10; i++)
+		{
+			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::translate(model, cubePositions[i]);
+
+			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
+	}
+
+	void Renderer::DrawLamp(unsigned int shaderId, Model lightCube, unsigned int lightModelLoc,
+							unsigned int lightProjLoc, unsigned int lightViewLoc, glm::mat4 projection,
+							glm::mat4 view, glm::vec3 lampPos)
+	{
+		glUseProgram(shaderId);
+		glUniformMatrix4fv(lightProjLoc, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(lightViewLoc, 1, GL_FALSE, glm::value_ptr(view));
+
 		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, this->lampPos);
+		model = glm::translate(model, lampPos);
 		model = glm::scale(model, glm::vec3(0.2f));
-		int modelLoc = glGetUniformLocation(shaderId, "model");
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(lightModelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-		glBindVertexArray(this->lampVAO);
+		glBindVertexArray(lightCube.VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
-	}
-
-	bool Renderer::LoadVertices(const char* vertices)
-	{
-		std::ifstream verticesFile(vertices);
-		
-		if (!verticesFile.is_open())
-		{
-			return false;
-		}
-
-		float num = 0;
-		while (verticesFile >> num)
-		{
-			verticesVector.push_back(num);
-		}
-	
-		verticesFile.close();
-		return true;
-	}
-
-	bool Renderer::LoadIndices(const char* indices)
-	{
-		std::ifstream indicesFile(indices);
-
-		if (!indicesFile.is_open())
-		{
-			return false;
-		}
-
-		float num = 0;
-		while (indicesFile >> num)
-		{
-			indicesVector.push_back(num);
-		}
-
-		indicesFile.close();
-		return true;
-	}
-
-	
-	void Renderer::InitRenderData()
-	{
-		glGenVertexArrays(1, &this->cubeVAO);
-		glGenBuffers(1, &this->VBO);
-		
-		glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-		//glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-		glBufferData(GL_ARRAY_BUFFER, verticesVector.size() * sizeof(verticesVector), &verticesVector[0], GL_STATIC_DRAW);
-
-		glBindVertexArray(this->cubeVAO);
-
-		// position attribute
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(0);
-
-
-		// NOTE: We dont need to define the vertices
-		//		 again because the VBO is the same and the lamp is a cube
-
-		//second, configure the light's VAO (VBO stays the same; the vertices are the same for the light object which is also a 3D cube)
-		glGenVertexArrays(1, &this->lampVAO);
-		glBindVertexArray(this->lampVAO);
-		//// we only need to bind to the VBO (to link it with glVertexAttribPointer), no need to fill it; the VBO's data already contains all we need (it's already bound, but we do it again for educational purposes)
-		glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(0);
-
-
-		// NOTE: THIS WAS 5 BEFORE because its based off of the vertices with texture coords
-		//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-
-		// Texture coord attributes
-		//glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-		//glEnableVertexAttribArray(1);
-
-	}
-	
-
-	void Renderer::InitRenderLampData()
-	{
-		// NOTE: THIS MIGHT NOT WORK 
-
-
-
-	}
+	}	
 }

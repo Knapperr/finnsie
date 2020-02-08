@@ -142,7 +142,8 @@ int main(int argc, char** argv)
 	//game->Init();
 	
 	::g_resourceManager = new ResourceManager();
-	
+	Renderer renderer;
+
 	// Init the cube with texture
 	// --------------------------
 	Model textureCube;
@@ -214,21 +215,10 @@ int main(int argc, char** argv)
 		glm::mat4 view = camera.GetViewMatrix();
 
 		// lamp
-		//-------------------------------------------------------------
-		glUseProgram(lightShader.id);
-		glUniformMatrix4fv(lightProjLoc, 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(lightViewLoc, 1, GL_FALSE, glm::value_ptr(view));
+		renderer.DrawLamp(lightShader.id, lightCube, lightModelLoc, 
+						  lightProjLoc, lightViewLoc, projection, view, lampPos);
 
-		//DrawLight(lightShader.id, lightVAO, lampPos);
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, lampPos);
-		model = glm::scale(model, glm::vec3(0.2f));
-		glUniformMatrix4fv(lightModelLoc, 1, GL_FALSE, glm::value_ptr(model));
-
-		glBindVertexArray(lightCube.VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-		//-------------------------------------------------------------
-
+		// Move this position to the model class
 		lampPos.x -= lampXMove * dt.time;
 		if (lampPos.x < -1.8f)
 		{
@@ -240,14 +230,9 @@ int main(int argc, char** argv)
 		}
 
 		// Cube with Texture
-		// -----------------------------------------
-		// Move to renderer??
-		DrawTextureCube(shader.id, textureCube, cubePositions, projLoc, 
-						viewLoc, modelLoc, projection, view);
-		//-------------------------------------------------------------
-		// NOTE: FOR 2D
-		// DRAW
-		//game->Render();
+		renderer.DrawTextureCube(shader.id, textureCube, cubePositions, projLoc, 
+								 viewLoc, modelLoc, projection, view);
+
 		glfwSwapBuffers(window);
 	}
 	
@@ -308,7 +293,6 @@ void DrawTextureCube(unsigned int shaderId, Model textureCube, glm::vec3 cubePos
 	glUseProgram(shaderId);
 	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-	//glBindVertexArray(VAO);
 	glBindVertexArray(textureCube.VAO);
 	for (unsigned int i = 0; i < 10; i++)
 	{
