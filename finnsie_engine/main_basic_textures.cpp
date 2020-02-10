@@ -147,7 +147,7 @@ int main(int argc, char** argv)
 	// Init the cube with texture
 	// --------------------------
 	Model textureCube;
-	Model textureNormalCube;
+	Model textureNomral;
 	Shader shader = ::g_resourceManager->GenerateShader(001, "vert_text.glsl", "frag_text.glsl", NULL);
 	if (!textureCube.LoadVertices("texturevert.txt"))
 	{
