@@ -79,5 +79,11 @@ namespace finnsie {
 
 		glBindVertexArray(lightCube.VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
-	}	
+	}
+
+	void Renderer::DrawTextureNormalCube(unsigned int shaderId, Model textureCube,
+		int projLoc, int viewLoc, int modelLoc, glm::mat4 projection, glm::mat4 view) 
+	{
+
+	}
 }

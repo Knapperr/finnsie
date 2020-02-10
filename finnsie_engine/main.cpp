@@ -144,17 +144,16 @@ int main(int argc, char** argv)
 	::g_resourceManager = new ResourceManager();
 	Renderer renderer;
 
-	// Init the cube with texture
+	// Init the cube with texture and normals
 	// --------------------------
-	Model textureCube;
 	Model textureNormalCube;
-	Shader shader = ::g_resourceManager->GenerateShader(001, "vert_text.glsl", "frag_text.glsl", NULL);
-	if (!textureCube.LoadVertices("texturevert.txt"))
+	Shader shader = ::g_resourceManager->GenerateShader(001, "vert_text_norm.glsl", "frag_text_norm.glsl", NULL);
+	if (!textureNormalCube.LoadVertices("texturenormalvert.txt"))
 	{
 		std::cout << "Failed to load vertices\n";
 		return EXIT_FAILURE;
 	}
-	textureCube.InitTextureCubeData(shader.id);
+	textureNormalCube.InitTextureNormalCubeData(shader.id);
 
 	// Now again for light model
 	Model lightCube;
@@ -179,19 +178,7 @@ int main(int argc, char** argv)
 	int lightProjLoc = glGetUniformLocation(lightShader.id, "projection");
 	int lightViewLoc = glGetUniformLocation(lightShader.id, "view");
 	int lightModelLoc = glGetUniformLocation(lightShader.id, "model");
-	// world space positions of our cubes
-	glm::vec3 cubePositions[] = {
-		glm::vec3(0.0f,  0.0f,  0.0f),
-		glm::vec3(2.0f,  5.0f, -15.0f),
-		glm::vec3(-1.5f, -2.2f, -2.5f),
-		glm::vec3(-3.8f, -2.0f, -12.3f),
-		glm::vec3(2.4f, -0.4f, -3.5f),
-		glm::vec3(-1.7f,  3.0f, -7.5f),
-		glm::vec3(1.3f, -2.0f, -2.5f),
-		glm::vec3(1.5f,  2.0f, -2.5f),
-		glm::vec3(1.5f,  0.2f, -1.5f),
-		glm::vec3(-1.3f,  1.0f, -1.5f)
-	};
+
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -230,8 +217,17 @@ int main(int argc, char** argv)
 		}
 
 		// Cube with Texture
-		renderer.DrawTextureCube(shader.id, textureCube, cubePositions, projLoc, 
-								 viewLoc, modelLoc, projection, view);
+		//renderer.DrawTextureCube(shader.id, textureCube, cubePositions, projLoc, 
+								 //viewLoc, modelLoc, projection, view);
+		glUseProgram(shader.id);
+		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, lampPos);
+		model = glm::scale(model, glm::vec3(0.2f));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
 
 		glfwSwapBuffers(window);
 	}
