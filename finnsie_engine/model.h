@@ -1,6 +1,8 @@
 #ifndef _MODEL_HG_
 #define _MODEL_HG_
 
+#include "global.h"
+
 #include <glm/vec3.hpp>
 #include <vector>
 #include <map>
@@ -37,6 +39,9 @@ namespace finnsie {
 		void InitTextureCubeData(unsigned int shaderId);
 		void InitTextureNormalCubeData(unsigned int shaderId);
 		void InitBasicCubeData(unsigned int shaderId);
+
+		void LoadTexture(Texture& texture, unsigned int shaderId, const char* fileLocation, const char* uniformName, GLint value);
+
 	};
 }
 #endif

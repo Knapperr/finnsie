@@ -82,8 +82,33 @@ namespace finnsie {
 	}
 
 	void Renderer::DrawTextureNormalCube(unsigned int shaderId, Model textureCube,
-		int projLoc, int viewLoc, int modelLoc, glm::mat4 projection, glm::mat4 view) 
+		int projLoc, int viewLoc, int modelLoc, glm::mat4 projection, 
+		glm::mat4 view, glm::vec3 cameraPos, glm::vec3 lightPos, unsigned int specularMap, unsigned int diffuseMap)
 	{
+		glUseProgram(shaderId);
+		glUniform3fv(glGetUniformLocation(shaderId, "light.position"), 1, &lightPos[0]);
+		glUniform3fv(glGetUniformLocation(shaderId, "viewPos"), 1, &cameraPos[0]);
 
+		glUniform3f(glGetUniformLocation(shaderId, "light.ambient"), 0.2f, 0.2f, 0.2f);
+		glUniform3f(glGetUniformLocation(shaderId, "light.diffuse"), 0.5f, 0.5f, 0.5f);
+		glUniform3f(glGetUniformLocation(shaderId, "light.specular"), 1.0f, 1.0f, 1.0f);
+
+		glUniform1f(glGetUniformLocation(shaderId, "material.shininess"), 64.0f);
+
+		// set the projection and view from the camera
+		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+		
+		glm::mat4 model = glm::mat4(1.0f);
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+		// now bind the diffuse and specular maps
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, diffuseMap);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, specularMap);
+
+		glBindVertexArray(textureCube.VAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
 }

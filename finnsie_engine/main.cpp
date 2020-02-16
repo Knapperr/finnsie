@@ -168,7 +168,8 @@ int main(int argc, char** argv)
 	lightCube.InitBasicCubeData(lightShader.id);
 
 	// -------------------------------------------------------
-	// I do this outside because i dont want to be calling getuniformlocation in the game loop
+	glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+
 	int projLoc = glGetUniformLocation(shader.id, "projection");
 	int viewLoc = glGetUniformLocation(shader.id, "view");
 	int modelLoc = glGetUniformLocation(shader.id, "model");
@@ -178,7 +179,6 @@ int main(int argc, char** argv)
 	int lightProjLoc = glGetUniformLocation(lightShader.id, "projection");
 	int lightViewLoc = glGetUniformLocation(lightShader.id, "view");
 	int lightModelLoc = glGetUniformLocation(lightShader.id, "model");
-
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -216,19 +216,10 @@ int main(int argc, char** argv)
 			lampXMove = 1.0f;
 		}
 
-		// Cube with Texture
-		//renderer.DrawTextureCube(shader.id, textureCube, cubePositions, projLoc, 
-								 //viewLoc, modelLoc, projection, view);
-		glUseProgram(shader.id);
-		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, lampPos);
-		model = glm::scale(model, glm::vec3(0.2f));
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-
-
+		// Cube with Texture & normals
+		renderer.DrawTextureNormalCube(shader.id, textureNormalCube, projLoc, viewLoc, modelLoc,
+			projection, view, camera.Position, lampPos, textureNormalCube.textures["specularMap"].id, textureNormalCube.textures["diffuseMap"].id);
+		
 		glfwSwapBuffers(window);
 	}
 	

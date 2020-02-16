@@ -1,21 +1,29 @@
 #include "model.h"
 
-#include "global.h"
-#include <glm/gtc/matrix_transform.hpp> 
-#include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 #include <fstream>
+
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <stb_image/stb_image.h>
 
 namespace finnsie {
 
-	void loadTexture(Texture texture, unsigned int shaderId, const char* fileLocation, const char* uniformName, GLint value)
+	void Model::LoadTexture(Texture& texture, unsigned int shaderId, const char* fileLocation, const char* uniformName, GLint value)
 	{
 		int width, height, nrChannels;
 		unsigned char* data = stbi_load(fileLocation, &width, &height, &nrChannels, 0);
 		stbi_set_flip_vertically_on_load(true);
 		if (data)
 		{
+			GLenum format;
+			if (nrChannels == 1)
+				format = GL_RED;
+			else if (nrChannels == 3)
+				format = GL_RGB;
+			else if (nrChannels == 4)
+				format = GL_RGBA;
+
 			glGenTextures(1, &texture.id);
 			glBindTexture(GL_TEXTURE_2D, texture.id);
 
@@ -27,7 +35,7 @@ namespace finnsie {
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, texture.minFilter);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, texture.magFilter);
 
-			glTexImage2D(GL_TEXTURE_2D, 0, texture.internalFormat, width, height, 0, texture.imageFormat, GL_UNSIGNED_BYTE, data);
+			glTexImage2D(GL_TEXTURE_2D, 0, texture.internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 			glGenerateMipmap(GL_TEXTURE_2D);
 
 			// Need to tell the shader where the texture belongs (which is this texture)
@@ -115,10 +123,19 @@ namespace finnsie {
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 		glEnableVertexAttribArray(2);
 
-		Texture tex1 = CreateTexture("diffuseMap", GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR, GL_RGB, GL_RGB);
-		loadTexture(tex1, shaderId, "content/textures/container2.png", "material.diffuse", 0);
-		Texture tex2 = CreateTexture("specularMap", GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR, GL_RGB, GL_RGB);
-		loadTexture(tex2, shaderId, "content/textures/container2_specular.png", "material.specular", 1);
+		Texture tex1 = CreateTexture("diffuseMap", GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, GL_RGB, GL_RGB);
+		LoadTexture(tex1, shaderId, "content/textures/container2.png", "material.diffuse", 0);
+		Texture tex2 = CreateTexture("specularMap", GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, GL_RGB, GL_RGB);
+		LoadTexture(tex2, shaderId, "content/textures/container2_specular.png", "material.specular", 1);
+
+		// NOTE(CK): Already doing this in LoadTexture
+		//glUseProgram(shaderId);
+		//glUniform1i(glGetUniformLocation(shaderId, "material.diffuse"), 0);
+		//glUniform1i(glGetUniformLocation(shaderId, "material.specular"), 1);
+
+		// put into models texture map
+		textures[tex1.name] = tex1;
+		textures[tex2.name] = tex2;
 	}
 
 
@@ -142,7 +159,7 @@ namespace finnsie {
 		glEnableVertexAttribArray(1);
 
 		Texture tex = CreateTexture("tex", GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR, GL_RGB, GL_RGB);
-		loadTexture(tex, shaderId, "content/textures/wall.jpg", "texture1", 0);
+		LoadTexture(tex, shaderId, "content/textures/wall.jpg", "texture1", 0);
 	}
 
 	void Model::InitBasicCubeData(unsigned int shaderId)

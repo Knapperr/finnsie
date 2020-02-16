@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="shaders">
+      <UniqueIdentifier>{6fa59166-3b85-455b-84cc-ce23c86ed157}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vertices">
+      <UniqueIdentifier>{64d12859-aa80-4c85-9ba4-417d1246038d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -88,22 +94,58 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="vert_sprite.glsl" />
-    <None Include="frag_sprite.glsl" />
-    <None Include="frag_color.glsl" />
-    <None Include="vert_color.glsl" />
-    <None Include="frag_lamp.glsl" />
-    <None Include="vert_lamp.glsl" />
-    <None Include="vert_basic_lighting.glsl" />
-    <None Include="frag_basic_lighting.glsl" />
-    <None Include="frag_text.glsl" />
-    <None Include="vert_text.glsl" />
+    <None Include="frag_color.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="frag_lamp.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="frag_sprite.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="frag_text.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="frag_text_norm.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="vert_basic_lighting.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="vert_color.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="vert_lamp.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="vert_sprite.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="vert_text.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="vert_text_norm.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="frag_basic_lighting.glsl">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="vertices.txt" />
-    <Text Include="basic_lighting_vertices.txt" />
-    <Text Include="texturevert.txt" />
-    <Text Include="textureindices.txt" />
-    <Text Include="texturenormalvert.txt" />
+    <Text Include="basic_lighting_vertices.txt">
+      <Filter>vertices</Filter>
+    </Text>
+    <Text Include="textureindices.txt">
+      <Filter>vertices</Filter>
+    </Text>
+    <Text Include="texturenormalvert.txt">
+      <Filter>vertices</Filter>
+    </Text>
+    <Text Include="texturevert.txt">
+      <Filter>vertices</Filter>
+    </Text>
+    <Text Include="vertices.txt">
+      <Filter>vertices</Filter>
+    </Text>
   </ItemGroup>
 </Project>
