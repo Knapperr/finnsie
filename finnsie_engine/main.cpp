@@ -24,6 +24,7 @@
 
 #include "model.h"
 
+
 using namespace finnsie;
 
 #define PI32 3.14159265359f
@@ -87,6 +88,8 @@ struct DeltaTime
 };
 global_variable DeltaTime dt;
 
+glm::vec3 lampPos = glm::vec3(2.2f, 1.0f, 2.0f);
+
 int main(int argc, char** argv)
 {
 	// glfw init and config
@@ -134,13 +137,6 @@ int main(int argc, char** argv)
 	glEnable(GL_DEPTH_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-
-	// NOTE: FOR 2D
-	// Init game 
-	// -------------------------------------------------------------------------- 
-	//game = new Game(SCREEN_WIDTH, SCREEN_HEIGHT, window);
-	//game->Init();
-	
 	::g_resourceManager = new ResourceManager();
 	Renderer renderer;
 
@@ -168,17 +164,29 @@ int main(int argc, char** argv)
 	lightCube.InitBasicCubeData(lightShader.id);
 
 	// -------------------------------------------------------
-	glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+	glm::vec3 lightPos(1.2f, -0.5f, 0.5);
 
 	int projLoc = glGetUniformLocation(shader.id, "projection");
 	int viewLoc = glGetUniformLocation(shader.id, "view");
 	int modelLoc = glGetUniformLocation(shader.id, "model");
 
-	glm::vec3 lampPos = glm::vec3(2.2f, 1.0f, 2.0f);
 	float lampXMove = 0.1f;
 	int lightProjLoc = glGetUniformLocation(lightShader.id, "projection");
 	int lightViewLoc = glGetUniformLocation(lightShader.id, "view");
 	int lightModelLoc = glGetUniformLocation(lightShader.id, "model");
+
+	glm::vec3 cubePositions[] = {
+		glm::vec3(0.0f,  0.0f,  0.0f),
+		glm::vec3(2.0f,  5.0f, -15.0f),
+		glm::vec3(-1.5f, -2.2f, -2.5f),
+		glm::vec3(-3.8f, -2.0f, -12.3f),
+		glm::vec3(2.4f, -0.4f, -3.5f),
+		glm::vec3(-1.7f,  3.0f, -7.5f),
+		glm::vec3(1.3f, -2.0f, -2.5f),
+		glm::vec3(1.5f,  2.0f, -2.5f),
+		glm::vec3(1.5f,  0.2f, -1.5f),
+		glm::vec3(-1.3f,  1.0f, -1.5f)
+	};
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -217,7 +225,7 @@ int main(int argc, char** argv)
 		}
 
 		// Cube with Texture & normals
-		renderer.DrawTextureNormalCube(shader.id, textureNormalCube, projLoc, viewLoc, modelLoc,
+		renderer.DrawTextureNormalCube(shader.id, textureNormalCube, cubePositions, projLoc, viewLoc, modelLoc,
 			projection, view, camera.Position, lampPos, textureNormalCube.textures["specularMap"].id, textureNormalCube.textures["diffuseMap"].id);
 		
 		glfwSwapBuffers(window);
@@ -240,6 +248,10 @@ void processInput(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) { camera.ProcessKeyboard(Camera_Movement::RIGHT, dt.time); }
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) { camera.ProcessKeyboard(Camera_Movement::UP, dt.time); }
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) { camera.ProcessKeyboard(Camera_Movement::DOWN, dt.time); }
+
+	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS) { lampPos.z += 0.2f; }
+	if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS) { lampPos.z -= 0.2f; }
+
 }
 
 // glfw: whenever the mouse moves, this callback is called
@@ -290,51 +302,3 @@ void DrawTextureCube(unsigned int shaderId, Model textureCube, glm::vec3 cubePos
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
 }
-
-
-//static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-//{
-//	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-//		glfwSetWindowShouldClose(window, GL_TRUE);
-//
-//	if (key >= 0 && key < 1024)
-//	{
-//		if (action == GLFW_PRESS)
-//		{
-//			::g_keys[key] = GL_TRUE;
-//		}
-//		else if (action == GLFW_RELEASE)
-//		{
-//			::g_keys[key] = GL_FALSE;
-//			::g_keysProcessed[key] = GL_FALSE;
-//		}
-//	}
-//}
-
-// IN MAIN
-// NOTE: INPUT FOR 2D
-// Pass input to our game object
-//bool g_keys[1024];
-//bool g_keysProcessed[1024];
-//void ProcessInput(float dt)
-//{
-//	// Calculate delta time before adding velocity
-//	float velocity = ::g_velocity * dt;
-//
-//	if (g_keys[GLFW_KEY_A])
-//	{
-//		//enemy.pos.x -= velocity;
-//	}
-//	if (g_keys[GLFW_KEY_D])
-//	{
-//		//enemy.pos.x += velocity;
-//	}
-//	if (g_keys[GLFW_KEY_W])
-//	{
-//		//enemy.pos.y -= velocity;
-//	}
-//	if (g_keys[GLFW_KEY_S])
-//	{
-//		//enemy.pos.y += velocity;
-//	}
-//}

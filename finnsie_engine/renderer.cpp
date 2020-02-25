@@ -81,8 +81,8 @@ namespace finnsie {
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
 
-	void Renderer::DrawTextureNormalCube(unsigned int shaderId, Model textureCube,
-		int projLoc, int viewLoc, int modelLoc, glm::mat4 projection, 
+	void Renderer::DrawTextureNormalCube(unsigned int shaderId, Model textureCube, glm::vec3 cubePositions[],
+		int projLoc, int viewLoc, int modelLoc, glm::mat4 projection,
 		glm::mat4 view, glm::vec3 cameraPos, glm::vec3 lightPos, unsigned int specularMap, unsigned int diffuseMap)
 	{
 		glUseProgram(shaderId);
@@ -98,17 +98,22 @@ namespace finnsie {
 		// set the projection and view from the camera
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-		
-		glm::mat4 model = glm::mat4(1.0f);
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-		// now bind the diffuse and specular maps
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, diffuseMap);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, specularMap);
+		for (unsigned int i = 0; i < 10; ++i)
+		{
+			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::translate(model, cubePositions[i]);
 
-		glBindVertexArray(textureCube.VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+			// now bind the diffuse and specular maps
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, diffuseMap);
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, specularMap);
+
+			glBindVertexArray(textureCube.VAO);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
 	}
 }

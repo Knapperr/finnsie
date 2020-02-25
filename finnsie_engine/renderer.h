@@ -20,7 +20,7 @@ namespace finnsie {
 		void DrawLamp(unsigned int shaderId, Model lightCube, unsigned int lightModelLoc,
 					  unsigned int lightProjLoc, unsigned int lightViewLoc, glm::mat4 projection, 
 					  glm::mat4 view, glm::vec3 lampPos);
-		void DrawTextureNormalCube(unsigned int shaderId, Model textureCube, int projLoc, 
+		void DrawTextureNormalCube(unsigned int shaderId, Model textureCube, glm::vec3 cubePositions[], int projLoc, 
 								   int viewLoc, int modelLoc, glm::mat4 projection, glm::mat4 view, 
 								   glm::vec3 cameraPos, glm::vec3 lightPos, unsigned int specularMap, unsigned int diffuseMap);
 	private:
