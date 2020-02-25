@@ -3,6 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# Assimp includes
+include/assimp/
+
 # User-specific files
 *.suo
 *.user
