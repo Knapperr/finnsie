@@ -1,7 +1,7 @@
 #ifndef RENDERER_HG_
 #define RENDERER_HG_
 
-#include "model.h"
+#include "primitive_model.h"
 
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -15,12 +15,12 @@ namespace finnsie {
 		~Renderer();
 		void DrawCube(unsigned int shaderId);
 
-		void DrawTextureCube(unsigned int shaderId, Model textureCube, glm::vec3 cubePositions[],
+		void DrawTextureCube(unsigned int shaderId, PrimitiveModel textureCube, glm::vec3 cubePositions[],
 							 int projLoc, int viewLoc, int modelLoc, glm::mat4 projection, glm::mat4 view);
-		void DrawLamp(unsigned int shaderId, Model lightCube, unsigned int lightModelLoc,
+		void DrawLamp(unsigned int shaderId, PrimitiveModel lightCube, unsigned int lightModelLoc,
 					  unsigned int lightProjLoc, unsigned int lightViewLoc, glm::mat4 projection, 
 					  glm::mat4 view, glm::vec3 lampPos);
-		void DrawTextureNormalCube(unsigned int shaderId, Model textureCube, glm::vec3 cubePositions[], int projLoc, 
+		void DrawTextureNormalCube(unsigned int shaderId, PrimitiveModel textureCube, glm::vec3 cubePositions[], int projLoc,
 								   int viewLoc, int modelLoc, glm::mat4 projection, glm::mat4 view, 
 								   glm::vec3 cameraPos, glm::vec3 lightPos, unsigned int specularMap, unsigned int diffuseMap);
 	private:

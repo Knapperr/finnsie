@@ -22,7 +22,7 @@
 #include "texture_manager.h"
 #include "game.h"
 
-#include "model.h"
+#include "primitive_model.h"
 
 
 using namespace finnsie;
@@ -78,7 +78,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 
-void DrawTextureCube(unsigned int shaderId, Model textureCube, glm::vec3 cubePositions[],
+void DrawTextureCube(unsigned int shaderId, PrimitiveModel textureCube, glm::vec3 cubePositions[],
 	int projLoc, int viewLoc, int modelLoc, glm::mat4 projection, glm::mat4 view);
 
 struct DeltaTime 
@@ -142,7 +142,7 @@ int main(int argc, char** argv)
 
 	// Init the cube with texture and normals
 	// --------------------------
-	Model textureNormalCube;
+	PrimitiveModel textureNormalCube;
 	Shader shader = ::g_resourceManager->GenerateShader(001, "vert_text_norm.glsl", "frag_text_norm.glsl", NULL);
 	if (!textureNormalCube.LoadVertices("texturenormalvert.txt"))
 	{
@@ -152,7 +152,7 @@ int main(int argc, char** argv)
 	textureNormalCube.InitTextureNormalCubeData(shader.id);
 
 	// Now again for light model
-	Model lightCube;
+	PrimitiveModel lightCube;
 	std::vector<float> vertices;
 	if (!lightCube.LoadVertices("basic_lighting_vertices.txt"))
 	{
@@ -286,7 +286,7 @@ static void error_callback(int error, const char* description)
 	fprintf(stderr, "Error: %s\n", description);
 }
 
-void DrawTextureCube(unsigned int shaderId, Model textureCube, glm::vec3 cubePositions[], 
+void DrawTextureCube(unsigned int shaderId, PrimitiveModel textureCube, glm::vec3 cubePositions[],
 					 int projLoc, int viewLoc, int modelLoc, glm::mat4 projection, glm::mat4 view)
 {
 	glUseProgram(shaderId);

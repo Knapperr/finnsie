@@ -1,5 +1,5 @@
-#ifndef _MODEL_HG_
-#define _MODEL_HG_
+#ifndef _PRIMITIVE_MODEL_HG_
+#define _PRIMITIVE_MODEL_HG_
 
 #include "global.h"
 
@@ -10,7 +10,7 @@
 
 namespace finnsie {
 
-	struct Texture {
+	struct ModelTexture {
 		std::string name;
 		unsigned int id;
 		unsigned int width;
@@ -24,23 +24,23 @@ namespace finnsie {
 	};
 
 	// move this out
-	class Model
+	class PrimitiveModel
 	{
 	public:
 		unsigned int VAO;
 		unsigned int VBO;
-		std::map<std::string, Texture> textures;
+		std::map<std::string, ModelTexture> textures;
 		glm::vec3 position;
 		std::vector<float> vertices;
 		bool LoadVertices(const char* vertFile);
-		Texture CreateTexture(std::string name, unsigned int wrapS, unsigned int wrapT, unsigned int minFilter,
+		ModelTexture CreateTexture(std::string name, unsigned int wrapS, unsigned int wrapT, unsigned int minFilter,
 			unsigned int magFilter, unsigned int internalFormat, unsigned int imageFormat);
 		// need to find a way to determine the position and texture coords not based off 
 		void InitTextureCubeData(unsigned int shaderId);
 		void InitTextureNormalCubeData(unsigned int shaderId);
 		void InitBasicCubeData(unsigned int shaderId);
 
-		void LoadTexture(Texture& texture, unsigned int shaderId, const char* fileLocation, const char* uniformName, GLint value);
+		void LoadTexture(ModelTexture& texture, unsigned int shaderId, const char* fileLocation, const char* uniformName, GLint value);
 
 	};
 }

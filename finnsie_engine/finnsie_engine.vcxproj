@@ -138,7 +138,7 @@
     <ClCompile Include="glad.c" />
     <ClCompile Include="include\stb_image\stb_image.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="model.cpp" />
+    <ClCompile Include="primitive_model.cpp" />
     <ClCompile Include="obj_loader.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="resource_manager.cpp" />
@@ -151,7 +151,8 @@
     <ClInclude Include="game.h" />
     <ClInclude Include="game_object.h" />
     <ClInclude Include="global.h" />
-    <ClInclude Include="model.h" />
+    <ClInclude Include="mesh.h" />
+    <ClInclude Include="primitive_model.h" />
     <ClInclude Include="obj_loader.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="render_helpers.h" />

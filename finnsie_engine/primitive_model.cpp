@@ -1,4 +1,4 @@
-#include "model.h"
+#include "primitive_model.h"
 
 #include <iostream>
 #include <fstream>
@@ -9,7 +9,7 @@
 
 namespace finnsie {
 
-	void Model::LoadTexture(Texture& texture, unsigned int shaderId, const char* fileLocation, const char* uniformName, GLint value)
+	void PrimitiveModel::LoadTexture(ModelTexture& texture, unsigned int shaderId, const char* fileLocation, const char* uniformName, GLint value)
 	{
 		int width, height, nrChannels;
 		unsigned char* data = stbi_load(fileLocation, &width, &height, &nrChannels, 0);
@@ -52,7 +52,7 @@ namespace finnsie {
 		stbi_image_free(data);
 	}
 
-	bool Model::LoadVertices(const char* vertFile)
+	bool PrimitiveModel::LoadVertices(const char* vertFile)
 	{
 		std::ifstream verticesFile(vertFile);
 
@@ -92,10 +92,10 @@ namespace finnsie {
 		}
 	*/
 
-	Texture Model::CreateTexture(std::string name, unsigned int wrapS, unsigned int wrapT, unsigned int minFilter,
+	ModelTexture PrimitiveModel::CreateTexture(std::string name, unsigned int wrapS, unsigned int wrapT, unsigned int minFilter,
 								 unsigned int magFilter, unsigned int internalFormat, unsigned int imageFormat)
 	{
-		Texture texture = {};
+		ModelTexture texture = {};
 		texture.name = name;
 		texture.wrapS = wrapS;
 		texture.wrapT = wrapT;
@@ -107,7 +107,7 @@ namespace finnsie {
 		return textures[name];
 	}
 
-	void Model::InitTextureNormalCubeData(unsigned int shaderId)
+	void PrimitiveModel::InitTextureNormalCubeData(unsigned int shaderId)
 	{
 		glGenVertexArrays(1, &VAO);
 		glGenBuffers(1, &VBO);
@@ -123,9 +123,9 @@ namespace finnsie {
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 		glEnableVertexAttribArray(2);
 
-		Texture tex1 = CreateTexture("diffuseMap", GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, GL_RGB, GL_RGB);
+		ModelTexture tex1 = CreateTexture("diffuseMap", GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, GL_RGB, GL_RGB);
 		LoadTexture(tex1, shaderId, "content/textures/container2.png", "material.diffuse", 0);
-		Texture tex2 = CreateTexture("specularMap", GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, GL_RGB, GL_RGB);
+		ModelTexture tex2 = CreateTexture("specularMap", GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, GL_RGB, GL_RGB);
 		LoadTexture(tex2, shaderId, "content/textures/container2_specular.png", "material.specular", 1);
 
 		// NOTE(CK): Already doing this in LoadTexture
@@ -139,7 +139,7 @@ namespace finnsie {
 	}
 
 
-	void Model::InitTextureCubeData(unsigned int shaderId)
+	void PrimitiveModel::InitTextureCubeData(unsigned int shaderId)
 	{
 		// void InitRenderTextureData(std::vector<float>& vertices, unsigned int shaderId, unsigned int& VBO, unsigned int& VAO)
 		glGenVertexArrays(1, &VAO);
@@ -158,11 +158,11 @@ namespace finnsie {
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 		glEnableVertexAttribArray(1);
 
-		Texture tex = CreateTexture("tex", GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR, GL_RGB, GL_RGB);
+		ModelTexture tex = CreateTexture("tex", GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR, GL_RGB, GL_RGB);
 		LoadTexture(tex, shaderId, "content/textures/wall.jpg", "texture1", 0);
 	}
 
-	void Model::InitBasicCubeData(unsigned int shaderId)
+	void PrimitiveModel::InitBasicCubeData(unsigned int shaderId)
 	{
 		glGenVertexArrays(1, &VAO);
 		glGenBuffers(1, &VBO);
