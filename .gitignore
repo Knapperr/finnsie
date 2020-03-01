@@ -5,6 +5,7 @@
 
 # Assimp includes
 assimp/
+objects/
 
 # User-specific files
 *.suo
