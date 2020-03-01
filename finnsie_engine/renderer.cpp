@@ -45,6 +45,8 @@ namespace finnsie {
 
 		glBindVertexArray(this->cubeVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
 	}
 
 	void Renderer::DrawTextureCube(unsigned int shaderId, PrimitiveModel textureCube, glm::vec3 cubePositions[],
@@ -114,6 +116,9 @@ namespace finnsie {
 
 			glBindVertexArray(textureCube.VAO);
 			glDrawArrays(GL_TRIANGLES, 0, 36);
+
 		}
+		// set back to defaults
+		glActiveTexture(GL_TEXTURE0);
 	}
 }

@@ -42,6 +42,9 @@ namespace finnsie {
 			// not sure if i need to do this here
 			glUseProgram(shaderId);
 			glUniform1i(glGetUniformLocation(shaderId, uniformName), value);
+
+			// reset the texture
+			glBindTexture(GL_TEXTURE_2D, 0);
 		}
 		else
 		{

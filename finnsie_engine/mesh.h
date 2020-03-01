@@ -36,12 +36,15 @@ namespace finnsie {
 		std::vector<unsigned int> indices;
 		std::vector<Texture> textures;
 		unsigned int VAO;
+		std::string meshName;
 
 		// constructor
-		Mesh(std::vector<Vertex> vertices,
+		Mesh(std::string meshName,
+			std::vector<Vertex> vertices,
 			std::vector<unsigned int> indices,
 			std::vector<Texture> textures)
 		{
+			this->meshName = meshName;
 			this->vertices = vertices;
 			this->indices = indices;
 			this->textures = textures;
@@ -84,7 +87,9 @@ namespace finnsie {
 			glBindVertexArray(0);
 
 			// Always good practice to set everything back to defaults once configured
+			// NOTE(CK): bind texture must be AFTER glActiveTexture or it will not unbind properly
 			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, 0);
 		}
 
 	private:

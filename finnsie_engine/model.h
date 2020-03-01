@@ -34,11 +34,13 @@ namespace finnsie {
 		texture_vec textures_loaded; 
 		mesh_vec meshes;
 		std::string directory;
+		std::string modelName;
 		bool gammaCorrection;
 
 		/* Methods */
-		Model(std::string const& path, bool gamma = false) : gammaCorrection(gamma)
+		Model(std::string modelName, std::string const& path, bool gamma = false) : gammaCorrection(gamma)
 		{
+			this->modelName = modelName;
 			loadModel(path);
 		}
 
@@ -173,13 +175,13 @@ namespace finnsie {
 			texture_vec heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
 			textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
-			return Mesh(vertices, indices, textures);
+			return Mesh(modelName, vertices, indices, textures);
 			
 		}
 
 		// checks all material textures of a given type and loads the textures if they're not loaded yet.
 		// the required info is returned as a Texture struct.
-		texture_vec  loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName)
+		texture_vec loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName)
 		{
 			texture_vec textures;
 			for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
@@ -244,6 +246,8 @@ namespace finnsie {
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+			// unbind after using
+			glBindTexture(GL_TEXTURE_2D, 0);
 			stbi_image_free(data);
 		}
 		else
@@ -251,7 +255,6 @@ namespace finnsie {
 			std::cout << "Texture failed to load at path: " << path << "\n";
 			stbi_image_free(data);
 		}
-
 		return textureID;
 	}
 }

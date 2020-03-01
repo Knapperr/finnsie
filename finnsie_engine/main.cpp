@@ -112,18 +112,7 @@ int main(int argc, char** argv)
 	::g_resourceManager = new ResourceManager();
 	Renderer renderer;
 
-	// Init the cube with texture and normals
-	// --------------------------
-	PrimitiveModel textureNormalCube;
-	Shader shader = ::g_resourceManager->GenerateShader(001, "vert_text_norm.glsl", "frag_text_norm.glsl", NULL);
-	if (!textureNormalCube.LoadVertices("texturenormalvert.txt"))
-	{
-		std::cout << "Failed to load vertices\n";
-		return EXIT_FAILURE;
-	}
-	textureNormalCube.InitTextureNormalCubeData(shader.id);
-
-	// Now again for light model
+	// light model cube (no textures or else models with no textures load improperly)
 	PrimitiveModel lightCube;
 	std::vector<float> vertices;
 	if (!lightCube.LoadVertices("basic_lighting_vertices.txt"))
@@ -132,21 +121,19 @@ int main(int argc, char** argv)
 		return EXIT_FAILURE;
 	}
 	// Init the light
-	Shader lightShader = ::g_resourceManager->GenerateShader(002, "vert_lamp.glsl", "frag_lamp.glsl", NULL);
+	Shader lightShader = ::g_resourceManager->GenerateShader(001, "vert_lamp.glsl", "frag_lamp.glsl", NULL);
 	lightCube.InitBasicCubeData(lightShader.id);
 	glm::vec3 lightPos(1.2f, -0.5f, 0.5);
 	// -------------------------------------------------------
 
 	// Init the obj model
-	Shader modelShader = ::g_resourceManager->GenerateShader(003, "vert_model.glsl", "frag_model.glsl", NULL);
-	Model ourModel("content/objects/nanosuit/nanosuit.obj");
+	Shader modelShader = ::g_resourceManager->GenerateShader(002, "vert_model.glsl", "frag_model.glsl", NULL);
+
+	Model ourModel("donut", "content/objects/donut/donutscaled.obj");
+	Model nanoModel("nano", "content/objects/nanosuit/nanosuit.obj");
 
 	// draw in wireframe
-	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
-
-	int projLoc = glGetUniformLocation(shader.id, "projection");
-	int viewLoc = glGetUniformLocation(shader.id, "view");
-	int modelLoc = glGetUniformLocation(shader.id, "model");
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	float lampXMove = 0.1f;
 	int lightProjLoc = glGetUniformLocation(lightShader.id, "projection");
@@ -157,22 +144,11 @@ int main(int argc, char** argv)
 	int objViewLoc = glGetUniformLocation(modelShader.id, "view");
 	int objModelLoc = glGetUniformLocation(modelShader.id, "model");
 
-	glm::vec3 cubePositions[] = {
-		glm::vec3(0.0f,  0.0f,  0.0f),
-		glm::vec3(2.0f,  5.0f, -15.0f),
-		glm::vec3(-1.5f, -2.2f, -2.5f),
-		glm::vec3(-3.8f, -2.0f, -12.3f),
-		glm::vec3(2.4f, -0.4f, -3.5f),
-		glm::vec3(-1.7f,  3.0f, -7.5f),
-		glm::vec3(1.3f, -2.0f, -2.5f),
-		glm::vec3(1.5f,  2.0f, -2.5f),
-		glm::vec3(1.5f,  0.2f, -1.5f),
-		glm::vec3(-1.3f,  1.0f, -1.5f)
-	};
 
 	while (!glfwWindowShouldClose(window))
 	{
 		processInput(window);
+		glfwPollEvents();
 
 		// delta time
 		float currentFrame = (float)glfwGetTime();
@@ -204,11 +180,6 @@ int main(int argc, char** argv)
 			lampXMove = 1.0f;
 		}
 
-		// Cube with Texture & normals
-		renderer.DrawTextureNormalCube(shader.id, textureNormalCube, cubePositions, projLoc, viewLoc, modelLoc,
-			projection, view, camera.Position, lampPos, textureNormalCube.textures["specularMap"].id, textureNormalCube.textures["diffuseMap"].id);
-		
-
 		// render the model last
 		glUseProgram(modelShader.id);
 		// need to set the view and projection as well
@@ -216,14 +187,19 @@ int main(int argc, char** argv)
 		glUniformMatrix4fv(objViewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
 		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(-40.0f, -5.75f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
+		glUniformMatrix4fv(objModelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		nanoModel.Draw(modelShader);
+
+		// can use the same shader again
+		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(-20.0f, -3.75f, 0.0f)); // translate it down so its at the center of the screen
 		model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f)); // its a bit too big for our scene
 		glUniformMatrix4fv(objModelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		ourModel.Draw(modelShader);
 
-
 		glfwSwapBuffers(window);
-		glfwPollEvents();
 	}
 	
 	glfwDestroyWindow(window);
