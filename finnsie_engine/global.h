@@ -8,11 +8,11 @@
 #include "resource_manager.h"
 
 namespace finnsie {
-	extern ResourceManager* g_resourceManager;
-}
+
+extern ResourceManager* g_resourceManager;
+
 
 #define PI32 3.14159265359f
-#define internal static 
 #define local_persist static 
 #define global_variable static
 
@@ -36,4 +36,5 @@ struct Fin_Vertex
 	float r, g, b;
 };
 
+}
 #endif

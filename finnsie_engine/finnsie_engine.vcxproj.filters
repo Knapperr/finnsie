@@ -101,6 +101,9 @@
     <ClInclude Include="mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="model.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="frag_color.glsl">
@@ -137,6 +140,12 @@
       <Filter>shaders</Filter>
     </None>
     <None Include="frag_basic_lighting.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="vert_model.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="frag_model.glsl">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>

@@ -23,34 +23,9 @@
 #include "game.h"
 
 #include "primitive_model.h"
-
+#include "model.h"
 
 using namespace finnsie;
-
-#define PI32 3.14159265359f
-#define internal static 
-#define local_persist static 
-#define global_variable static
-
-typedef int8_t int8;
-typedef int16_t int16;
-typedef int32_t int32;
-typedef int64_t int64;
-typedef int32 bool32;
-
-typedef uint8_t uint8;
-typedef uint16_t uint16;
-typedef uint32_t uint32;
-typedef uint64_t uint64;
-
-typedef float real32;
-typedef double real64;
-
-struct Fin_Vertex
-{
-	float x, y;
-	float r, g, b;
-};
 
 void processInput(GLFWwindow* window);
 
@@ -77,9 +52,6 @@ static void error_callback(int error, const char* description);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
-
-void DrawTextureCube(unsigned int shaderId, PrimitiveModel textureCube, glm::vec3 cubePositions[],
-	int projLoc, int viewLoc, int modelLoc, glm::mat4 projection, glm::mat4 view);
 
 struct DeltaTime 
 {
@@ -162,9 +134,15 @@ int main(int argc, char** argv)
 	// Init the light
 	Shader lightShader = ::g_resourceManager->GenerateShader(002, "vert_lamp.glsl", "frag_lamp.glsl", NULL);
 	lightCube.InitBasicCubeData(lightShader.id);
-
-	// -------------------------------------------------------
 	glm::vec3 lightPos(1.2f, -0.5f, 0.5);
+	// -------------------------------------------------------
+
+	// Init the obj model
+	Shader modelShader = ::g_resourceManager->GenerateShader(003, "vert_model.glsl", "frag_model.glsl", NULL);
+	Model ourModel("content/objects/nanosuit/nanosuit.obj");
+
+	// draw in wireframe
+	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
 
 	int projLoc = glGetUniformLocation(shader.id, "projection");
 	int viewLoc = glGetUniformLocation(shader.id, "view");
@@ -174,6 +152,10 @@ int main(int argc, char** argv)
 	int lightProjLoc = glGetUniformLocation(lightShader.id, "projection");
 	int lightViewLoc = glGetUniformLocation(lightShader.id, "view");
 	int lightModelLoc = glGetUniformLocation(lightShader.id, "model");
+
+	int objProjLoc = glGetUniformLocation(modelShader.id, "projection");
+	int objViewLoc = glGetUniformLocation(modelShader.id, "view");
+	int objModelLoc = glGetUniformLocation(modelShader.id, "model");
 
 	glm::vec3 cubePositions[] = {
 		glm::vec3(0.0f,  0.0f,  0.0f),
@@ -191,7 +173,6 @@ int main(int argc, char** argv)
 	while (!glfwWindowShouldClose(window))
 	{
 		processInput(window);
-		glfwPollEvents();
 
 		// delta time
 		float currentFrame = (float)glfwGetTime();
@@ -199,8 +180,7 @@ int main(int argc, char** argv)
 		dt.lastFrame = currentFrame;
 
 		// Process the input & move the player
-
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		// NOTE: FOR 3D
@@ -228,7 +208,22 @@ int main(int argc, char** argv)
 		renderer.DrawTextureNormalCube(shader.id, textureNormalCube, cubePositions, projLoc, viewLoc, modelLoc,
 			projection, view, camera.Position, lampPos, textureNormalCube.textures["specularMap"].id, textureNormalCube.textures["diffuseMap"].id);
 		
+
+		// render the model last
+		glUseProgram(modelShader.id);
+		// need to set the view and projection as well
+		glUniformMatrix4fv(objProjLoc, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(objViewLoc, 1, GL_FALSE, glm::value_ptr(view));
+
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(-20.0f, -3.75f, 0.0f)); // translate it down so its at the center of the screen
+		model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f)); // its a bit too big for our scene
+		glUniformMatrix4fv(objModelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		ourModel.Draw(modelShader);
+
+
 		glfwSwapBuffers(window);
+		glfwPollEvents();
 	}
 	
 	glfwDestroyWindow(window);
@@ -278,27 +273,10 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 // ----------------------------------------------------------------------
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	camera.ProcessMouseScroll(yoffset);
+	camera.ProcessMouseScroll((float)yoffset);
 }
 
 static void error_callback(int error, const char* description)
 {
 	fprintf(stderr, "Error: %s\n", description);
-}
-
-void DrawTextureCube(unsigned int shaderId, PrimitiveModel textureCube, glm::vec3 cubePositions[],
-					 int projLoc, int viewLoc, int modelLoc, glm::mat4 projection, glm::mat4 view)
-{
-	glUseProgram(shaderId);
-	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-	glBindVertexArray(textureCube.VAO);
-	for (unsigned int i = 0; i < 10; i++)
-	{
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, cubePositions[i]);
-
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-	}
 }
