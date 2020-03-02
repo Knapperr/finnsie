@@ -134,7 +134,7 @@ int main(int argc, char** argv)
 	// TODO(CK): MOVE TO LOAD FUNCTION
 	// -----------------------------------------
 	Model* ourModel = new Model("donut", 
-								true,
+								false,
 								glm::vec3(-20.0f, -3.75f, 0.0f),
 								glm::vec3(0.0f, 0.0f, 0.0f),
 								1.0f,
@@ -144,7 +144,7 @@ int main(int argc, char** argv)
 	Model* nanoModel = new Model("nano",
 								 false,
 								 glm::vec3(-40.0f, -5.75f, 0.0f),
-								 glm::vec3(0.0f, 0.0f, 0.0f),
+								 glm::vec3(0.0f, 2.0f, 0.0f),
 								 0.2f,
 								 "content/objects/nanosuit/nanosuit.obj");
 	models.push_back(nanoModel);

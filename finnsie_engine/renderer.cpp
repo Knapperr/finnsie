@@ -90,7 +90,6 @@ namespace finnsie {
 			
 			*/
 
-			// Is the object wireframe?
 			if (model.wireFrame)
 			{
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -99,7 +98,6 @@ namespace finnsie {
 			{
 				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 			}
-
 
 			// Draw mesh
 			glBindVertexArray(model.meshes[i].VAO);
