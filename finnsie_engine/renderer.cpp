@@ -1,6 +1,11 @@
 #include "renderer.h"
 
 #include "global.h"
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp> 
+#include <glm/mat4x4.hpp> 
+#include <glm/gtc/matrix_transform.hpp> 
+#include <glm/gtc/type_ptr.hpp>
 #include <fstream>
 
 namespace finnsie {
@@ -17,6 +22,96 @@ namespace finnsie {
 		glDeleteVertexArrays(1, &this->cubeVAO);
 		glDeleteVertexArrays(1, &this->lampVAO);
 		glDeleteBuffers(1, &this->VBO);
+	}
+
+	void Renderer::DrawModel(Model& model, unsigned int shaderId, int modelLoc)
+	{
+		for (unsigned int i = 0; i < model.meshes.size(); i++)
+		{
+			unsigned int diffuseNr = 1;
+			unsigned int specularNr = 1;
+			unsigned int normalNr = 1;
+			unsigned int heightNr = 1;
+
+			for (unsigned int j = 0; j < model.meshes[i].textures.size(); ++j)
+			{
+				glActiveTexture(GL_TEXTURE0 + j); // activate the proper texture unit before binding
+				// retrieve texture number (the N in diffuse_TextureN)
+				std::string number;
+				std::string name = model.meshes[i].textures[j].type;
+
+				if (name == "texture_diffuse")
+					number = std::to_string(diffuseNr++);
+				else if (name == "texture_specular")
+					number = std::to_string(specularNr++);
+				else if (name == "texture_normal")
+					number = std::to_string(normalNr++);
+				else if (name == "texture_height")
+					number = std::to_string(heightNr++);
+
+				// now set the sampler to the correct texture unit
+				glUniform1i(glGetUniformLocation(shaderId, (name + number).c_str()), j);
+				// and finally bind the texture
+				glBindTexture(GL_TEXTURE_2D, model.meshes[i].textures[j].id);
+			}
+			
+			// Set position, rotation and scale
+			glm::mat4 matModel = glm::mat4(1.0f);
+
+			glm::mat4 matTranslate = glm::translate(glm::mat4(1.0f),
+													glm::vec3(model.pos.x, model.pos.y, model.pos.z));
+			matModel = matModel * matTranslate;
+
+			glm::mat4 rotateZ = glm::rotate(glm::mat4(1.0f),
+											model.orientation.z,
+											glm::vec3(0.0f, 0.0f, 1.0f));
+			matModel = matModel * rotateZ;
+
+			glm::mat4 rotateY = glm::rotate(glm::mat4(1.0f),
+											model.orientation.y,
+											glm::vec3(0.0f, 1.0f, 0.0f));
+			matModel = matModel * rotateY;
+
+			glm::mat4 rotateX = glm::rotate(glm::mat4(1.0f),
+											model.orientation.x,
+											glm::vec3(1.0f, 0.0f, 0.0f));
+			matModel = matModel * rotateX;
+
+			glm::mat4 matScale = glm::scale(glm::mat4(1.0f),
+								 glm::vec3(model.scale, model.scale, model.scale));
+
+			matModel = matModel * matScale;
+			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(matModel));
+
+			/*
+			// INVERSE WAS FROM GRAPHICS CLASS
+				GLint matModel_loc = glGetUniformLocation(shaderProgID, "matModel");
+				GLint matModelInvTran_loc = glGetUniformLocation(shaderProgID, "matModelInvTrans");
+			
+			*/
+
+			// Is the object wireframe?
+			if (model.wireFrame)
+			{
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			}
+			else
+			{
+				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			}
+
+
+			// Draw mesh
+			glBindVertexArray(model.meshes[i].VAO);
+			glDrawElements(GL_TRIANGLES, model.meshes[i].indices.size(), GL_UNSIGNED_INT, 0);
+			glBindVertexArray(0);
+
+			// Always good practice to set everything back to defaults once configured
+			// NOTE(CK): bind texture must be AFTER glActiveTexture or it will not unbind properly
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, 0);
+
+		}
 	}
 
 	void Renderer::DrawCube(unsigned int shaderId)

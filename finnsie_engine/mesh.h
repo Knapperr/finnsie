@@ -5,11 +5,7 @@
 #include "shader_manager.h"
 
 #include <glm/gtc/matrix_transform.hpp>
-#include <vector>
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <iostream>
+
 
 namespace finnsie {
 

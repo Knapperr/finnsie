@@ -17,13 +17,13 @@
 #include <iostream>
 
 #include "camera.h"
-#include "renderer.h"
 #include "shader_manager.h"
 #include "texture_manager.h"
 #include "game.h"
 
 #include "primitive_model.h"
 #include "model.h"
+#include "renderer.h"
 
 using namespace finnsie;
 
@@ -61,6 +61,8 @@ struct DeltaTime
 global_variable DeltaTime dt;
 
 glm::vec3 lampPos = glm::vec3(2.2f, 1.0f, 2.0f);
+
+std::vector<Model*> models;
 
 int main(int argc, char** argv)
 {
@@ -129,8 +131,32 @@ int main(int argc, char** argv)
 	// Init the obj model
 	Shader modelShader = ::g_resourceManager->GenerateShader(002, "vert_model.glsl", "frag_model.glsl", NULL);
 
-	Model ourModel("donut", "content/objects/donut/donutscaled.obj");
-	Model nanoModel("nano", "content/objects/nanosuit/nanosuit.obj");
+	// TODO(CK): MOVE TO LOAD FUNCTION
+	// -----------------------------------------
+	Model* ourModel = new Model("donut", 
+								true,
+								glm::vec3(-20.0f, -3.75f, 0.0f),
+								glm::vec3(0.0f, 0.0f, 0.0f),
+								1.0f,
+								"content/objects/donut/donutscaled.obj");
+	models.push_back(ourModel);
+	
+	Model* nanoModel = new Model("nano",
+								 false,
+								 glm::vec3(-40.0f, -5.75f, 0.0f),
+								 glm::vec3(0.0f, 0.0f, 0.0f),
+								 0.2f,
+								 "content/objects/nanosuit/nanosuit.obj");
+	models.push_back(nanoModel);
+
+	Model* rockModel = new Model("rock", 
+								 false,
+								 glm::vec3(-60.0f, -5.75f, 0.0f),
+								 glm::vec3(0.0f, 0.0f, 0.0f),
+								 0.5f, 
+								 "content/objects/column/OldColumn.obj");
+	models.push_back(rockModel);
+	// ---------------------------------------------------
 
 	// draw in wireframe
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -144,7 +170,6 @@ int main(int argc, char** argv)
 	int objViewLoc = glGetUniformLocation(modelShader.id, "view");
 	int objModelLoc = glGetUniformLocation(modelShader.id, "model");
 
-
 	while (!glfwWindowShouldClose(window))
 	{
 		processInput(window);
@@ -156,7 +181,8 @@ int main(int argc, char** argv)
 		dt.lastFrame = currentFrame;
 
 		// Process the input & move the player
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		//glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // blue 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		// NOTE: FOR 3D
@@ -186,18 +212,10 @@ int main(int argc, char** argv)
 		glUniformMatrix4fv(objProjLoc, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(objViewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(-40.0f, -5.75f, 0.0f));
-		model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
-		glUniformMatrix4fv(objModelLoc, 1, GL_FALSE, glm::value_ptr(model));
-		nanoModel.Draw(modelShader);
-
-		// can use the same shader again
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(-20.0f, -3.75f, 0.0f)); // translate it down so its at the center of the screen
-		model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f)); // its a bit too big for our scene
-		glUniformMatrix4fv(objModelLoc, 1, GL_FALSE, glm::value_ptr(model));
-		ourModel.Draw(modelShader);
+		for (unsigned int i = 0; i < models.size(); i++)
+		{		
+			renderer.DrawModel(*models[i], modelShader.id, objModelLoc);
+		}
 
 		glfwSwapBuffers(window);
 	}

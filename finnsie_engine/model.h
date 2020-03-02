@@ -25,7 +25,6 @@ namespace finnsie {
 	typedef std::vector<Vertex> vertex_vec;
 	typedef std::vector<unsigned int> uint_vec;
 
-	unsigned int TextureFromFile(const char* path, const std::string& directory, bool gamma = false);
 
 	class Model
 	{
@@ -36,10 +35,24 @@ namespace finnsie {
 		std::string directory;
 		std::string modelName;
 		bool gammaCorrection;
+		bool wireFrame;
+		float scale;
+		glm::vec3 pos;
+		glm::vec3 orientation;
 
 		/* Methods */
-		Model(std::string modelName, std::string const& path, bool gamma = false) : gammaCorrection(gamma)
+		Model(std::string modelName, 
+			  bool wireFrame, 
+			  glm::vec3 pos,
+			  glm::vec3 orientation,
+			  float scale,
+			  std::string const& path,
+			  bool gamma = false) : gammaCorrection(gamma)
 		{
+			this->wireFrame = wireFrame;
+			this->pos = pos;
+			this->orientation = orientation;
+			this->scale = scale;
 			this->modelName = modelName;
 			loadModel(path);
 		}
@@ -213,49 +226,49 @@ namespace finnsie {
 			}
 			return textures;
 		}
+
+		unsigned int TextureFromFile(const char* path, const std::string& directory, bool gamma = false)
+		{
+			std::string filename = std::string(path);
+			filename = directory + '/' + filename;
+
+			unsigned int textureID;
+			glGenTextures(1, &textureID);
+
+			int width, height, nrComponents;
+			unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
+
+			if (data)
+			{
+				GLenum format;
+				if (nrComponents == 1)
+					format = GL_RED;
+				else if (nrComponents == 3)
+					format = GL_RGB;
+				else if (nrComponents == 4)
+					format = GL_RGBA;
+
+				glBindTexture(GL_TEXTURE_2D, textureID);
+				glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+				glGenerateMipmap(GL_TEXTURE_2D);
+
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+				// unbind after using
+				glBindTexture(GL_TEXTURE_2D, 0);
+				stbi_image_free(data);
+			}
+			else
+			{
+				std::cout << "Texture failed to load at path: " << path << "\n";
+				stbi_image_free(data);
+			}
+			return textureID;
+		}
 	};
 
-
-	unsigned int TextureFromFile(const char* path, const std::string& directory, bool gamma)
-	{
-		std::string filename = std::string(path);
-		filename = directory + '/' + filename;
-
-		unsigned int textureID;
-		glGenTextures(1, &textureID);
-
-		int width, height, nrComponents;
-		unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
-
-		if (data)
-		{
-			GLenum format;
-			if (nrComponents == 1)
-				format = GL_RED;
-			else if (nrComponents == 3)
-				format = GL_RGB;
-			else if (nrComponents == 4)
-				format = GL_RGBA;
-
-			glBindTexture(GL_TEXTURE_2D, textureID);
-			glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-			glGenerateMipmap(GL_TEXTURE_2D);
-
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-			// unbind after using
-			glBindTexture(GL_TEXTURE_2D, 0);
-			stbi_image_free(data);
-		}
-		else
-		{
-			std::cout << "Texture failed to load at path: " << path << "\n";
-			stbi_image_free(data);
-		}
-		return textureID;
-	}
 }
 #endif
