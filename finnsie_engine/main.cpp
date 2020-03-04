@@ -1,10 +1,3 @@
-/*
-	TODO:
-		- [ ] .obj parser (learn how to write one) and then vector of objects and add those to the scene
-		- [ ] game obj
-		- [ ] Vertices manager VAO manager class?
-		- [ ] read up on InitRenderTextureData 
-*/
 #include "global.h"
 
 #include <glm/vec3.hpp> // glm::vec3
@@ -27,7 +20,8 @@
 
 using namespace finnsie;
 
-void processInput(GLFWwindow* window);
+void processCamera(GLFWwindow* window);
+void processInput(GLFWwindow* window, int key, int action, int scancode, int mods);
 
 const unsigned int SCREEN_WIDTH = 1080;
 const unsigned int SCREEN_HEIGHT = 720;
@@ -36,7 +30,10 @@ const unsigned int SCREEN_HEIGHT = 720;
 Game* game;
 ResourceManager* g_resourceManager;
 
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+// TODO(CK): Could have one camera with two views?
+Camera debugCamera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera playerCamera(glm::vec3(0.0f, 2.0f, 2.0f));
+
 float lastX = SCREEN_WIDTH / 2.0f;
 float lastY = SCREEN_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -46,6 +43,7 @@ float g_velocity = 300.0f;
 
 // Camera
 glm::vec3 g_cameraEye = glm::vec3(0.0, 0.0, +4.0f);
+bool debugCameraActive = true;
 
 static void error_callback(int error, const char* description);
 //static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -66,6 +64,7 @@ std::vector<Model*> models;
 
 int main(int argc, char** argv)
 {
+	//---------------------------------------------------------------------
 	// glfw init and config
 	// --------------------
 	glfwSetErrorCallback(error_callback);
@@ -87,7 +86,7 @@ int main(int argc, char** argv)
 	}
 
 	glfwMakeContextCurrent(window);
-	//glfwSetKeyCallback(window, key_callback);
+	glfwSetKeyCallback(window, processInput);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 
@@ -110,6 +109,8 @@ int main(int argc, char** argv)
 	//glEnable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+// ----------------------------------------------------------------------------
 
 	::g_resourceManager = new ResourceManager();
 	Renderer renderer;
@@ -170,9 +171,12 @@ int main(int argc, char** argv)
 	int objViewLoc = glGetUniformLocation(modelShader.id, "view");
 	int objModelLoc = glGetUniformLocation(modelShader.id, "model");
 
+	glm::mat4 projection = glm::mat4(1.0f);
+	glm::mat4 view = glm::mat4(1.0f);
+
 	while (!glfwWindowShouldClose(window))
 	{
-		processInput(window);
+		processCamera(window);
 		glfwPollEvents();
 
 		// delta time
@@ -185,12 +189,21 @@ int main(int argc, char** argv)
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // blue 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		// NOTE: FOR 3D
-		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), 
-											   (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT,
-											    0.1f, 100.0f);
-		glm::mat4 view = camera.GetViewMatrix();
-
+		// TODO(CK): Put into camera class method
+		if (debugCameraActive)
+		{
+			projection = glm::perspective(glm::radians(debugCamera.Zoom),
+				(float)SCREEN_WIDTH / (float)SCREEN_HEIGHT,
+				0.1f, 100.0f);
+			view = debugCamera.GetViewMatrix();
+		}
+		else
+		{
+			projection = glm::perspective(glm::radians(playerCamera.Zoom),
+				(float)SCREEN_WIDTH / (float)SCREEN_HEIGHT,
+				0.1f, 100.0f);
+			view = playerCamera.GetViewMatrix();
+		}
 		// lamp
 		renderer.DrawLamp(lightShader.id, lightCube, lightModelLoc, 
 						  lightProjLoc, lightViewLoc, projection, view, lampPos);
@@ -228,18 +241,42 @@ int main(int argc, char** argv)
 }
 
 // Camera input
-void processInput(GLFWwindow* window)
+void processCamera(GLFWwindow* window)
+{
+	if (debugCameraActive)
+	{
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) { debugCamera.ProcessKeyboard(Camera_Movement::FORWARD, dt.time); }
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) { debugCamera.ProcessKeyboard(Camera_Movement::BACKWARD, dt.time); }
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) { debugCamera.ProcessKeyboard(Camera_Movement::LEFT, dt.time); }
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) { debugCamera.ProcessKeyboard(Camera_Movement::RIGHT, dt.time); }
+		if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) { debugCamera.ProcessKeyboard(Camera_Movement::UP, dt.time); }
+		if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) { debugCamera.ProcessKeyboard(Camera_Movement::DOWN, dt.time); }
+	}
+	else
+	{
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) { playerCamera.ProcessKeyboard(Camera_Movement::FORWARD, dt.time); }
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) { playerCamera.ProcessKeyboard(Camera_Movement::BACKWARD, dt.time); }
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) { playerCamera.ProcessKeyboard(Camera_Movement::LEFT, dt.time); }
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) { playerCamera.ProcessKeyboard(Camera_Movement::RIGHT, dt.time); }
+		if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) { playerCamera.ProcessKeyboard(Camera_Movement::UP, dt.time); }
+		if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) { playerCamera.ProcessKeyboard(Camera_Movement::DOWN, dt.time); }
+	}
+}
+
+void processInput(GLFWwindow* window, int key, int action, int scancode, int mods)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) { glfwSetWindowShouldClose(window, true); }
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) { camera.ProcessKeyboard(Camera_Movement::FORWARD, dt.time); }
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) { camera.ProcessKeyboard(Camera_Movement::BACKWARD, dt.time); }
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) { camera.ProcessKeyboard(Camera_Movement::LEFT, dt.time); }
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) { camera.ProcessKeyboard(Camera_Movement::RIGHT, dt.time); }
-	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) { camera.ProcessKeyboard(Camera_Movement::UP, dt.time); }
-	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) { camera.ProcessKeyboard(Camera_Movement::DOWN, dt.time); }
 
 	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS) { lampPos.z += 0.2f; }
 	if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS) { lampPos.z -= 0.2f; }
+
+	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) 
+	{ 
+		if (!debugCameraActive)
+			debugCameraActive = true;
+		else
+			debugCameraActive = false;
+	}
 
 }
 
@@ -260,14 +297,14 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	lastX = (float)xpos;
 	lastY = (float)ypos;
 
-	camera.ProcessMouseMovement(xoffset, yoffset);
+	debugCameraActive ? debugCamera.ProcessMouseMovement(xoffset, yoffset) : playerCamera.ProcessMouseMovement(xoffset, yoffset);
 }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
 // ----------------------------------------------------------------------
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	camera.ProcessMouseScroll((float)yoffset);
+	debugCameraActive ? debugCamera.ProcessMouseScroll((float)yoffset) : playerCamera.ProcessMouseScroll((float)yoffset);
 }
 
 static void error_callback(int error, const char* description)
