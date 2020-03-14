@@ -49,7 +49,7 @@ static void error_callback(int error, const char* description);
 //static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-
+void gamepad_callback(int jid, int event);
 
 struct DeltaTime 
 {
@@ -89,6 +89,7 @@ int main(int argc, char** argv)
 	glfwSetKeyCallback(window, processInput);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
+	//glfwSetJoystickCallback(gamepad_callback);
 
 
 	// tell GLFW to capture our mouse
@@ -135,11 +136,11 @@ int main(int argc, char** argv)
 	// TODO(CK): MOVE TO LOAD FUNCTION
 	// -----------------------------------------
 	Model* ourModel = new Model("donut", 
-								false,
+								true,
 								glm::vec3(-20.0f, -3.75f, 0.0f),
 								glm::vec3(0.0f, 0.0f, 0.0f),
 								1.0f,
-								"content/objects/donut/donutscaled.obj");
+								"content/objects/donuttext/donutscaletext.obj");
 	models.push_back(ourModel);
 	
 	Model* nanoModel = new Model("nano",
@@ -177,6 +178,25 @@ int main(int argc, char** argv)
 	while (!glfwWindowShouldClose(window))
 	{
 		processCamera(window);
+
+		// NOTE(CK): Gamepad
+		if (glfwJoystickPresent(GLFW_JOYSTICK_1))
+		{
+			int axesCount;
+			const float* axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
+			//std::cout << axesCount << "\n";
+
+			int buttonCount;
+			const unsigned char* buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonCount);
+			if (GLFW_PRESS == buttons[1])
+			{
+				std::cout << "b button pressed" << "\n";
+			}
+			// gives you type (xbox)
+			const char* name = glfwGetJoystickName(GLFW_JOYSTICK_1);
+			//std::cout << "Joystick is: " << name << "\n";
+		}
+
 		glfwPollEvents();
 
 		// delta time
@@ -305,6 +325,18 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	debugCameraActive ? debugCamera.ProcessMouseScroll((float)yoffset) : playerCamera.ProcessMouseScroll((float)yoffset);
+}
+
+void gamepad_callback(int jid, int event)
+{
+	if (event == GLFW_CONNECTED)
+	{
+		// The joystick was connected
+	}
+	else if (event == GLFW_DISCONNECTED)
+	{
+		// The joystick was disconnected
+	}
 }
 
 static void error_callback(int error, const char* description)
