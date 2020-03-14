@@ -158,6 +158,15 @@ int main(int argc, char** argv)
 								 0.5f, 
 								 "content/objects/column/OldColumn.obj");
 	models.push_back(rockModel);
+
+	Model* eraserModel = new Model("eraser", 
+								 false,
+								 glm::vec3(-78.0f, -5.75f, 0.0f),
+								 glm::vec3(0.0f, 0.0f, 0.0f),
+								 1.0f, 
+								 "content/objects/eraser/eraser.obj");
+	models.push_back(eraserModel);
+
 	// ---------------------------------------------------
 
 	// draw in wireframe
