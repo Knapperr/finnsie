@@ -4,13 +4,15 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>	
+#include <vector>
 
+#include "model.h"
 #include "resource_manager.h"
 
 namespace finnsie {
 
 extern ResourceManager* g_resourceManager;
-
+extern std::vector<Model*> g_models;
 
 #define PI32 3.14159265359f
 #define local_persist static 

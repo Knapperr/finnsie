@@ -1,4 +1,4 @@
-#include "global.h"
+#include "gl_common.h"
 
 #include <glm/vec3.hpp> // glm::vec3
 #include <glm/vec4.hpp> // glm::vec4
@@ -13,10 +13,11 @@
 #include "shader_manager.h"
 #include "texture_manager.h"
 #include "game.h"
-
 #include "primitive_model.h"
 #include "model.h"
 #include "renderer.h"
+#include "utils.h"
+#include "gui.h"
 
 using namespace finnsie;
 
@@ -29,6 +30,8 @@ const unsigned int SCREEN_HEIGHT = 720;
 // NOTE: 2D has its own game for now
 Game* game;
 ResourceManager* g_resourceManager;
+
+Gui* gui = new Gui();
 
 // TODO(CK): Could have one camera with two views?
 Camera debugCamera(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -109,7 +112,12 @@ int main(int argc, char** argv)
 	//glEnable(GL_CULL_FACE);
 	//glEnable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
+	
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+// ----------------------------------------------------------------------------
+	// init gui -- it needs a window
+	gui->Init(*window);
 
 // ----------------------------------------------------------------------------
 
@@ -130,47 +138,8 @@ int main(int argc, char** argv)
 	glm::vec3 lightPos(1.2f, -0.5f, 0.5);
 	// -------------------------------------------------------
 
-	// Init the obj model
 	Shader modelShader = ::g_resourceManager->GenerateShader(002, "vert_model.glsl", "frag_model.glsl", NULL);
-
-	// TODO(CK): MOVE TO LOAD FUNCTION
-	// -----------------------------------------
-	Model* ourModel = new Model("donut", 
-								true,
-								glm::vec3(-20.0f, -3.75f, 0.0f),
-								glm::vec3(0.0f, 0.0f, 0.0f),
-								1.0f,
-								"content/objects/donuttext/donutscaletext.obj");
-	models.push_back(ourModel);
-	
-	Model* nanoModel = new Model("nano",
-								 false,
-								 glm::vec3(-40.0f, -5.75f, 0.0f),
-								 glm::vec3(0.0f, 2.0f, 0.0f),
-								 0.2f,
-								 "content/objects/nanosuit/nanosuit.obj");
-	models.push_back(nanoModel);
-
-	Model* rockModel = new Model("rock", 
-								 false,
-								 glm::vec3(-60.0f, -5.75f, 0.0f),
-								 glm::vec3(0.0f, 0.0f, 0.0f),
-								 0.5f, 
-								 "content/objects/column/OldColumn.obj");
-	models.push_back(rockModel);
-
-	Model* eraserModel = new Model("eraser", 
-								 false,
-								 glm::vec3(-78.0f, -5.75f, 0.0f),
-								 glm::vec3(0.0f, 0.0f, 0.0f),
-								 1.0f, 
-								 "content/objects/eraser/eraser.obj");
-	models.push_back(eraserModel);
-
-	// ---------------------------------------------------
-
-	// draw in wireframe
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	LoadModels();
 
 	float lampXMove = 0.1f;
 	int lightProjLoc = glGetUniformLocation(lightShader.id, "projection");
@@ -183,6 +152,8 @@ int main(int argc, char** argv)
 
 	glm::mat4 projection = glm::mat4(1.0f);
 	glm::mat4 view = glm::mat4(1.0f);
+
+	guiState state;
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -218,19 +189,20 @@ int main(int argc, char** argv)
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // blue 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
+
 		// TODO(CK): Put into camera class method
 		if (debugCameraActive)
 		{
 			projection = glm::perspective(glm::radians(debugCamera.Zoom),
 				(float)SCREEN_WIDTH / (float)SCREEN_HEIGHT,
-				0.1f, 100.0f);
+				1.0f, 1000.0f); // NOTE(CK): near and far clipping distance
 			view = debugCamera.GetViewMatrix();
 		}
 		else
 		{
 			projection = glm::perspective(glm::radians(playerCamera.Zoom),
 				(float)SCREEN_WIDTH / (float)SCREEN_HEIGHT,
-				0.1f, 100.0f);
+				1.0f, 1000.0f); // NOTE(CK): near and far clipping distance
 			view = playerCamera.GetViewMatrix();
 		}
 		// lamp
@@ -254,10 +226,19 @@ int main(int argc, char** argv)
 		glUniformMatrix4fv(objProjLoc, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(objViewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
-		for (unsigned int i = 0; i < models.size(); i++)
+		for (unsigned int i = 0; i < g_models.size(); i++)
 		{		
-			renderer.DrawModel(*models[i], modelShader.id, objModelLoc);
+			renderer.DrawModel(*g_models[i], modelShader.id, objModelLoc);
 		}
+
+
+		state.gameDeltaTime = dt.time; // probably a better way to do this
+		gui->SetState(state);
+
+		// NOTE(CK:) Do last because it will render over top everything
+		// NOTE(CK): Gui needs to render after clear
+		gui->Update();
+		gui->Render();
 
 		glfwSwapBuffers(window);
 	}
