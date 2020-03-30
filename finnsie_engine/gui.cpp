@@ -1,5 +1,7 @@
 #include "gui.h"
 
+#include "utils.h"
+
 #include <iostream>
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -52,6 +54,10 @@ namespace finnsie {
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
+		// deal with object loading checkboxes
+
+
+
 		// This sample code is located in ImGui::ShowDemoWindow()
 		if (showDemoWindow)
 			ImGui::ShowDemoWindow(&showDemoWindow);
@@ -66,18 +72,48 @@ namespace finnsie {
 
 			ImGui::SliderFloat("Player Velocity", &playerVelocity, 300.0f, 800.0f);
 
-			// checkbox for all models 
-			for (int i = 0; i < objPaths.size(); ++i)
+			bool loadModel = false;
+			int modelIndex = 0;
+			if (ImGui::CollapsingHeader("Models"))
 			{
-				// how do we bind that that to a funcion
-				ImGui::Checkbox(objPaths[i].name.c_str(), &objPaths[i].loadModel);
+				for (int i = 0; i < objPaths.size(); i++)
+				{
+					ImGui::Checkbox(objPaths[i].name.c_str(), &objPaths[i].loadModel);
 
-				// NOTE(CK):
-				// call some function?
-				// or can we get the state from this...
-				// probably need to do a check but we don't want 
-				// to poll this ALL the time......
+					// Load model do this once based off of loaded
+					if (objPaths[i].loadModel && !objPaths[i].loaded)
+					{
+						LoadModel(objPaths[i].name, objPaths[i].path);
+						objPaths[i].loaded = true;
+					}
+					if (!objPaths[i].loadModel && objPaths[i].loaded)
+					{
+						UnloadModel(objPaths[i].name);
+						objPaths[i].loaded = false;
+					}
+				}
 			}
+
+			// DROP DOWN COMBOBOX EXAMPLE
+			//static ImGuiComboFlags flags = 0;
+			//static const char* item_current = objPaths[0].name.c_str();            // Here our selection is a single pointer stored outside the object.
+			//static std::string item_current_path = objPaths[0].path.c_str();
+			//if (ImGui::BeginCombo("models", item_current, flags)) // The second parameter is the label previewed before opening the combo.
+			//{
+			//	for (int n = 0; n < objPaths.size(); n++)
+			//	{
+			//		bool is_selected = (item_current == objPaths[n].name.c_str());
+			//		if (ImGui::Selectable(objPaths[n].name.c_str(), is_selected))
+			//		{
+			//			item_current = objPaths[n].name.c_str();
+			//		}
+			//		if (is_selected)
+			//		{
+			//			ImGui::SetItemDefaultFocus();   // Set the initial focus when opening the combo (scrolling + for keyboard navigation support in the upcoming navigation branch)
+			//		}
+			//	}
+			//	ImGui::EndCombo();
+			//}
 
 			ImGui::Text("application average %.3f ms/frame (%.1f FPS", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 			ImGui::Text("Delta Time from game %.2f ms/frame", (double)state.gameDeltaTime * 1000.0f);
@@ -120,17 +156,18 @@ namespace finnsie {
 	// TODO(CK): Get rid of C++17 nonsense
 	void Gui::getFolders()
 	{
+		// TODO(CK): Need to check which models 
 		objFile obj = {};
 		obj.loadModel = false;
+		obj.loaded = false;
 		std::string path = "content\\objects";
 		for (auto& d : fs::recursive_directory_iterator(path))
 		{
 			if (d.path().extension() == ".obj")
 			{
-				obj.path = d.path().string();
-				obj.name = d.path().filename().string();
+				obj.path = d.path().generic_string();
+				obj.name = d.path().filename().generic_string();
 				objPaths.push_back(obj);
-				std::cout << d.path().string() << "\n";
 			}
 		}
 	}

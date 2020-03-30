@@ -24,6 +24,7 @@ namespace finnsie {
 		std::string path;
 		std::string name;
 		bool loadModel;
+		bool loaded;
 	};
 
 	class Gui
@@ -42,6 +43,7 @@ namespace finnsie {
 		guiState state;
 
 		// method for finding folders objects
+		int index = 0;
 		bool loadModel = false;
 		std::vector<objFile> objPaths;
 		void getFolders();

@@ -5,11 +5,34 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <algorithm>
 
 namespace finnsie {
 
 	std::vector<Model*> g_models;
 	
+	bool LoadModel(std::string name, std::string path)
+	{
+		// need to check if the model is loaded already
+		for (int i = 0; i < g_models.size(); ++i)
+		{
+			if (g_models[i]->modelName == name)
+			{
+				std::cout << name << " is already loaded\n";
+				return false;
+			}
+		}
+		// TODO(CK): Don't really like loading the model with the constructor
+		Model* model = new Model(name,
+								false,
+								glm::vec3(-100.0f, -30.0f, 0.0f),
+								glm::vec3(0.0f, 0.0f, 0.0f),
+								10.0f,
+								path);
+		g_models.push_back(model);
+		return true;
+	}
+
 	bool LoadModels()
 	{
 		// TODO(CK): Change to bool
@@ -126,6 +149,25 @@ namespace finnsie {
 
 
 
+		return true;
+	}
+
+	bool UnloadModel(std::string name)
+	{
+		bool found = false;
+		Model* model;
+		for (int i = 0; i < g_models.size(); ++i)
+		{
+			if (g_models[i]->modelName == name)
+			{
+				model = g_models[i];
+				found = true;
+				break;
+			}
+		}
+		if (!found) { return false; }
+
+		g_models.erase(std::remove(g_models.begin(), g_models.end(), model), g_models.end());
 		return true;
 	}
 }

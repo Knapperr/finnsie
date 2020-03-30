@@ -35,6 +35,8 @@ namespace finnsie {
 		std::string directory;
 		std::string modelName;
 		bool gammaCorrection;
+
+		bool loaded;
 		bool wireFrame;
 		float scale;
 		glm::vec3 pos;
@@ -54,6 +56,8 @@ namespace finnsie {
 			this->orientation = orientation;
 			this->scale = scale;
 			this->modelName = modelName;
+
+			this->loaded = false;
 			loadModel(path);
 		}
 
@@ -83,6 +87,9 @@ namespace finnsie {
 
 			// process ASSIMP's root node recursively
 			processNode(scene->mRootNode, scene);
+
+
+			loaded = true;
 		}
 
 		// process a node in a recursive fashion. processes each individual mesh located at the node and repeats this process on its children nodes
@@ -177,7 +184,7 @@ namespace finnsie {
 			// 1. diffuse maps
 			texture_vec diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
 			textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-			// 2. specualr maps
+			// 2. specular maps
 			texture_vec specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
 			textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 			// 3. normal maps
