@@ -4,84 +4,76 @@
 #include <glm/gtc/type_ptr.hpp>
 
 namespace finnsie {
-
-
-	// Global ResourceManager 
-	// have to initialize here
-	ResourceManager* g_resourceManager;
-
-	Game::Game(unsigned int width, unsigned int height, GLFWwindow* window) 
-		:	Width(width)	, 
-			Height(height)	, 
-			window(window)
+	void Game::Init(GLFWwindow &wnd)
 	{
-		g_resourceManager = new ResourceManager();
-	}
-	
-	Game::~Game() 
-	{
-		// clean up
-		g_resourceManager->ShutDown();
-		delete ::finnsie::g_resourceManager;
-		delete renderer;
-	}
+		::finnsie::g_resourceManager = new ResourceManager();
 
-	void Game::Init()
-	{
-		// Create a shader
-		g_resourceManager->GenerateShader(001, "vert_sprite.glsl", "frag_sprite.glsl", NULL);
+		this->mode = Mode::CAMERA;
+		this->window = &wnd;
+		this->renderer = new Renderer();
+		this->camera = new Camera();
 
-		glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(Width), 
-										static_cast<float>(Height), 0.0f, -1.0f, 1.0f);
+		this->projection = glm::mat4(1.0f);
+		this->view = glm::mat4(1.0f);
 
-		// NOTE: Need to call use program before we can access the shader
-		glUseProgram(g_resourceManager->GetShader(001).id);
+		// Need a shader for models
+		this->modelShader = ::finnsie::g_resourceManager->GenerateShader(001, "vert_model.glsl", "frag_model.glsl", NULL);
 
-		int imageLoc = glGetUniformLocation(g_resourceManager->GetShader(001).id, "image");
-		int projLoc = glGetUniformLocation(g_resourceManager->GetShader(001).id, "projection");
-		glUniform1i(imageLoc, 0);
-		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
-		// NOTE: call in two lines rather than 4 EXAMPLE
-		//glUniform1i(glGetUniformLocation(shader.id, "image"), 0);
-		//glUniformMatrix4fv(glGetUniformLocation(shader.id, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-
-
-		// Initialize our renderer here
-		renderer = new SpriteRenderer(g_resourceManager->GetShader(001));
-
-
-		//GameObject(std::string, glm::vec2 pos, glm::vec2 size, glm::vec2 velocity,
-		//	glm::vec3 color, bool solid, float rotation, Texture sprite);
-
-		g_resourceManager->GenerateTexture(001, "content/sprites/enemy.png", true);
-		GameObject enemy = InitGameObject("Enemy", glm::vec2((Width - 64) / 2, (Height - 64) / 2), glm::vec2(64, 64),
-						 glm::vec2(0,0), glm::vec3(1.0f, 1.0f, 1.0f), true, 0.0f, g_resourceManager->GetTexture(001));
-
-
-
-		gameObjects.push_back(enemy);
-
-
+		// uniforms
+		this->objProjLoc = glGetUniformLocation(modelShader.id, "projection");
+		this->objViewLoc = glGetUniformLocation(modelShader.id, "view");
+		this->objModelLoc = glGetUniformLocation(modelShader.id, "model");
 	}
 
 	void Game::Render()
 	{
-		//for (std::vector<GameObject*>::const_iterator *obj = &gameObjects.begin(); obj != &gameObjects.end(); ++obj)
-		//{
-		//	obj->Draw();
-		//}
+		projection = glm::perspective(glm::radians(camera->Zoom),
+									 (float)1080 / (float)720,
+									 1.0f, 1000.0f); // NOTE(CK): near and far clipping distance
+		view = camera->GetViewMatrix();
 
-		for (auto& itObj : gameObjects)
+		// render the model last
+		glUseProgram(modelShader.id);
+		// need to set the view and projection as well
+		glUniformMatrix4fv(objProjLoc, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(objViewLoc, 1, GL_FALSE, glm::value_ptr(view));
+
+		for (unsigned int i = 0; i < g_models.size(); i++)
 		{
-			//itObj->Draw(*renderer);
-			Draw(&itObj, *renderer);
+			renderer->DrawModel(*g_models[i], modelShader.id, objModelLoc);
 		}
 	}
 
-	void Game::Update()
+	void Game::ProcessInput(int key, int action, int scancode, int mods, float dt)
 	{
-
+		if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
+		{
+			// Change to (!cameraMode) - camera mode else guimode
+			if (mode == Mode::CAMERA)
+			{
+				mode = Mode::GUI;
+				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+				
+			}
+			else
+			{
+				mode = Mode::CAMERA;
+				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+			}
+		}
 	}
+
+	
+	void Game::ProcessCamera(float dt)
+	{
+		// TODO(CK): Just use an array of cameras and move between those
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) { camera->ProcessKeyboard(Camera_Movement::FORWARD, dt); }
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) { camera->ProcessKeyboard(Camera_Movement::BACKWARD, dt); }
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) { camera->ProcessKeyboard(Camera_Movement::LEFT, dt); }
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) { camera->ProcessKeyboard(Camera_Movement::RIGHT, dt); }
+		if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) { camera->ProcessKeyboard(Camera_Movement::UP, dt); }
+		if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) { camera->ProcessKeyboard(Camera_Movement::DOWN, dt); }
+	}
+
 
 }

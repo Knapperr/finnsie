@@ -74,37 +74,37 @@ namespace finnsie {
 		//verticesFile.close();
 		//return true;
 
-		Model* ourModel = new Model("donut",
-									true,
-									glm::vec3(-20.0f, -3.75f, 0.0f),
-									glm::vec3(0.0f, 0.0f, 0.0f),
-									1.0f,
-									"content/objects/donuttext/donutscaletext.obj");
-		g_models.push_back(ourModel);
+		//Model* ourModel = new Model("donut",
+		//							true,
+		//							glm::vec3(-20.0f, -3.75f, 0.0f),
+		//							glm::vec3(0.0f, 0.0f, 0.0f),
+		//							1.0f,
+		//							"content/objects/donuttext/donutscaletext.obj");
+		//g_models.push_back(ourModel);
 
-		Model* nanoModel = new Model("nano",
-									 false,
-									 glm::vec3(-40.0f, -5.75f, 0.0f),
-									 glm::vec3(0.0f, 2.0f, 0.0f),
-									 0.2f,
-									 "content/objects/nanosuit/nanosuit.obj");
-		g_models.push_back(nanoModel);
+		//Model* nanoModel = new Model("nano",
+		//							 false,
+		//							 glm::vec3(-40.0f, -5.75f, 0.0f),
+		//							 glm::vec3(0.0f, 2.0f, 0.0f),
+		//							 0.2f,
+		//							 "content/objects/nanosuit/nanosuit.obj");
+		//g_models.push_back(nanoModel);
 
-		Model* rockModel = new Model("rock",
-									 false,
-									 glm::vec3(-60.0f, -5.75f, 0.0f),
-									 glm::vec3(0.0f, 0.0f, 0.0f),
-									 0.5f,
-									 "content/objects/column/OldColumn.obj");
-		g_models.push_back(rockModel);
+		//Model* rockModel = new Model("rock",
+		//							 false,
+		//							 glm::vec3(-60.0f, -5.75f, 0.0f),
+		//							 glm::vec3(0.0f, 0.0f, 0.0f),
+		//							 0.5f,
+		//							 "content/objects/column/OldColumn.obj");
+		//g_models.push_back(rockModel);
 
-		Model* eraserModel = new Model("eraser",
-									   false,
-									   glm::vec3(-78.0f, -5.75f, 0.0f),
-									   glm::vec3(0.0f, 0.0f, 0.0f),
-									   1.0f,
-									   "content/objects/eraser/eraser.obj");
-		g_models.push_back(eraserModel);
+		//Model* eraserModel = new Model("eraser",
+		//							   false,
+		//							   glm::vec3(-78.0f, -5.75f, 0.0f),
+		//							   glm::vec3(0.0f, 0.0f, 0.0f),
+		//							   1.0f,
+		//							   "content/objects/eraser/eraser.obj");
+		//g_models.push_back(eraserModel);
 
 		//Model* mansionModel = new Model("mansion",
 		//								false,
@@ -114,13 +114,13 @@ namespace finnsie {
 		//								"content/objects/mansion/op_mansion.obj");
 		//g_models.push_back(mansionModel);
 
-		Model* treasureModel = new Model("teller",
-										 false,
-										 glm::vec3(-100.0f, -30.0f, 0.0f),
-										 glm::vec3(0.0f, 0.0f, 0.0f),
-										 1.0f,
-										 "content/objects/treasureteller/TradeMan.obj");
-		g_models.push_back(treasureModel);
+		//Model* treasureModel = new Model("teller",
+		//								 false,
+		//								 glm::vec3(-100.0f, -30.0f, 0.0f),
+		//								 glm::vec3(0.0f, 0.0f, 0.0f),
+		//								 1.0f,
+		//								 "content/objects/treasureteller/TradeMan.obj");
+		//g_models.push_back(treasureModel);
 
 		//Model* battlefield = new Model("battle",
 		//							   false,
@@ -139,13 +139,13 @@ namespace finnsie {
 		//								 "content/objects/outset/Island.obj");
 		//g_models.push_back(outsetModel);
 
-		Model* windfall = new Model("outset",
-									false,
-									glm::vec3(-100.0f, -30.0f, 0.0f),
-									glm::vec3(0.0f, 0.0f, 0.0f),
-									0.05f,
-									"content/objects/windfall/Windfall.obj");
-		g_models.push_back(windfall);
+		//Model* windfall = new Model("outset",
+		//							false,
+		//							glm::vec3(-100.0f, -30.0f, 0.0f),
+		//							glm::vec3(0.0f, 0.0f, 0.0f),
+		//							0.05f,
+		//							"content/objects/windfall/Windfall.obj");
+		//g_models.push_back(windfall);
 
 
 

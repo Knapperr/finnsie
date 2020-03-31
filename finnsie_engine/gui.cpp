@@ -59,18 +59,18 @@ namespace finnsie {
 
 
 		// This sample code is located in ImGui::ShowDemoWindow()
-		if (showDemoWindow)
-			ImGui::ShowDemoWindow(&showDemoWindow);
+		//if (showDemoWindow)
+		//	ImGui::ShowDemoWindow(&showDemoWindow);
 
 		// Show a simple window that we create ourselves. We use a begin/end pair to create a named window
 		{
 			ImGui::Begin("DEBUG MENU");
 
-			ImGui::Text("This is text");
-			ImGui::Checkbox("Demo Window", &showDemoWindow);
-			ImGui::Checkbox("Show another window", &showAnotherWindow);
+			//ImGui::Text("This is text");
+			//ImGui::Checkbox("Demo Window", &showDemoWindow);
+			//ImGui::Checkbox("Show another window", &showAnotherWindow);
 
-			ImGui::SliderFloat("Player Velocity", &playerVelocity, 300.0f, 800.0f);
+			//ImGui::SliderFloat("Player Velocity", &playerVelocity, 300.0f, 800.0f);
 
 			bool loadModel = false;
 			int modelIndex = 0;
@@ -121,14 +121,14 @@ namespace finnsie {
 		}
 
 		// Show another simple window
-		if (showAnotherWindow)
-		{
-			ImGui::Begin("Another window", &showAnotherWindow);
-			ImGui::Text("Hey! Another window");
-			if (ImGui::Button("Close"))
-				showAnotherWindow = false;
-			ImGui::End();
-		}
+		//if (showAnotherWindow)
+		//{
+		//	ImGui::Begin("Another window", &showAnotherWindow);
+		//	ImGui::Text("Hey! Another window");
+		//	if (ImGui::Button("Close"))
+		//		showAnotherWindow = false;
+		//	ImGui::End();
+		//}
 	}
 
 	void Gui::Render()

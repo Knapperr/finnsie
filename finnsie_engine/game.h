@@ -1,35 +1,47 @@
 #ifndef GAME_HG_
 #define GAME_HG_
 
+#include "gl_common.h"
 #include "global.h"
+#include "renderer.h"
+#include "camera.h"
 
-#include "game_object.h"
-#include "sprite_renderer.h"
-
-#include <vector>
+#include <glm/vec3.hpp> // glm::vec3
+#include <glm/vec4.hpp> // glm::vec4
+#include <glm/mat4x4.hpp> // glm::mat4
 
 namespace finnsie {
 
-	class Game 
+	enum class Mode {
+		GUI,
+		CAMERA
+	};
+
+	class Game
 	{
 	public:
-		unsigned int Width;
-		unsigned int Height;
-		
-		std::vector<GameObject> gameObjects;
-
-		Game(unsigned int width, unsigned int height, GLFWwindow* window);
-		~Game();
-
-		void Init();
+		void Init(GLFWwindow& wnd);
 		void Render();
 		void Update();
+		void ProcessInput(int key, int action, int scancode, int mods, float dt);
+		void ProcessCamera(float dt);
+		void Shutdown();
 
-	private:
+		Mode mode;
+
 		GLFWwindow* window;
-		SpriteRenderer* renderer;
+		Shader modelShader;
+		Camera *camera;
+		Renderer *renderer;
+
+		glm::mat4 projection;
+		glm::mat4 view;
+
+		int objProjLoc;
+		int objViewLoc;
+		int objModelLoc;
+
 	};
-	
 }
 
 #endif

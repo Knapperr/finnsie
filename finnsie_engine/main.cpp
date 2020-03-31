@@ -21,21 +21,16 @@
 
 using namespace finnsie;
 
-void processCamera(GLFWwindow* window);
 void processInput(GLFWwindow* window, int key, int action, int scancode, int mods);
 
 const unsigned int SCREEN_WIDTH = 1080;
 const unsigned int SCREEN_HEIGHT = 720;
 
-// NOTE: 2D has its own game for now
-Game* game;
-ResourceManager* g_resourceManager;
+// NOTE(CK): global resource manager
+ResourceManager* g_resourceManager = NULL;
 
 Gui* gui = new Gui();
-
-// TODO(CK): Could have one camera with two views?
-Camera debugCamera(glm::vec3(0.0f, 0.0f, 3.0f));
-Camera playerCamera(glm::vec3(0.0f, 2.0f, 2.0f));
+Game* game = new Game();
 
 float lastX = SCREEN_WIDTH / 2.0f;
 float lastY = SCREEN_HEIGHT / 2.0f;
@@ -44,26 +39,19 @@ bool firstMouse = true;
 float g_playerXPos = 0;
 float g_velocity = 300.0f;
 
-// Camera
-glm::vec3 g_cameraEye = glm::vec3(0.0, 0.0, +4.0f);
-bool debugCameraActive = true;
-
-static void error_callback(int error, const char* description);
-//static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-void mouse_callback(GLFWwindow* window, double xpos, double ypos);
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-void gamepad_callback(int jid, int event);
-
-struct DeltaTime 
+struct DeltaTime
 {
 	float time;
-	float lastFrame; 
+	float lastFrame;
 };
 global_variable DeltaTime dt;
 
-glm::vec3 lampPos = glm::vec3(2.2f, 1.0f, 2.0f);
-
-std::vector<Model*> models;
+static void error_callback(int error, const char* description);
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void gamepad_callback(int jid, int event);
+// not using anymore
+//static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+//void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 int main(int argc, char** argv)
 {
@@ -91,11 +79,13 @@ int main(int argc, char** argv)
 	glfwMakeContextCurrent(window);
 	glfwSetKeyCallback(window, processInput);
 	glfwSetCursorPosCallback(window, mouse_callback);
-	glfwSetScrollCallback(window, scroll_callback);
+	//glfwSetScrollCallback(window, scroll_callback);
 	//glfwSetJoystickCallback(gamepad_callback);
 
 
 	// tell GLFW to capture our mouse
+	// GLFW_CURSOR_NORMAL GLFW_CURSOR_DISABLED make a func
+	// TODO(CK): Need a mode that will disable the camera control for the gui
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	// glad: load all OpenGL function pointers
@@ -112,53 +102,14 @@ int main(int argc, char** argv)
 	//glEnable(GL_CULL_FACE);
 	//glEnable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
-	
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-// ----------------------------------------------------------------------------
-	// init gui -- it needs a window
+	
+	game->Init(*window);
 	gui->Init(*window);
-
-// ----------------------------------------------------------------------------
-
-	::g_resourceManager = new ResourceManager();
-	Renderer renderer;
-
-	// light model cube (no textures or else models with no textures load improperly)
-	PrimitiveModel lightCube;
-	std::vector<float> vertices;
-	if (!lightCube.LoadVertices("basic_lighting_vertices.txt"))
-	{
-		std::cout << "Failed to load vertices\n";
-		return EXIT_FAILURE;
-	}
-	// Init the light
-	Shader lightShader = ::g_resourceManager->GenerateShader(001, "vert_lamp.glsl", "frag_lamp.glsl", NULL);
-	lightCube.InitBasicCubeData(lightShader.id);
-	glm::vec3 lightPos(1.2f, -0.5f, 0.5);
-	// -------------------------------------------------------
-
-	Shader modelShader = ::g_resourceManager->GenerateShader(002, "vert_model.glsl", "frag_model.glsl", NULL);
-	LoadModels();
-
-	float lampXMove = 0.1f;
-	int lightProjLoc = glGetUniformLocation(lightShader.id, "projection");
-	int lightViewLoc = glGetUniformLocation(lightShader.id, "view");
-	int lightModelLoc = glGetUniformLocation(lightShader.id, "model");
-
-	int objProjLoc = glGetUniformLocation(modelShader.id, "projection");
-	int objViewLoc = glGetUniformLocation(modelShader.id, "view");
-	int objModelLoc = glGetUniformLocation(modelShader.id, "model");
-
-	glm::mat4 projection = glm::mat4(1.0f);
-	glm::mat4 view = glm::mat4(1.0f);
-
 	guiState state;
 
 	while (!glfwWindowShouldClose(window))
 	{
-		processCamera(window);
-
 		// NOTE(CK): Gamepad
 		if (glfwJoystickPresent(GLFW_JOYSTICK_1))
 		{
@@ -189,57 +140,13 @@ int main(int argc, char** argv)
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // blue 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-
-		// TODO(CK): Put into camera class method
-		if (debugCameraActive)
-		{
-			projection = glm::perspective(glm::radians(debugCamera.Zoom),
-				(float)SCREEN_WIDTH / (float)SCREEN_HEIGHT,
-				1.0f, 1000.0f); // NOTE(CK): near and far clipping distance
-			view = debugCamera.GetViewMatrix();
-		}
-		else
-		{
-			projection = glm::perspective(glm::radians(playerCamera.Zoom),
-				(float)SCREEN_WIDTH / (float)SCREEN_HEIGHT,
-				1.0f, 1000.0f); // NOTE(CK): near and far clipping distance
-			view = playerCamera.GetViewMatrix();
-		}
-		// lamp
-		renderer.DrawLamp(lightShader.id, lightCube, lightModelLoc, 
-						  lightProjLoc, lightViewLoc, projection, view, lampPos);
-
-		// Move this position to the model class
-		lampPos.x -= lampXMove * dt.time;
-		if (lampPos.x < -1.8f)
-		{
-			lampXMove = -1.0f;
-		}
-		else if (lampPos.x > 1.8f)
-		{
-			lampXMove = 1.0f;
-		}
-
-		// render the model last
-		glUseProgram(modelShader.id);
-		// need to set the view and projection as well
-		glUniformMatrix4fv(objProjLoc, 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(objViewLoc, 1, GL_FALSE, glm::value_ptr(view));
-
-		for (unsigned int i = 0; i < g_models.size(); i++)
-		{		
-			renderer.DrawModel(*g_models[i], modelShader.id, objModelLoc);
-		}
-
+		game->ProcessCamera(dt.time);
+		game->Render();
 
 		state.gameDeltaTime = dt.time; // probably a better way to do this
 		gui->SetState(state);
-
-		// NOTE(CK:) Do last because it will render over top everything
-		// NOTE(CK): Gui needs to render after clear
 		gui->Update();
 		gui->Render();
-
 		glfwSwapBuffers(window);
 	}
 	
@@ -250,44 +157,11 @@ int main(int argc, char** argv)
 
 }
 
-// Camera input
-void processCamera(GLFWwindow* window)
-{
-	if (debugCameraActive)
-	{
-		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) { debugCamera.ProcessKeyboard(Camera_Movement::FORWARD, dt.time); }
-		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) { debugCamera.ProcessKeyboard(Camera_Movement::BACKWARD, dt.time); }
-		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) { debugCamera.ProcessKeyboard(Camera_Movement::LEFT, dt.time); }
-		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) { debugCamera.ProcessKeyboard(Camera_Movement::RIGHT, dt.time); }
-		if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) { debugCamera.ProcessKeyboard(Camera_Movement::UP, dt.time); }
-		if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) { debugCamera.ProcessKeyboard(Camera_Movement::DOWN, dt.time); }
-	}
-	else
-	{
-		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) { playerCamera.ProcessKeyboard(Camera_Movement::FORWARD, dt.time); }
-		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) { playerCamera.ProcessKeyboard(Camera_Movement::BACKWARD, dt.time); }
-		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) { playerCamera.ProcessKeyboard(Camera_Movement::LEFT, dt.time); }
-		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) { playerCamera.ProcessKeyboard(Camera_Movement::RIGHT, dt.time); }
-		if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) { playerCamera.ProcessKeyboard(Camera_Movement::UP, dt.time); }
-		if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) { playerCamera.ProcessKeyboard(Camera_Movement::DOWN, dt.time); }
-	}
-}
-
 void processInput(GLFWwindow* window, int key, int action, int scancode, int mods)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) { glfwSetWindowShouldClose(window, true); }
-
-	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS) { lampPos.z += 0.2f; }
-	if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS) { lampPos.z -= 0.2f; }
-
-	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) 
-	{ 
-		if (!debugCameraActive)
-			debugCameraActive = true;
-		else
-			debugCameraActive = false;
-	}
-
+	// NOTE(CK): includes camera input
+	game->ProcessInput(key, action, scancode, mods, dt.time);
 }
 
 // glfw: whenever the mouse moves, this callback is called
@@ -306,16 +180,18 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 	lastX = (float)xpos;
 	lastY = (float)ypos;
-
-	debugCameraActive ? debugCamera.ProcessMouseMovement(xoffset, yoffset) : playerCamera.ProcessMouseMovement(xoffset, yoffset);
+	if (game->mode == Mode::CAMERA)
+	{
+		game->camera->ProcessMouseMovement(xoffset, yoffset);
+	}
 }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
 // ----------------------------------------------------------------------
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
-{
-	debugCameraActive ? debugCamera.ProcessMouseScroll((float)yoffset) : playerCamera.ProcessMouseScroll((float)yoffset);
-}
+//void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+//{
+//	game->camera->ProcessMouseScroll((float)yoffset);
+//}
 
 void gamepad_callback(int jid, int event)
 {
