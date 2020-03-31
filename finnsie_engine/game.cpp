@@ -25,6 +25,15 @@ namespace finnsie {
 		this->objModelLoc = glGetUniformLocation(modelShader.id, "model");
 	}
 
+	void Game::Update(float dt)
+	{
+		// Do this first
+		processCamera(dt);
+
+
+
+	}
+
 	void Game::Render()
 	{
 		projection = glm::perspective(glm::radians(camera->Zoom),
@@ -64,7 +73,7 @@ namespace finnsie {
 	}
 
 	
-	void Game::ProcessCamera(float dt)
+	void Game::processCamera(float dt)
 	{
 		// TODO(CK): Just use an array of cameras and move between those
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) { camera->ProcessKeyboard(Camera_Movement::FORWARD, dt); }

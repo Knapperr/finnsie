@@ -22,9 +22,8 @@ namespace finnsie {
 	public:
 		void Init(GLFWwindow& wnd);
 		void Render();
-		void Update();
+		void Update(float dt);
 		void ProcessInput(int key, int action, int scancode, int mods, float dt);
-		void ProcessCamera(float dt);
 		void Shutdown();
 
 		Mode mode;
@@ -41,6 +40,8 @@ namespace finnsie {
 		int objViewLoc;
 		int objModelLoc;
 
+	private:
+		void processCamera(float dt);
 	};
 }
 

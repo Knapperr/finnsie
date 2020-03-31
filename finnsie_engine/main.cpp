@@ -48,10 +48,9 @@ global_variable DeltaTime dt;
 
 static void error_callback(int error, const char* description);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void gamepad_callback(int jid, int event);
-// not using anymore
 //static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-//void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 int main(int argc, char** argv)
 {
@@ -79,7 +78,7 @@ int main(int argc, char** argv)
 	glfwMakeContextCurrent(window);
 	glfwSetKeyCallback(window, processInput);
 	glfwSetCursorPosCallback(window, mouse_callback);
-	//glfwSetScrollCallback(window, scroll_callback);
+	glfwSetScrollCallback(window, scroll_callback);
 	//glfwSetJoystickCallback(gamepad_callback);
 
 
@@ -140,7 +139,7 @@ int main(int argc, char** argv)
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // blue 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		game->ProcessCamera(dt.time);
+		game->Update(dt.time);
 		game->Render();
 
 		state.gameDeltaTime = dt.time; // probably a better way to do this
@@ -160,7 +159,6 @@ int main(int argc, char** argv)
 void processInput(GLFWwindow* window, int key, int action, int scancode, int mods)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) { glfwSetWindowShouldClose(window, true); }
-	// NOTE(CK): includes camera input
 	game->ProcessInput(key, action, scancode, mods, dt.time);
 }
 
@@ -188,10 +186,12 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
 // ----------------------------------------------------------------------
-//void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
-//{
-//	game->camera->ProcessMouseScroll((float)yoffset);
-//}
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	std::cout << yoffset << "\n";
+	game->camera->ProcessMouseScroll((float)yoffset);
+
+}
 
 void gamepad_callback(int jid, int event)
 {
