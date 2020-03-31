@@ -116,7 +116,7 @@ namespace finnsie {
 			{
 				if (!g_models.empty())
 				{
-					ImGui::Text("Current model %d", g_models[state.modelIndex]->modelName);
+					ImGui::Text("Current model %s", g_models[state.modelIndex]->modelName.c_str());
 					ImGui::SliderFloat("scale", &state.modelScale, 0.0f, 30.0f);
 				}
 			}
