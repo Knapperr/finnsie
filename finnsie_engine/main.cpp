@@ -99,7 +99,7 @@ int main(int argc, char** argv)
 	// OpenGL Configurations - after loading glad -
 	glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 	//glEnable(GL_CULL_FACE);
-	//glEnable(GL_BLEND);
+	glEnable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
@@ -148,7 +148,10 @@ int main(int argc, char** argv)
 		gui->Render();
 		glfwSwapBuffers(window);
 	}
-	
+	// NOTE(CK): CLEAN UP
+	game->Shutdown();
+	delete gui;
+	delete game;
 	glfwDestroyWindow(window);
 	glfwTerminate();
 
@@ -188,9 +191,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 // ----------------------------------------------------------------------
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	std::cout << yoffset << "\n";
 	game->camera->ProcessMouseScroll((float)yoffset);
-
 }
 
 void gamepad_callback(int jid, int event)

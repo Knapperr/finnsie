@@ -23,6 +23,9 @@ namespace finnsie {
 		this->objProjLoc = glGetUniformLocation(modelShader.id, "projection");
 		this->objViewLoc = glGetUniformLocation(modelShader.id, "view");
 		this->objModelLoc = glGetUniformLocation(modelShader.id, "model");
+		
+		// Load models based off of text file
+
 	}
 
 	void Game::Update(float dt)
@@ -72,6 +75,12 @@ namespace finnsie {
 		}
 	}
 
+	void Game::Shutdown()
+	{
+		delete ::finnsie::g_resourceManager;
+		delete renderer;
+		delete camera;
+	}
 	
 	void Game::processCamera(float dt)
 	{

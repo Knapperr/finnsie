@@ -5,7 +5,7 @@
 
 namespace finnsie {
 	bool LoadModel(std::string name, std::string path);
-	bool LoadModels();
+	bool LoadModels(std::string path);
 	bool UnloadModel(std::string name);
 }
 #endif

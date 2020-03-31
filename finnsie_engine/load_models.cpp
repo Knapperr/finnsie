@@ -33,7 +33,7 @@ namespace finnsie {
 		return true;
 	}
 
-	bool LoadModels()
+	bool LoadModels(std::string path)
 	{
 		// TODO(CK): Change to bool
 		/* TODO(CK): Read a file with all of this data in it. 

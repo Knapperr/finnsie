@@ -27,21 +27,21 @@ namespace finnsie {
 		void Shutdown();
 
 		Mode mode;
+		Shader modelShader;
 
 		GLFWwindow* window;
-		Shader modelShader;
 		Camera *camera;
 		Renderer *renderer;
 
+	private:
 		glm::mat4 projection;
 		glm::mat4 view;
-
 		int objProjLoc;
 		int objViewLoc;
 		int objModelLoc;
-
-	private:
+		
 		void processCamera(float dt);
+		
 	};
 }
 
