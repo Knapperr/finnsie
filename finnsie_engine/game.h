@@ -5,6 +5,7 @@
 #include "global.h"
 #include "renderer.h"
 #include "camera.h"
+#include "gui.h"
 
 #include <glm/vec3.hpp> // glm::vec3
 #include <glm/vec4.hpp> // glm::vec4
@@ -22,7 +23,7 @@ namespace finnsie {
 	public:
 		void Init(GLFWwindow& wnd);
 		void Render();
-		void Update(float dt);
+		void Update(float dt, gui_state state);
 		void ProcessInput(int key, int action, int scancode, int mods, float dt);
 		void Shutdown();
 

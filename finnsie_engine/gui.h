@@ -14,11 +14,13 @@
 
 namespace finnsie {
 
-	struct guiState
+	struct gui_state
 	{
 		float gameDeltaTime;
-		
+		int modelIndex = 0;
+		float modelScale = 0.0f;
 	};
+
 	struct objFile
 	{
 		std::string path;
@@ -31,20 +33,17 @@ namespace finnsie {
 	{
 	public:
 		void Init(GLFWwindow& window);
-		void SetState(guiState state);
+		void SetState(gui_state state);
 		void Update();
 		void Render();
 		void Shutdown();
 
 		float playerVelocity;
+		gui_state state;
 	private:
 		bool showDemoWindow = false;
 		bool showAnotherWindow = false;
-		guiState state;
 
-		// method for finding folders objects
-		int index = 0;
-		bool loadModel = false;
 		std::vector<objFile> objPaths;
 		void getFolders();
 	};

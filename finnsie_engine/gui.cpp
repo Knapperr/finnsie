@@ -1,6 +1,8 @@
 #include "gui.h"
 
+#include "global.h"
 #include "utils.h"
+
 
 #include <iostream>
 #include <filesystem>
@@ -10,11 +12,7 @@ namespace finnsie {
 
 	void Gui::Init(GLFWwindow& window)
 	{
-
-		// Player velocity
-		playerVelocity = 300.0f;
-
-		const char* glsl_version = "#version 130";
+		const char* glsl_version = "#version 330";
 
 		// set up
 		IMGUI_CHECKVERSION();
@@ -25,6 +23,8 @@ namespace finnsie {
 		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+		
+		
 
 		// ImGui style
 		ImGui::StyleColorsDark();
@@ -36,6 +36,8 @@ namespace finnsie {
 		showDemoWindow = false;
 		showAnotherWindow = false;
 
+		// initialize memory
+		state = {};
 		// Grab obj files in the folders
 		getFolders();
 		// could use this and then create a glm::vec4 from this field to change colour in the game
@@ -43,7 +45,7 @@ namespace finnsie {
 
 	}
 
-	void Gui::SetState(guiState state)
+	void Gui::SetState(gui_state state)
 	{
 		this->state.gameDeltaTime = state.gameDeltaTime;
 	}
@@ -55,8 +57,6 @@ namespace finnsie {
 		ImGui::NewFrame();
 
 		// deal with object loading checkboxes
-
-
 
 		// This sample code is located in ImGui::ShowDemoWindow()
 		//if (showDemoWindow)
@@ -71,9 +71,6 @@ namespace finnsie {
 			//ImGui::Checkbox("Show another window", &showAnotherWindow);
 
 			//ImGui::SliderFloat("Player Velocity", &playerVelocity, 300.0f, 800.0f);
-
-			bool loadModel = false;
-			int modelIndex = 0;
 			if (ImGui::CollapsingHeader("Models"))
 			{
 				for (int i = 0; i < objPaths.size(); i++)
@@ -114,10 +111,22 @@ namespace finnsie {
 			//	}
 			//	ImGui::EndCombo();
 			//}
+			
+			if (ImGui::CollapsingHeader("Model Edit"))
+			{
+				if (!g_models.empty())
+				{
+					ImGui::Text("Current model %d", g_models[state.modelIndex]->modelName);
+					ImGui::SliderFloat("scale", &state.modelScale, 0.0f, 30.0f);
+				}
+			}
 
-			ImGui::Text("application average %.3f ms/frame (%.1f FPS", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-			ImGui::Text("Delta Time from game %.2f ms/frame", (double)state.gameDeltaTime * 1000.0f);
+			//ImGui::Text("application average %.3f ms/frame (%.1f FPS", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+			//ImGui::Text("Delta Time from game %.2f ms/frame", (double)state.gameDeltaTime * 1000.0f);
+			
 			ImGui::End();
+
+			
 		}
 
 		// Show another simple window

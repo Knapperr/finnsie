@@ -99,13 +99,13 @@ int main(int argc, char** argv)
 	// OpenGL Configurations - after loading glad -
 	glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 	//glEnable(GL_CULL_FACE);
-	glEnable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
 	game->Init(*window);
 	gui->Init(*window);
-	guiState state;
+	gui_state guiState;
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -139,12 +139,13 @@ int main(int argc, char** argv)
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // blue 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		game->Update(dt.time);
+		guiState.gameDeltaTime = dt.time; // probably a better way to do this
+		//gui->SetState(guiState);
+		gui->Update();
+
+		game->Update(dt.time, gui->state);
 		game->Render();
 
-		state.gameDeltaTime = dt.time; // probably a better way to do this
-		gui->SetState(state);
-		gui->Update();
 		gui->Render();
 		glfwSwapBuffers(window);
 	}

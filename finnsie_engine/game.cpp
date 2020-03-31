@@ -28,13 +28,15 @@ namespace finnsie {
 
 	}
 
-	void Game::Update(float dt)
+	void Game::Update(float dt, gui_state state)
 	{
 		// Do this first
 		processCamera(dt);
-
-
-
+		// just change the index that the gui is working on
+		if (!g_models.empty())
+		{
+			g_models[state.modelIndex]->scale = state.modelScale;
+		}
 	}
 
 	void Game::Render()
