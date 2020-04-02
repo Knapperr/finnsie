@@ -24,8 +24,6 @@ namespace finnsie {
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 		
-		
-
 		// ImGui style
 		ImGui::StyleColorsDark();
 
@@ -45,32 +43,76 @@ namespace finnsie {
 
 	}
 
-	void Gui::SetState(gui_state state)
+	void Gui::SetActive(bool active)
 	{
-		this->state.gameDeltaTime = state.gameDeltaTime;
+		this->state.active = active;
 	}
+
+	/*
+								Examples
+		================================================================
+		ImGui::Text("This is text");
+		ImGui::SliderFloat("Player Velocity", &playerVelocity, 300.0f, 800.0f);
+		ImGui::Text("application average %.3f ms/frame (%.1f FPS", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		ImGui::Text("Delta Time from game %.2f ms/frame", (double)state.gameDeltaTime * 1000.0f);
+
+	    // Color buttons, demonstrate using PushID() to add unique identifier in the ID stack, and changing style.
+        for (int i = 0; i < 7; i++)
+        {
+            if (i > 0)
+                ImGui::SameLine();
+            ImGui::PushID(i);
+            ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(i/7.0f, 0.6f, 0.6f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(i/7.0f, 0.7f, 0.7f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(i/7.0f, 0.8f, 0.8f));
+            ImGui::Button("Click");
+            ImGui::PopStyleColor(3);
+            ImGui::PopID();
+        }
+
+		// DROP DOWN COMBOBOX EXAMPLE
+		static ImGuiComboFlags flags = 0;
+		static const char* item_current = objPaths[0].name.c_str();            // Here our selection is a single pointer stored outside the object.
+		static std::string item_current_path = objPaths[0].path.c_str();
+		if (ImGui::BeginCombo("models", item_current, flags)) // The second parameter is the label previewed before opening the combo.
+		{
+			for (int n = 0; n < objPaths.size(); n++)
+			{
+				bool is_selected = (item_current == objPaths[n].name.c_str());
+				if (ImGui::Selectable(objPaths[n].name.c_str(), is_selected))
+				{
+					item_current = objPaths[n].name.c_str();
+				}
+				if (is_selected)
+				{
+					ImGui::SetItemDefaultFocus();   // Set the initial focus when opening the combo (scrolling + for keyboard navigation support in the upcoming navigation branch)
+				}
+			}
+			ImGui::EndCombo();
+		}
+		=================================================================
+	*/
+
 
 	void Gui::Update()
 	{
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
+		
 
 		// deal with object loading checkboxes
 
 		// This sample code is located in ImGui::ShowDemoWindow()
-		//if (showDemoWindow)
-		//	ImGui::ShowDemoWindow(&showDemoWindow);
+		if (showDemoWindow)
+			ImGui::ShowDemoWindow(&showDemoWindow);
 
 		// Show a simple window that we create ourselves. We use a begin/end pair to create a named window
 		{
+			// Only update the gui if its active
 			ImGui::Begin("DEBUG MENU");
+			ImGui::Checkbox("Demo Window", &showDemoWindow);
 
-			//ImGui::Text("This is text");
-			//ImGui::Checkbox("Demo Window", &showDemoWindow);
-			//ImGui::Checkbox("Show another window", &showAnotherWindow);
-
-			//ImGui::SliderFloat("Player Velocity", &playerVelocity, 300.0f, 800.0f);
 			if (ImGui::CollapsingHeader("Models"))
 			{
 				for (int i = 0; i < objPaths.size(); i++)
@@ -91,53 +133,36 @@ namespace finnsie {
 				}
 			}
 
-			// DROP DOWN COMBOBOX EXAMPLE
-			//static ImGuiComboFlags flags = 0;
-			//static const char* item_current = objPaths[0].name.c_str();            // Here our selection is a single pointer stored outside the object.
-			//static std::string item_current_path = objPaths[0].path.c_str();
-			//if (ImGui::BeginCombo("models", item_current, flags)) // The second parameter is the label previewed before opening the combo.
-			//{
-			//	for (int n = 0; n < objPaths.size(); n++)
-			//	{
-			//		bool is_selected = (item_current == objPaths[n].name.c_str());
-			//		if (ImGui::Selectable(objPaths[n].name.c_str(), is_selected))
-			//		{
-			//			item_current = objPaths[n].name.c_str();
-			//		}
-			//		if (is_selected)
-			//		{
-			//			ImGui::SetItemDefaultFocus();   // Set the initial focus when opening the combo (scrolling + for keyboard navigation support in the upcoming navigation branch)
-			//		}
-			//	}
-			//	ImGui::EndCombo();
-			//}
-			
 			if (ImGui::CollapsingHeader("Model Edit"))
 			{
 				if (!g_models.empty())
 				{
-					ImGui::Text("Current model %s", g_models[state.modelIndex]->modelName.c_str());
-					ImGui::SliderFloat("scale", &state.modelScale, 0.0f, 30.0f);
+					ImGui::Text("Current model %s", g_models[state.modelInfo.index]->modelName.c_str());
+					ImGui::SliderFloat("scale", &state.modelInfo.scale, 0.0f, 30.0f);
 				}
 			}
 
-			//ImGui::Text("application average %.3f ms/frame (%.1f FPS", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-			//ImGui::Text("Delta Time from game %.2f ms/frame", (double)state.gameDeltaTime * 1000.0f);
-			
-			ImGui::End();
+			ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.1f, 0.8f, 0.7f));
+			if (ImGui::SmallButton("Save Models"))
+			{
 
+			}
+			ImGui::PopStyleColor(1);
+
+			ImGui::End();
 			
 		}
 
-		// Show another simple window
-		//if (showAnotherWindow)
-		//{
-		//	ImGui::Begin("Another window", &showAnotherWindow);
-		//	ImGui::Text("Hey! Another window");
-		//	if (ImGui::Button("Close"))
-		//		showAnotherWindow = false;
-		//	ImGui::End();
-		//}
+
+		ImGuiIO& io = ImGui::GetIO();
+		if (io.WantCaptureMouse)
+		{
+			state.active = true;
+		}
+		else
+		{
+			state.active = false;
+		}
 	}
 
 	void Gui::Render()
@@ -151,7 +176,6 @@ namespace finnsie {
 		ImGui::UpdatePlatformWindows();
 		ImGui::RenderPlatformWindowsDefault();
 		glfwMakeContextCurrent(backupCurrentContext);
-
 	}
 
 	void Gui::Shutdown()
@@ -164,8 +188,7 @@ namespace finnsie {
 	// Run on init
 	// TODO(CK): Get rid of C++17 nonsense
 	void Gui::getFolders()
-	{
-		// TODO(CK): Need to check which models 
+	{ 
 		objFile obj = {};
 		obj.loadModel = false;
 		obj.loaded = false;
@@ -179,5 +202,8 @@ namespace finnsie {
 				objPaths.push_back(obj);
 			}
 		}
+
+		// TODO(CK): Compare this with save file and set obj.loaded to true
+
 	}
 }

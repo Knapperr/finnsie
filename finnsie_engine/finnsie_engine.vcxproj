@@ -145,7 +145,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
-    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="game.cpp" />
     <ClCompile Include="game2D.cpp" />
     <ClCompile Include="game_object.cpp" />
     <ClCompile Include="glad.c" />

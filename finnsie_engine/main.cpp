@@ -48,6 +48,7 @@ global_variable DeltaTime dt;
 
 static void error_callback(int error, const char* description);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void gamepad_callback(int jid, int event);
 //static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -77,15 +78,11 @@ int main(int argc, char** argv)
 
 	glfwMakeContextCurrent(window);
 	glfwSetKeyCallback(window, processInput);
+	glfwSetMouseButtonCallback(window, mouse_button_callback);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 	//glfwSetJoystickCallback(gamepad_callback);
 
-
-	// tell GLFW to capture our mouse
-	// GLFW_CURSOR_NORMAL GLFW_CURSOR_DISABLED make a func
-	// TODO(CK): Need a mode that will disable the camera control for the gui
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	// glad: load all OpenGL function pointers
 	// ---------------------------------------
@@ -138,11 +135,10 @@ int main(int argc, char** argv)
 		//glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // blue 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
-		guiState.gameDeltaTime = dt.time; // probably a better way to do this
-		//gui->SetState(guiState);
-		gui->Update();
 
+
+		gui->Update();
+		
 		game->Update(dt.time, gui->state);
 		game->Render();
 
@@ -150,6 +146,7 @@ int main(int argc, char** argv)
 		glfwSwapBuffers(window);
 	}
 	// NOTE(CK): CLEAN UP
+	gui->Shutdown();
 	game->Shutdown();
 	delete gui;
 	delete game;
@@ -164,6 +161,11 @@ void processInput(GLFWwindow* window, int key, int action, int scancode, int mod
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) { glfwSetWindowShouldClose(window, true); }
 	game->ProcessInput(key, action, scancode, mods, dt.time);
+}
+
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+	game->ProcessMouseButtons(button, action, mods);
 }
 
 // glfw: whenever the mouse moves, this callback is called
@@ -182,7 +184,9 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 	lastX = (float)xpos;
 	lastY = (float)ypos;
-	if (game->mode == Mode::CAMERA)
+
+	// TODO(CK): Put this into the game class as well
+	if (game->leftMousePressed)
 	{
 		game->camera->ProcessMouseMovement(xoffset, yoffset);
 	}

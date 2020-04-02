@@ -7,6 +7,7 @@ uniform sampler2D texture_diffuse1;
 
 void main()
 {   
+	// Remove white pixels on texture
 	vec4 texColor = texture(texture_diffuse1, TexCoords);
 	if (texColor.a < 0.1)
 	{

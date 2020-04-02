@@ -14,11 +14,17 @@
 
 namespace finnsie {
 
+	struct model_info
+	{
+		int index = 0;
+		float scale = 0.0f;
+	};
+
 	struct gui_state
 	{
+		float active = false;
 		float gameDeltaTime;
-		int modelIndex = 0;
-		float modelScale = 0.0f;
+		model_info modelInfo;
 	};
 
 	struct objFile
@@ -33,7 +39,7 @@ namespace finnsie {
 	{
 	public:
 		void Init(GLFWwindow& window);
-		void SetState(gui_state state);
+		void SetActive(bool active);
 		void Update();
 		void Render();
 		void Shutdown();

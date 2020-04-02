@@ -31,11 +31,17 @@ namespace finnsie {
 	void Game::Update(float dt, gui_state state)
 	{
 		// Do this first
-		processCamera(dt);
+		if (leftMousePressed)
+		{
+			processCamera(dt);
+		}
+
+		isGuiHovered = state.active;
+
 		// just change the index that the gui is working on
 		if (!g_models.empty())
 		{
-			g_models[state.modelIndex]->scale = state.modelScale;
+			g_models[state.modelInfo.index]->scale = state.modelInfo.scale;
 		}
 	}
 
@@ -60,6 +66,7 @@ namespace finnsie {
 
 	void Game::ProcessInput(int key, int action, int scancode, int mods, float dt)
 	{
+		/*
 		if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
 		{
 			// Change to (!cameraMode) - camera mode else guimode
@@ -67,13 +74,33 @@ namespace finnsie {
 			{
 				mode = Mode::GUI;
 				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-				
+				std::cout << "normal\n";
+
 			}
 			else
 			{
 				mode = Mode::CAMERA;
 				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+				std::cout << "disabled\n";
 			}
+		}
+		*/
+	}
+
+	void Game::ProcessMouseButtons(int button, int action, int mods)
+	{
+		// NOTE(CK): (hack?)
+		// This interacts with the gui well because if the mouse button is held down
+		// the gui wont register to the mouse
+		if (!isGuiHovered && button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+		{
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+			leftMousePressed = true;
+		}
+		else
+		{
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			leftMousePressed = false;
 		}
 	}
 
@@ -86,7 +113,6 @@ namespace finnsie {
 	
 	void Game::processCamera(float dt)
 	{
-		// TODO(CK): Just use an array of cameras and move between those
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) { camera->ProcessKeyboard(Camera_Movement::FORWARD, dt); }
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) { camera->ProcessKeyboard(Camera_Movement::BACKWARD, dt); }
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) { camera->ProcessKeyboard(Camera_Movement::LEFT, dt); }
