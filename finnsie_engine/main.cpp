@@ -102,6 +102,9 @@ int main(int argc, char** argv)
 	
 	game->Init(*window);
 	gui->Init(*window);
+	gui->SetCameraPointer(game->camera->MovementSpeed);
+
+	game->SetGuiState(gui->state);
 	gui_state guiState;
 
 	while (!glfwWindowShouldClose(window))
@@ -139,7 +142,7 @@ int main(int argc, char** argv)
 
 		gui->Update();
 		
-		game->Update(dt.time, gui->state);
+		game->Update(dt.time);
 		game->Render();
 
 		gui->Render();

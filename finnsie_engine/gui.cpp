@@ -23,7 +23,7 @@ namespace finnsie {
 		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-		
+
 		// ImGui style
 		ImGui::StyleColorsDark();
 
@@ -46,6 +46,12 @@ namespace finnsie {
 	void Gui::SetActive(bool active)
 	{
 		this->state.active = active;
+	}
+
+	// Set a pointer to the camera object's speed
+	void Gui::SetCameraPointer(float &cameraSpeed)
+	{
+		this->state.cameraSpeed = &cameraSpeed;
 	}
 
 	/*
@@ -104,14 +110,16 @@ namespace finnsie {
 		// deal with object loading checkboxes
 
 		// This sample code is located in ImGui::ShowDemoWindow()
-		if (showDemoWindow)
-			ImGui::ShowDemoWindow(&showDemoWindow);
+		//if (showDemoWindow)
+			//ImGui::ShowDemoWindow(&showDemoWindow);
 
 		// Show a simple window that we create ourselves. We use a begin/end pair to create a named window
 		{
 			// Only update the gui if its active
 			ImGui::Begin("DEBUG MENU");
-			ImGui::Checkbox("Demo Window", &showDemoWindow);
+			//ImGui::Checkbox("Demo Window", &showDemoWindow);
+
+			ImGui::SliderFloat("Camera Speed", this->state.cameraSpeed, 0.0f, 100.0f);
 
 			if (ImGui::CollapsingHeader("Models"))
 			{

@@ -28,7 +28,13 @@ namespace finnsie {
 
 	}
 
-	void Game::Update(float dt, gui_state state)
+	// TODO(CK): Wont need this if i just put the gui object in this class.... 
+	void Game::SetGuiState(gui_state &state)
+	{
+		guiState = &state;
+	}
+
+	void Game::Update(float dt)
 	{
 		// Do this first
 		if (leftMousePressed)
@@ -36,12 +42,12 @@ namespace finnsie {
 			processCamera(dt);
 		}
 
-		isGuiHovered = state.active;
+		isGuiHovered = guiState->active;
 
 		// just change the index that the gui is working on
 		if (!g_models.empty())
 		{
-			g_models[state.modelInfo.index]->scale = state.modelInfo.scale;
+			g_models[guiState->modelInfo.index]->scale = guiState->modelInfo.scale;
 		}
 	}
 

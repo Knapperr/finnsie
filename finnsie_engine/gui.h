@@ -23,6 +23,7 @@ namespace finnsie {
 	struct gui_state
 	{
 		float active = false;
+		float *cameraSpeed = 0; // set to the camera object's speed
 		float gameDeltaTime;
 		model_info modelInfo;
 	};
@@ -40,6 +41,7 @@ namespace finnsie {
 	public:
 		void Init(GLFWwindow& window);
 		void SetActive(bool active);
+		void SetCameraPointer(float& cameraSpeed);
 		void Update();
 		void Render();
 		void Shutdown();

@@ -23,7 +23,8 @@ namespace finnsie {
 	public:
 		void Init(GLFWwindow& wnd);
 		void Render();
-		void Update(float dt, gui_state state);
+		void Update(float dt);
+		void SetGuiState(gui_state& state);
 		void ProcessInput(int key, int action, int scancode, int mods, float dt);
 		void ProcessMouseButtons(int button, int action, int mods);
 		void Shutdown();
@@ -43,6 +44,7 @@ namespace finnsie {
 		int objViewLoc;
 		int objModelLoc;
 		bool isGuiHovered = true;
+		gui_state* guiState;
 
 		void processCamera(float dt);
 	};
