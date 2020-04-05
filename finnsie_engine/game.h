@@ -14,8 +14,8 @@
 namespace finnsie {
 
 	enum class Mode {
-		GUI,
-		CAMERA
+		EDIT,
+		RUN
 	};
 
 	class Game
@@ -44,7 +44,7 @@ namespace finnsie {
 		int objViewLoc;
 		int objModelLoc;
 		bool isGuiHovered = true;
-		gui_state* guiState;
+		Gui *gui;
 
 		void processCamera(float dt);
 	};

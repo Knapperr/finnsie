@@ -29,7 +29,6 @@ const unsigned int SCREEN_HEIGHT = 720;
 // NOTE(CK): global resource manager
 ResourceManager* g_resourceManager = NULL;
 
-Gui* gui = new Gui();
 Game* game = new Game();
 
 float lastX = SCREEN_WIDTH / 2.0f;
@@ -101,11 +100,6 @@ int main(int argc, char** argv)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
 	game->Init(*window);
-	gui->Init(*window);
-	gui->SetCameraPointer(game->camera->MovementSpeed);
-
-	game->SetGuiState(gui->state);
-	gui_state guiState;
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -138,20 +132,14 @@ int main(int argc, char** argv)
 		//glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // blue 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
-		gui->Update();
 		
 		game->Update(dt.time);
 		game->Render();
 
-		gui->Render();
 		glfwSwapBuffers(window);
 	}
 	// NOTE(CK): CLEAN UP
-	gui->Shutdown();
 	game->Shutdown();
-	delete gui;
 	delete game;
 	glfwDestroyWindow(window);
 	glfwTerminate();

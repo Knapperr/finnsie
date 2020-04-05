@@ -8,8 +8,9 @@ namespace finnsie {
 	{
 		::finnsie::g_resourceManager = new ResourceManager();
 
-		this->mode = Mode::CAMERA;
+		this->mode = Mode::EDIT;
 		this->window = &wnd;
+		this->gui = new Gui();
 		this->renderer = new Renderer();
 		this->camera = new Camera();
 
@@ -24,30 +25,35 @@ namespace finnsie {
 		this->objViewLoc = glGetUniformLocation(modelShader.id, "view");
 		this->objModelLoc = glGetUniformLocation(modelShader.id, "model");
 		
+		gui->Init(*this->window, camera->MovementSpeed);
+
 		// Load models based off of text file
 
 	}
 
 	// TODO(CK): Wont need this if i just put the gui object in this class.... 
+	// TODO(CK): Not sure if the gui should be in this class or not
 	void Game::SetGuiState(gui_state &state)
 	{
-		guiState = &state;
+		//guiState = &state;
 	}
 
 	void Game::Update(float dt)
 	{
+		gui->Update();
+
 		// Do this first
 		if (leftMousePressed)
 		{
 			processCamera(dt);
 		}
 
-		isGuiHovered = guiState->active;
+		isGuiHovered = gui->state.active;
 
-		// just change the index that the gui is working on
+		// Update game with data from gui
 		if (!g_models.empty())
 		{
-			g_models[guiState->modelInfo.index]->scale = guiState->modelInfo.scale;
+			g_models[gui->state.modelInfo.index]->scale = gui->state.modelInfo.scale;
 		}
 	}
 
@@ -68,6 +74,10 @@ namespace finnsie {
 		{
 			renderer->DrawModel(*g_models[i], modelShader.id, objModelLoc);
 		}
+
+
+		// render gui
+		gui->Render();
 	}
 
 	void Game::ProcessInput(int key, int action, int scancode, int mods, float dt)
@@ -115,6 +125,8 @@ namespace finnsie {
 		delete ::finnsie::g_resourceManager;
 		delete renderer;
 		delete camera;
+		gui->Shutdown();
+		delete gui;
 	}
 	
 	void Game::processCamera(float dt)

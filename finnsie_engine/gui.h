@@ -39,9 +39,8 @@ namespace finnsie {
 	class Gui
 	{
 	public:
-		void Init(GLFWwindow& window);
+		void Init(GLFWwindow& window, float& cameraSpeed);
 		void SetActive(bool active);
-		void SetCameraPointer(float& cameraSpeed);
 		void Update();
 		void Render();
 		void Shutdown();

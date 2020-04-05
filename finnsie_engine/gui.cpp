@@ -10,7 +10,7 @@ namespace fs = std::filesystem;
 
 namespace finnsie {
 
-	void Gui::Init(GLFWwindow& window)
+	void Gui::Init(GLFWwindow& window, float& cameraSpeed)
 	{
 		const char* glsl_version = "#version 330";
 
@@ -41,17 +41,14 @@ namespace finnsie {
 		// could use this and then create a glm::vec4 from this field to change colour in the game
 		//ImVec4 clearColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f); <-- can use a vec4 to control colours 
 
+
+		// NOTE(CK): set the camera pointer
+		this->state.cameraSpeed = &cameraSpeed;
 	}
 
 	void Gui::SetActive(bool active)
 	{
 		this->state.active = active;
-	}
-
-	// Set a pointer to the camera object's speed
-	void Gui::SetCameraPointer(float &cameraSpeed)
-	{
-		this->state.cameraSpeed = &cameraSpeed;
 	}
 
 	/*
