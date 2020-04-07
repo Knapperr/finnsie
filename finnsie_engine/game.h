@@ -29,21 +29,20 @@ namespace finnsie {
 		void ProcessMouseButtons(int button, int action, int mods);
 		void Shutdown();
 
-		Mode mode;
-		Shader modelShader;
 		bool leftMousePressed;
-
+		Mode mode;
 		GLFWwindow* window;
+		Shader modelShader;
 		Camera *camera;
 		Renderer *renderer;
 
 	private:
-		glm::mat4 projection;
-		glm::mat4 view;
+		bool isGuiHovered = true;
 		int objProjLoc;
 		int objViewLoc;
 		int objModelLoc;
-		bool isGuiHovered = true;
+		glm::mat4 projection;
+		glm::mat4 view;
 		Gui *gui;
 
 		void processCamera(float dt);

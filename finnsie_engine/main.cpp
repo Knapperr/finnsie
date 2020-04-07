@@ -19,8 +19,17 @@
 #include "utils.h"
 #include "gui.h"
 
+#include <windows.h>
+#include <mmsystem.h> // timeBeginPerdod TODO(CK): Look into this should be included with windows.h?
+#include <stdio.h>
+#include <stdint.h>
+
 using namespace finnsie;
 
+
+// TODO(CK): move to game
+inline LARGE_INTEGER GetWallClock(void);
+inline float GetSecondsElapsed(LARGE_INTEGER start, LARGE_INTEGER end);
 void processInput(GLFWwindow* window, int key, int action, int scancode, int mods);
 
 const unsigned int SCREEN_WIDTH = 1080;
@@ -37,6 +46,7 @@ bool firstMouse = true;
 
 float g_playerXPos = 0;
 float g_velocity = 300.0f;
+int64_t g_perfCountFrequency;
 
 struct DeltaTime
 {
@@ -54,6 +64,17 @@ void gamepad_callback(int jid, int event);
 
 int main(int argc, char** argv)
 {
+	// Delta time -- (Handmade Hero Day 573 as reference)
+	LARGE_INTEGER perfCountFrequencyResult;
+	QueryPerformanceFrequency(&perfCountFrequencyResult);
+	g_perfCountFrequency = perfCountFrequencyResult.QuadPart;
+
+	// TODO(CK): unresolved external for timeBeginPeriod?
+	// NOTE(casey): Set the Windows scheduler granularity to 1ms
+	// so that our Sleep() can be more granular.
+	//UINT DesiredSchedulerMS = 1;
+	//bool32 SleepIsGranular = (timeBeginPeriod(DesiredSchedulerMS) == TIMERR_NOERROR);
+
 	//---------------------------------------------------------------------
 	// glfw init and config
 	// --------------------
@@ -101,6 +122,10 @@ int main(int argc, char** argv)
 	
 	game->Init(*window);
 
+	// Get wall clock speed
+	LARGE_INTEGER lastCounter = GetWallClock();
+	uint64_t lastCycleCount = __rdtsc();
+
 	while (!glfwWindowShouldClose(window))
 	{
 		// NOTE(CK): Gamepad
@@ -137,6 +162,24 @@ int main(int argc, char** argv)
 		game->Render();
 
 		glfwSwapBuffers(window);
+		
+		
+		// TODO(CK): Figure out where to put this
+		LARGE_INTEGER endCounter = GetWallClock();
+		double msPerFrame = 1000.0 * GetSecondsElapsed(lastCounter, endCounter);
+		lastCounter = endCounter;
+
+		// end cycles
+		uint64_t endCycleCount = __rdtsc();
+		uint64_t cyclesElapsed = endCycleCount - lastCycleCount;
+		lastCycleCount = endCycleCount;
+
+		double FPS = 0.0f;
+		// mega cycles per frame
+		double MCPF = (real64)(cyclesElapsed / (1000.0f * 1000.0f));
+
+		// INCONSISTENT FRAMES LIKE HANDMADE
+		printf("%.02fms/f %.02ff/s %.02fmc/f\n", msPerFrame, FPS, MCPF);
 	}
 	// NOTE(CK): CLEAN UP
 	game->Shutdown();
@@ -205,4 +248,18 @@ void gamepad_callback(int jid, int event)
 static void error_callback(int error, const char* description)
 {
 	fprintf(stderr, "Error: %s\n", description);
+}
+
+inline LARGE_INTEGER GetWallClock(void)
+{
+	LARGE_INTEGER result;
+	QueryPerformanceCounter(&result);
+	return result;
+}
+
+inline float GetSecondsElapsed(LARGE_INTEGER start, LARGE_INTEGER end)
+{
+	float result = ((float)(end.QuadPart - start.QuadPart) /
+		(float)g_perfCountFrequency);
+	return result;
 }

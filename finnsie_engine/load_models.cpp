@@ -114,21 +114,22 @@ namespace finnsie {
 		//								"content/objects/mansion/op_mansion.obj");
 		//g_models.push_back(mansionModel);
 
-		//Model* treasureModel = new Model("teller",
-		//								 false,
-		//								 glm::vec3(-100.0f, -30.0f, 0.0f),
-		//								 glm::vec3(0.0f, 0.0f, 0.0f),
-		//								 1.0f,
-		//								 "content/objects/treasureteller/TradeMan.obj");
-		//g_models.push_back(treasureModel);
 
-		//Model* battlefield = new Model("battle",
-		//							   false,
-		//							   glm::vec3(-200.0f, -10.0f, 0.0f),
-		//							   glm::vec3(0.0f, 0.0f, 0.0f),
-		//							   10.0f,
-		//							   "content/objects/bombbattlefield/Bob-omb Battlefield.obj");
-		//g_models.push_back(battlefield);
+		Model* battlefield = new Model("battle",
+									   false,
+									   glm::vec3(-200.0f, -10.0f, 0.0f),
+									   glm::vec3(0.0f, 0.0f, 0.0f),
+									   10.0f,
+									   "content/objects/bombbattlefield/Bob-omb Battlefield.obj");
+		g_models.push_back(battlefield);
+
+		Model* treasureModel = new Model("teller",
+										 false,
+										 glm::vec3(-100.0f, -30.0f, 0.0f),
+										 glm::vec3(0.0f, 0.0f, 0.0f),
+										 1.0f,
+										 "content/objects/treasureteller/TradeMan.obj");
+		g_models.push_back(treasureModel);
 		
 		// DOESN'T WORK
 		//Model* outsetModel = new Model("outset",

@@ -2,6 +2,7 @@
 
 #include <glm/gtc/matrix_transform.hpp> 
 #include <glm/gtc/type_ptr.hpp>
+#include "utils.h";
 
 namespace finnsie {
 	void Game::Init(GLFWwindow &wnd)
@@ -28,6 +29,7 @@ namespace finnsie {
 		gui->Init(*this->window, camera->MovementSpeed);
 
 		// Load models based off of text file
+		//LoadModels("PATHHERE");
 
 	}
 
