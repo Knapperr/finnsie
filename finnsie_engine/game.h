@@ -33,6 +33,7 @@ namespace finnsie {
 		Mode mode;
 		GLFWwindow* window;
 		Shader modelShader;
+		Shader normalShader;
 		Camera *camera;
 		Renderer *renderer;
 
@@ -41,6 +42,11 @@ namespace finnsie {
 		int objProjLoc;
 		int objViewLoc;
 		int objModelLoc;
+
+		bool viewNormals;
+		int normalProjLoc;
+		int normalViewLoc;
+		int normalModelLoc;
 		glm::mat4 projection;
 		glm::mat4 view;
 		Gui *gui;

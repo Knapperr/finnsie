@@ -179,7 +179,7 @@ int main(int argc, char** argv)
 		double MCPF = (real64)(cyclesElapsed / (1000.0f * 1000.0f));
 
 		// INCONSISTENT FRAMES LIKE HANDMADE
-		printf("%.02fms/f %.02ff/s %.02fmc/f\n", msPerFrame, FPS, MCPF);
+		//printf("%.02fms/f %.02ff/s %.02fmc/f\n", msPerFrame, FPS, MCPF);
 	}
 	// NOTE(CK): CLEAN UP
 	game->Shutdown();

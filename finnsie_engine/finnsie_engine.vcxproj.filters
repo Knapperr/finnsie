@@ -214,6 +214,15 @@
     <None Include="frag_model.glsl">
       <Filter>shaders</Filter>
     </None>
+    <None Include="geo_normal_model.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="frag_normal_model.glsl">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="vert_normal_model.glsl">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="basic_lighting_vertices.txt">

@@ -200,13 +200,16 @@
     <None Include="frag_color.glsl" />
     <None Include="frag_lamp.glsl" />
     <None Include="frag_model.glsl" />
+    <None Include="frag_normal_model.glsl" />
     <None Include="frag_sprite.glsl" />
     <None Include="frag_text.glsl" />
     <None Include="frag_text_norm.glsl" />
+    <None Include="geo_normal_model.glsl" />
     <None Include="vert_basic_lighting.glsl" />
     <None Include="vert_color.glsl" />
     <None Include="vert_lamp.glsl" />
     <None Include="vert_model.glsl" />
+    <None Include="vert_normal_model.glsl" />
     <None Include="vert_sprite.glsl" />
     <None Include="vert_text.glsl" />
     <None Include="vert_text_norm.glsl" />
