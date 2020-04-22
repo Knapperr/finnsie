@@ -5,33 +5,16 @@
 #include "utils.h";
 
 namespace finnsie {
+
 	void Game::Init(GLFWwindow &wnd)
 	{
-		::finnsie::g_resourceManager = new ResourceManager();
-
 		this->mode = Mode::EDIT;
 		this->window = &wnd;
 		this->gui = new Gui();
 		this->renderer = new Renderer();
 		this->camera = new Camera();
 
-		this->projection = glm::mat4(1.0f);
-		this->view = glm::mat4(1.0f);
-
-		// Need a shader for models
-		this->modelShader = ::finnsie::g_resourceManager->GenerateShader(001, "vert_model.glsl", "frag_model.glsl", NULL);
-		this->normalShader = ::finnsie::g_resourceManager->GenerateShader(002, "vert_normal_model.glsl", "frag_normal_model.glsl", "geo_normal_model.glsl");
-		// uniforms
-		this->objProjLoc = glGetUniformLocation(modelShader.id, "projection");
-		this->objViewLoc = glGetUniformLocation(modelShader.id, "view");
-		this->objModelLoc = glGetUniformLocation(modelShader.id, "model");
-		
 		this->viewNormals = true;
-		this->normalProjLoc = glGetUniformLocation(normalShader.id, "projection");
-		this->normalViewLoc = glGetUniformLocation(normalShader.id, "view");
-		this->normalModelLoc = glGetUniformLocation(normalShader.id, "model");
-
-
 		gui->Init(*this->window, camera->MovementSpeed);
 
 		// Load models based off of text file
@@ -67,37 +50,13 @@ namespace finnsie {
 
 	void Game::Render()
 	{
-		// TODO(CK): This code is probably supposed to be in the renderer better off to pass
-		// a struct of data from the game to the renderer with the object to draw
-		projection = glm::perspective(glm::radians(camera->Zoom),
-									 (float)1080 / (float)720,
-									 1.0f, 1000.0f); // NOTE(CK): near and far clipping distance
-		view = camera->GetViewMatrix();
-
-
-		for (unsigned int i = 0; i < g_models.size(); i++)
-		{
-			// render the model last
-			glUseProgram(modelShader.id);
-			// need to set the view and projection as well
-			glUniformMatrix4fv(objProjLoc, 1, GL_FALSE, glm::value_ptr(projection));
-			glUniformMatrix4fv(objViewLoc, 1, GL_FALSE, glm::value_ptr(view));
-			renderer->DrawModel(*g_models[i], modelShader.id, objModelLoc);
-
-
-			// Draw normals
-			// ----------------------
-			if (viewNormals)
+		renderer->BeginRender(*camera);
+			for (unsigned int i = 0; i < g_models.size(); i++)
 			{
-				glUseProgram(normalShader.id);
-				glUniformMatrix4fv(normalProjLoc, 1, GL_FALSE, glm::value_ptr(projection));
-				glUniformMatrix4fv(normalViewLoc, 1, GL_FALSE, glm::value_ptr(view));
-				renderer->DrawModel(*g_models[i], normalShader.id, normalModelLoc);
+				renderer->DrawModel(*g_models[i], viewNormals);
 			}
-		}
+		renderer->EndRender();
 
-
-		// render gui
 		gui->Render();
 	}
 
@@ -143,7 +102,7 @@ namespace finnsie {
 
 	void Game::Shutdown()
 	{
-		delete ::finnsie::g_resourceManager;
+		renderer->Shutdown();
 		delete renderer;
 		delete camera;
 		gui->Shutdown();

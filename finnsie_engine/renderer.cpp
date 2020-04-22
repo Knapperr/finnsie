@@ -10,11 +10,27 @@
 
 namespace finnsie {
 
+	// NOTE(CK): Global ResourceManager 
+	//			 have to initialize here inside of the namespace
+	ResourceManager* g_resourceManager;
+
 	Renderer::Renderer()
 	{
+		::finnsie::g_resourceManager = new ResourceManager();
+
 		this->color = glm::vec3(0.1f, 0.5f, 0.31f);
 		this->colorChange = 0.01f;
 		this->lampPos = glm::vec3(1.2f, 1.0f, 2.0f);
+
+		this->projection = glm::mat4(1.0f);
+		this->view = glm::mat4(1.0f);
+
+		this->drawingNormals = false;
+
+		// init shaders before uniforms
+		initShaders();
+		initUniforms();
+
 	}
 
 	Renderer::~Renderer()
@@ -24,8 +40,29 @@ namespace finnsie {
 		glDeleteBuffers(1, &this->VBO);
 	}
 
-	void Renderer::DrawModel(Model& model, unsigned int shaderId, int modelLoc)
+	// This begin render will happen before the model vector is looped through
+	void Renderer::BeginRender(Camera& cam)
 	{
+		this->projection = glm::perspective(glm::radians(cam.Zoom),
+										   (float)1080 / (float)720, 
+											1.0f, 1000.0f); // NOTE(CK): near and far clipping distance
+		this->view = cam.GetViewMatrix();
+	}
+
+	void Renderer::DrawModel(Model& model, bool drawNormals)
+	{
+
+		// TODO(CK): Dont do this if normals are currently being drawn
+		if (!drawingNormals)
+		{
+			glUseProgram(modelShader.id);
+			glUniformMatrix4fv(objProjLoc, 1, GL_FALSE, glm::value_ptr(projection));
+			glUniformMatrix4fv(objViewLoc, 1, GL_FALSE, glm::value_ptr(view));
+
+			this->activeModelShaderId = modelShader.id;
+			this->activeModelLoc = objModelLoc;
+		}
+
 		for (unsigned int i = 0; i < model.meshes.size(); i++)
 		{
 			unsigned int diffuseNr = 1;
@@ -50,7 +87,7 @@ namespace finnsie {
 					number = std::to_string(heightNr++);
 
 				// now set the sampler to the correct texture unit
-				glUniform1i(glGetUniformLocation(shaderId, (name + number).c_str()), j);
+				glUniform1i(glGetUniformLocation(activeModelShaderId, (name + number).c_str()), j);
 				// and finally bind the texture
 				glBindTexture(GL_TEXTURE_2D, model.meshes[i].textures[j].id);
 			}
@@ -81,13 +118,12 @@ namespace finnsie {
 								 glm::vec3(model.scale, model.scale, model.scale));
 
 			matModel = matModel * matScale;
-			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(matModel));
+			glUniformMatrix4fv(activeModelLoc, 1, GL_FALSE, glm::value_ptr(matModel));
 
 			/*
 			// INVERSE WAS FROM GRAPHICS CLASS
 				GLint matModel_loc = glGetUniformLocation(shaderProgID, "matModel");
 				GLint matModelInvTran_loc = glGetUniformLocation(shaderProgID, "matModelInvTrans");
-			
 			*/
 
 			if (model.wireFrame)
@@ -110,36 +146,25 @@ namespace finnsie {
 			glBindTexture(GL_TEXTURE_2D, 0);
 
 		}
+
+		if (drawNormals)
+		{
+			glUseProgram(normalShader.id);
+			glUniformMatrix4fv(normalProjLoc, 1, GL_FALSE, glm::value_ptr(projection));
+			glUniformMatrix4fv(normalViewLoc, 1, GL_FALSE, glm::value_ptr(view));
+
+			this->activeModelShaderId = normalShader.id;
+			this->activeModelLoc = normalModelLoc;
+
+			drawingNormals = true;
+			DrawModel(model, false);
+			drawingNormals = false;
+		}
 	}
 
-	void Renderer::DrawCube(unsigned int shaderId)
+	void Renderer::EndRender()
 	{
-		// NOTE: CANT DO THIS HERE  Activate shader first
-		// glUseProgram(shaderId);
-
-		this->color.x += this->colorChange;
-
-		if (this->color.x > 1.0f)
-		{
-			this->colorChange = -0.01f;
-		}
-		else if (this->color.x < 0.0f)
-		{
-			this->colorChange = 0.01f;
-		}
-
-		//glUniform3f(glGetUniformLocation(shaderId, "objectColor"), 1.0f, 0.5f, 0.31f);
-		glUniform3f(glGetUniformLocation(shaderId, "objectColor"), this->color.x, this->color.y, this->color.z);
-		glUniform3f(glGetUniformLocation(shaderId, "lightColor"), 1.0f, 1.0f, 1.0f);
-
-		glm::mat4 model = glm::mat4(1.0f);
-		int modelLoc = glGetUniformLocation(shaderId, "model");
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-
-		glBindVertexArray(this->cubeVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
+		return;
 	}
 
 	void Renderer::DrawTextureCube(unsigned int shaderId, PrimitiveModel textureCube, glm::vec3 cubePositions[],
@@ -213,5 +238,30 @@ namespace finnsie {
 		}
 		// set back to defaults
 		glActiveTexture(GL_TEXTURE0);
+	}
+
+
+	void Renderer::Shutdown()
+	{
+		delete ::finnsie::g_resourceManager;
+	}
+
+	void Renderer::initShaders()
+	{
+		// Need a shader for models
+		this->modelShader = ::finnsie::g_resourceManager->GenerateShader(001, "vert_model.glsl", "frag_model.glsl", NULL);
+		this->normalShader = ::finnsie::g_resourceManager->GenerateShader(002, "vert_normal_model.glsl", "frag_normal_model.glsl", "geo_normal_model.glsl");
+	}
+
+	void Renderer::initUniforms()
+	{
+		// uniforms
+		this->objProjLoc = glGetUniformLocation(modelShader.id, "projection");
+		this->objViewLoc = glGetUniformLocation(modelShader.id, "view");
+		this->objModelLoc = glGetUniformLocation(modelShader.id, "model");
+
+		this->normalProjLoc = glGetUniformLocation(normalShader.id, "projection");
+		this->normalViewLoc = glGetUniformLocation(normalShader.id, "view");
+		this->normalModelLoc = glGetUniformLocation(normalShader.id, "model");
 	}
 }

@@ -35,8 +35,8 @@ void processInput(GLFWwindow* window, int key, int action, int scancode, int mod
 const unsigned int SCREEN_WIDTH = 1080;
 const unsigned int SCREEN_HEIGHT = 720;
 
-// NOTE(CK): global resource manager
-ResourceManager* g_resourceManager = NULL;
+// NOTE(CK): Can't init here its outside of the finnsie namespace
+// ResourceManager* g_resourceManager; 
 
 Game* game = new Game();
 

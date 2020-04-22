@@ -8,6 +8,7 @@ I am using this project as an opportunity to expand on my journey of learning ga
 * glad 
 * glfw
 * glm - math library
+* imgui
 * stb_image
 
 ![Alt text](finnsie_engine/content/screenshots/screen1.png?raw=true) 

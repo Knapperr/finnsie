@@ -8,7 +8,7 @@ namespace finnsie {
 
 	// Global ResourceManager 
 	// have to initialize here
-	ResourceManager* g_resourceManager;
+	//ResourceManager* g_resourceManager;
 
 	Game2D::Game2D(unsigned int width, unsigned int height, GLFWwindow* window)
 		:	Width(width)	, 
