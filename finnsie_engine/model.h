@@ -9,7 +9,7 @@
 #include <assimp/postprocess.h>
 
 #include "mesh.h"
-#include "shader_manager.h"
+#include "gui.h"
 
 #include <string>
 #include <fstream>
@@ -32,15 +32,17 @@ namespace finnsie {
 		// NOTE(CK): stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once
 		texture_vec textures_loaded; 
 		mesh_vec meshes;
-		std::string directory;
-		std::string modelName;
-		bool gammaCorrection;
-
-		bool loaded;
-		bool wireFrame;
-		float scale;
 		glm::vec3 pos;
 		glm::vec3 orientation;
+		std::string directory;
+		std::string modelName;
+		
+		float scale;
+
+		bool gammaCorrection;
+		bool viewNormals;
+		bool loaded;
+		bool wireFrame;
 
 		/* Methods */
 		Model(std::string modelName, 
@@ -57,14 +59,16 @@ namespace finnsie {
 			this->scale = scale;
 			this->modelName = modelName;
 
+			this->viewNormals = false;
 			this->loaded = false;
 			loadModel(path);
 		}
 
-		void Draw(Shader shader)
+		// Helper for setting info in game.cpp
+		void SetInfo(gui_state& state)
 		{
-			for (unsigned int i = 0; i < meshes.size(); i++)
-				meshes[i].Draw(shader);
+			this->viewNormals = state.modelInfo.viewNormals;
+			this->scale = state.modelInfo.scale;
 		}
 
 	private:

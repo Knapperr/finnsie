@@ -18,14 +18,15 @@ namespace finnsie {
 	{
 		int index = 0;
 		float scale = 0.0f;
+		bool viewNormals = false;
 	};
 
 	struct gui_state
 	{
+		model_info modelInfo;
 		float active = false;
 		float *cameraSpeed = 0; // set to the camera object's speed
 		float gameDeltaTime;
-		model_info modelInfo;
 	};
 
 	struct objFile

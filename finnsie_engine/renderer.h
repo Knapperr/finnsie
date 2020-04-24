@@ -17,7 +17,7 @@ namespace finnsie {
 		Renderer();
 		~Renderer();
 		void BeginRender(Camera& cam);
-		void DrawModel(Model& model, bool drawNormals);
+		void DrawModel(Model& model);
 		void EndRender();
 		void Shutdown();
 

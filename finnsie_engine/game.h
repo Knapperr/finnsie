@@ -37,7 +37,6 @@ namespace finnsie {
 
 	private:
 		bool isGuiHovered = true;
-		bool viewNormals;
 		Gui *gui;
 
 		void processCamera(float dt);

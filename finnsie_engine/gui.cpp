@@ -144,6 +144,7 @@ namespace finnsie {
 				{
 					ImGui::Text("Current model %s", g_models[state.modelInfo.index]->modelName.c_str());
 					ImGui::SliderFloat("scale", &state.modelInfo.scale, 0.0f, 30.0f);
+					ImGui::Checkbox("show normals", &state.modelInfo.viewNormals);
 				}
 			}
 

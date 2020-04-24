@@ -14,7 +14,6 @@ namespace finnsie {
 		this->renderer = new Renderer();
 		this->camera = new Camera();
 
-		this->viewNormals = true;
 		gui->Init(*this->window, camera->MovementSpeed);
 
 		// Load models based off of text file
@@ -39,12 +38,13 @@ namespace finnsie {
 			processCamera(dt);
 		}
 
+		// get info from gui
 		isGuiHovered = gui->state.active;
 
 		// Update game with data from gui
 		if (!g_models.empty())
 		{
-			g_models[gui->state.modelInfo.index]->scale = gui->state.modelInfo.scale;
+			g_models[gui->state.modelInfo.index]->SetInfo(gui->state);
 		}
 	}
 
@@ -53,7 +53,8 @@ namespace finnsie {
 		renderer->BeginRender(*camera);
 			for (unsigned int i = 0; i < g_models.size(); i++)
 			{
-				renderer->DrawModel(*g_models[i], viewNormals);
+				// can send through view normals with the model instead of through the method
+				renderer->DrawModel(*g_models[i]);
 			}
 		renderer->EndRender();
 

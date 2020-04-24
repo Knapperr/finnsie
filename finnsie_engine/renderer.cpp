@@ -49,7 +49,7 @@ namespace finnsie {
 		this->view = cam.GetViewMatrix();
 	}
 
-	void Renderer::DrawModel(Model& model, bool drawNormals)
+	void Renderer::DrawModel(Model& model)
 	{
 
 		// TODO(CK): Dont do this if normals are currently being drawn
@@ -147,7 +147,7 @@ namespace finnsie {
 
 		}
 
-		if (drawNormals)
+		if (model.viewNormals)
 		{
 			glUseProgram(normalShader.id);
 			glUniformMatrix4fv(normalProjLoc, 1, GL_FALSE, glm::value_ptr(projection));
@@ -156,8 +156,16 @@ namespace finnsie {
 			this->activeModelShaderId = normalShader.id;
 			this->activeModelLoc = normalModelLoc;
 
+			// TODO(CK): clean this up only use one bool... model.viewNormals
+
+			// set info so that the normals are only 
+			// drawn once
 			drawingNormals = true;
-			DrawModel(model, false);
+			model.viewNormals = false;
+			DrawModel(model);
+
+			// set info back for next pass
+			model.viewNormals = true;
 			drawingNormals = false;
 		}
 	}
