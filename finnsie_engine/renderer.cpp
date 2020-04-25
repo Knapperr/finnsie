@@ -53,13 +53,9 @@ namespace finnsie {
 	{
 		// Only use the modelShader when not drawing normals
 		if (!drawingNormals)
-		{
 			startShader(modelShader.id, objModelLoc, objProjLoc, objViewLoc);
-		}
 		else
-		{
 			startShader(normalShader.id, normalModelLoc, normalProjLoc, normalViewLoc);
-		}
 
 		for (unsigned int i = 0; i < model.meshes.size(); i++)
 		{
@@ -142,14 +138,12 @@ namespace finnsie {
 			// NOTE(CK): bind texture must be AFTER glActiveTexture or it will not unbind properly
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, 0);
-
 		}
 
 		// Draw the normals of the model
 		if (model.viewNormals && !drawingNormals)
 		{
-			// set info so the normals are only drawn once
-			// only draw normals on first pass
+			// Normals are only drawn on the next draw call
 			drawingNormals = true;
 			DrawModel(model);
 			drawingNormals = false;
@@ -253,8 +247,8 @@ namespace finnsie {
 	void Renderer::initShaders()
 	{
 		// Need a shader for models
-		this->modelShader = ::finnsie::g_resourceManager->GenerateShader(001, "vert_model.glsl", "frag_model.glsl", NULL);
-		this->normalShader = ::finnsie::g_resourceManager->GenerateShader(002, "vert_normal_model.glsl", "frag_normal_model.glsl", "geo_normal_model.glsl");
+		this->modelShader = ::finnsie::g_resourceManager->GenerateShader(001, "shaders/vert_model.glsl", "shaders/frag_model.glsl", NULL);
+		this->normalShader = ::finnsie::g_resourceManager->GenerateShader(002, "shaders/vert_normal_model.glsl", "shaders/frag_normal_model.glsl", "shaders/geo_normal_model.glsl");
 	}
 
 	void Renderer::initUniforms()
