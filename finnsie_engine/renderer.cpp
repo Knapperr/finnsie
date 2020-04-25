@@ -145,17 +145,14 @@ namespace finnsie {
 
 		}
 
-		// Now draw the normals
-		if (model.viewNormals)
+		// Draw the normals of the model
+		if (model.viewNormals && !drawingNormals)
 		{
-			// set info so that the normals are only drawn once
+			// set info so the normals are only drawn once
+			// only draw normals on first pass
 			drawingNormals = true;
-			model.viewNormals = false;
 			DrawModel(model);
-
-			// Do not draw normals after this pass
 			drawingNormals = false;
-			model.viewNormals = true;
 		}
 	}
 
