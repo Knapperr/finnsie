@@ -51,16 +51,14 @@ namespace finnsie {
 
 	void Renderer::DrawModel(Model& model)
 	{
-
-		// TODO(CK): Dont do this if normals are currently being drawn
+		// Only use the modelShader when not drawing normals
 		if (!drawingNormals)
 		{
-			glUseProgram(modelShader.id);
-			glUniformMatrix4fv(objProjLoc, 1, GL_FALSE, glm::value_ptr(projection));
-			glUniformMatrix4fv(objViewLoc, 1, GL_FALSE, glm::value_ptr(view));
-
-			this->activeModelShaderId = modelShader.id;
-			this->activeModelLoc = objModelLoc;
+			startShader(modelShader.id, objModelLoc, objProjLoc, objViewLoc);
+		}
+		else
+		{
+			startShader(normalShader.id, normalModelLoc, normalProjLoc, normalViewLoc);
 		}
 
 		for (unsigned int i = 0; i < model.meshes.size(); i++)
@@ -147,32 +145,33 @@ namespace finnsie {
 
 		}
 
+		// Now draw the normals
 		if (model.viewNormals)
 		{
-			glUseProgram(normalShader.id);
-			glUniformMatrix4fv(normalProjLoc, 1, GL_FALSE, glm::value_ptr(projection));
-			glUniformMatrix4fv(normalViewLoc, 1, GL_FALSE, glm::value_ptr(view));
-
-			this->activeModelShaderId = normalShader.id;
-			this->activeModelLoc = normalModelLoc;
-
-			// TODO(CK): clean this up only use one bool... model.viewNormals
-
-			// set info so that the normals are only 
-			// drawn once
+			// set info so that the normals are only drawn once
 			drawingNormals = true;
 			model.viewNormals = false;
 			DrawModel(model);
 
-			// set info back for next pass
-			model.viewNormals = true;
+			// Do not draw normals after this pass
 			drawingNormals = false;
+			model.viewNormals = true;
 		}
 	}
 
 	void Renderer::EndRender()
 	{
 		return;
+	}
+
+	void Renderer::startShader(unsigned int shaderId, int modelLoc, int projLoc, int viewLoc)
+	{
+		glUseProgram(shaderId);
+		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+
+		this->activeModelShaderId = shaderId;
+		this->activeModelLoc = modelLoc;
 	}
 
 	void Renderer::DrawTextureCube(unsigned int shaderId, PrimitiveModel textureCube, glm::vec3 cubePositions[],

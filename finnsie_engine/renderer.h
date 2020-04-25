@@ -66,6 +66,7 @@ namespace finnsie {
 
 		void initUniforms();
 		void initShaders();
+		void startShader(unsigned int shaderId, int modelLoc, int projLoc, int viewLoc);
 	};
 
 }
