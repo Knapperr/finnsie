@@ -18,6 +18,7 @@ namespace finnsie {
 		glm::vec3 bitangent;
 	};
 
+	// TODO(CK): MOVE TO GLOBAL.cpp ???
 	struct Texture 
 	{
 		unsigned int id;
@@ -109,6 +110,19 @@ namespace finnsie {
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 
+			/*
+				NOTE(CK): IN GDP setting the vertexattrib pointers is done in a different way
+
+				first the location is grabbed lets use the Texture coords as an example
+					GLint vUV_location = glGetAttribPointer(shaderProgramID, "vUVx2"); <- vUVx2 is the same in the vertex/frag shader
+				then we need to glEnableVertexAttribArray()
+					glEnableVertexAttribArray(vUV_location); <- the location can be set manually instead of using [ layout (location = 2) in vec2 aTexCoords ]
+				then we do the attribPointer
+					glVertexAttribPointer(vUV_location, 4, GL_FLOAT, GL_FALSE, 
+										  sizeof(sVertex), (void*)offsetof(sVertex, texCoords));
+
+				This is just an example to show that we don't need to use the layout (location = 0) method that I am currently using
+			*/
 			// Set the vertex attribute poiinters
 			// Vertex positions
 			glEnableVertexAttribArray(0);

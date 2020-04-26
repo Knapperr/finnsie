@@ -7,10 +7,11 @@
 #include <stdio.h>
 
 // include this after imgui
-// you also need to include the files for imgui in here as well since its all files
+// you also need to include the files for imgui in here as well since its single header
 #include "gl_common.h"
 #include <vector>
 #include <string>
+#include <stb_image/stb_image.h>
 
 namespace finnsie {
 

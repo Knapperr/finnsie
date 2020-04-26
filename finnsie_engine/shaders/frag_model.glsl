@@ -9,13 +9,12 @@ uniform sampler2D texture_diffuse1;
 
 void main()
 {   
-	// Remove white pixels on texture
+	// Remove white pixels on texture (using diffuse for now)
 	vec4 texColor = texture(texture_diffuse1, TexCoords);
 	if (texColor.a < 0.1)
 	{
 		discard;
 	}
-
 
 	/*
 	An easy way to visualize your normals is to draw them using lines, 
