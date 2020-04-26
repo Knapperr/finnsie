@@ -140,7 +140,6 @@ namespace finnsie {
 			glBindTexture(GL_TEXTURE_2D, 0);
 		}
 
-		// Draw the normals of the model
 		if (model.viewNormals && !drawingNormals)
 		{
 			// Normals are only drawn on the next draw call
@@ -247,6 +246,9 @@ namespace finnsie {
 	void Renderer::initShaders()
 	{
 		// Need a shader for models
+		// TODO(CK): The game probably should pass the shaders to the renderer
+		// the renderer shouldn't have the shaders init inside because the shaders
+		// could be different...
 		this->modelShader = ::finnsie::g_resourceManager->GenerateShader(001, "shaders/vert_model.glsl", "shaders/frag_model.glsl", NULL);
 		this->normalShader = ::finnsie::g_resourceManager->GenerateShader(002, "shaders/vert_normal_model.glsl", "shaders/frag_normal_model.glsl", "shaders/geo_normal_model.glsl");
 	}

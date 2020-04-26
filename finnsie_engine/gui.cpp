@@ -107,14 +107,14 @@ namespace finnsie {
 		// deal with object loading checkboxes
 
 		// This sample code is located in ImGui::ShowDemoWindow()
-		//if (showDemoWindow)
-			//ImGui::ShowDemoWindow(&showDemoWindow);
+		if (showDemoWindow)
+			ImGui::ShowDemoWindow(&showDemoWindow);
 
 		// Show a simple window that we create ourselves. We use a begin/end pair to create a named window
 		{
 			// Only update the gui if its active
 			ImGui::Begin("DEBUG MENU");
-			//ImGui::Checkbox("Demo Window", &showDemoWindow);
+			ImGui::Checkbox("Demo Window", &showDemoWindow);
 
 			ImGui::SliderFloat("Camera Speed", this->state.cameraSpeed, 0.0f, 100.0f);
 
@@ -142,7 +142,38 @@ namespace finnsie {
 			{
 				if (!g_models.empty())
 				{
+					ImGui::AlignTextToFramePadding();
 					ImGui::Text("Current model %s", g_models[state.modelInfo.index]->modelName.c_str());
+					ImGui::SameLine();
+
+					// Arrow buttons with Repeater
+					float spacing = ImGui::GetStyle().ItemInnerSpacing.x;
+					ImGui::PushButtonRepeat(true);
+					if (ImGui::ArrowButton("##left", ImGuiDir_Left)) 
+					{ 
+						if (state.modelInfo.index > 0)
+						{
+							state.modelInfo.index--;
+							// TODO(CK): Need to set the modelInfo to 
+							// the current scale and viewNormals of the object
+						}
+					}
+					ImGui::SameLine(0.0f, spacing);
+					if (ImGui::ArrowButton("##right", ImGuiDir_Right)) 
+					{ 
+						if (state.modelInfo.index < g_models.size() - 1)
+						{
+							state.modelInfo.index++;
+							// TODO(CK): Need to set the modelInfo to 
+							// the current scale and viewNormals of the object
+						}
+					}
+					ImGui::PopButtonRepeat();
+					ImGui::SameLine();
+					
+					ImGui::Separator();
+
+					// Options on models
 					ImGui::SliderFloat("scale", &state.modelInfo.scale, 0.0f, 30.0f);
 					ImGui::Checkbox("show normals", &state.modelInfo.viewNormals);
 				}

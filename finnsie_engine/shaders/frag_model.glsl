@@ -15,7 +15,8 @@ void main()
 	{
 		discard;
 	}
-	
+
+
 	/*
 	An easy way to visualize your normals is to draw them using lines, 
 	using {position, position + normal} as the start & end points.

@@ -11,10 +11,12 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
+uniform sampler2D texture_normal1;
+
 void main()
-{
+{    
     FragPos = vec3(model * vec4(aPos, 1.0));
     Normal = mat3(transpose(inverse(model))) * aNormal;  
-    TexCoords = aTexCoords;    
+    TexCoords = aTexCoords;  // MULTIPLYING THE COORDS BY TIME on all textures
     gl_Position = projection * view * vec4(FragPos, 1.0);
 }
