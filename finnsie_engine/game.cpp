@@ -2,7 +2,6 @@
 
 #include <glm/gtc/matrix_transform.hpp> 
 #include <glm/gtc/type_ptr.hpp>
-#include "utils.h";
 
 namespace finnsie {
 
@@ -53,7 +52,6 @@ namespace finnsie {
 		renderer->BeginRender(*camera);
 			for (unsigned int i = 0; i < g_models.size(); i++)
 			{
-				// can send through view normals with the model instead of through the method
 				renderer->DrawModel(*g_models[i]);
 			}
 		renderer->EndRender();

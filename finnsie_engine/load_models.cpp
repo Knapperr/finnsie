@@ -10,7 +10,52 @@
 namespace finnsie {
 
 	std::vector<Model*> g_models;
-	
+
+	// TODO(CK): TEMP FUNCTION USE RESOURCE MANAGER
+	unsigned int LoadTextureFile(const char* path, const std::string& directory, bool gamma = false)
+	{
+		std::string filename = std::string(path);
+		filename = directory + '/' + filename;
+
+		unsigned int textureID;
+		glGenTextures(1, &textureID);
+
+		int width, height, nrComponents;
+		unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
+
+		if (data)
+		{
+			GLenum format;
+			if (nrComponents == 1)
+				format = GL_RED;
+			else if (nrComponents == 3)
+				format = GL_RGB;
+			else if (nrComponents == 4)
+				format = GL_RGBA;
+
+				
+			glBindTexture(GL_TEXTURE_2D, textureID);
+			glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+			glGenerateMipmap(GL_TEXTURE_2D);
+			
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+			// unbind after using
+			glBindTexture(GL_TEXTURE_2D, 0);
+			stbi_image_free(data);
+		}
+		else
+		{
+			std::cout << "Texture failed to load at path: " << path << "\n";
+			stbi_image_free(data);
+		}
+		return textureID;
+	}
+
+
 	bool LoadModel(std::string name, std::string path)
 	{
 		// need to check if the model is loaded already
@@ -32,6 +77,53 @@ namespace finnsie {
 		g_models.push_back(model);
 		return true;
 	}
+
+	// TODO(CK): Temp function for loading all of the texture to the quad
+	bool LoadTexture(int index)
+	{
+		// CREATE A BASIC SHAPE LOADER replace ASSIMP
+		// TODO(CK): [TEST] bind textures to water
+		// WE WILL HAVE TO PUSH THIS TEXTURE TO THE TEXUTES OF THE QUAD 
+		// IN model.h
+		std::string uvpath = "content/textures/water/uv.png";
+		std::string uvdirectory = uvpath.substr(0, uvpath.find_last_of('/'));
+		Texture uvtexture = {};
+		uvtexture.id = LoadTextureFile("uv.png", uvdirectory);
+		uvtexture.type = "texture_diffuse";
+		uvtexture.path = uvpath;
+		
+		std::string flowpath = "content/textures/water/flowmapA.png";
+		std::string flowdirectory = flowpath.substr(0, flowpath.find_last_of('/'));
+		Texture flowtexture = {};
+		flowtexture.id = LoadTextureFile("flowmapA.png", flowdirectory);
+		flowtexture.type = "texture_normal";
+		flowtexture.path = flowpath;
+
+		// NOTE(CK): For now only using this for primitives (can use mesh index 0)
+		g_models[index]->meshes[0].textures.push_back(uvtexture);
+		g_models[index]->meshes[0].textures.push_back(flowtexture);
+		return true;
+	}
+
+	/* NOTE(CK): OG (USE THIS FOR LOADING TEXTURES FROM GUI )
+	bool LoadTexture(int index)
+	{
+		// CREATE A BASIC SHAPE LOADER replace ASSIMP
+		// TODO(CK): [TEST] bind textures to water
+		// WE WILL HAVE TO PUSH THIS TEXTURE TO THE TEXUTES OF THE QUAD 
+		// IN model.h
+		std::string path = "content/textures/water/uv.png";
+		std::string directory = path.substr(0, path.find_last_of('/'));
+		Texture texture = {};
+		texture.id = LoadTextureFile("uv.png", directory);
+		texture.type = "texture_diffuse";
+		texture.path = path;
+
+		// NOTE(CK): For now only using this for primitives (can use mesh index 0)
+		g_models[index]->meshes[0].textures.push_back(texture);
+		return true;
+	}
+	*/
 
 	bool LoadModels(std::string path)
 	{

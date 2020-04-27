@@ -37,7 +37,8 @@ namespace finnsie {
 		// initialize memory
 		state = {};
 		// Grab obj files in the folders
-		getFolders();
+		getFolders("objects");
+		getFolders("primitives");
 		// could use this and then create a glm::vec4 from this field to change colour in the game
 		//ImVec4 clearColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f); <-- can use a vec4 to control colours 
 
@@ -118,6 +119,26 @@ namespace finnsie {
 
 			ImGui::SliderFloat("Camera Speed", this->state.cameraSpeed, 0.0f, 100.0f);
 
+			if (ImGui::CollapsingHeader("Primitives"))
+			{
+				for (int i = 0; i < primitivePaths.size(); i++)
+				{
+					ImGui::Checkbox(primitivePaths[i].name.c_str(), &primitivePaths[i].loadModel);
+
+					// Load model do this once based off of loaded
+					if (primitivePaths[i].loadModel && !primitivePaths[i].loaded)
+					{
+						LoadModel(primitivePaths[i].name, primitivePaths[i].path);
+						primitivePaths[i].loaded = true;
+					}
+					if (!primitivePaths[i].loadModel && primitivePaths[i].loaded)
+					{
+						UnloadModel(primitivePaths[i].name);
+						primitivePaths[i].loaded = false;
+					}
+				}
+			}
+
 			if (ImGui::CollapsingHeader("Models"))
 			{
 				for (int i = 0; i < objPaths.size(); i++)
@@ -176,6 +197,12 @@ namespace finnsie {
 					// Options on models
 					ImGui::SliderFloat("scale", &state.modelInfo.scale, 0.0f, 30.0f);
 					ImGui::Checkbox("show normals", &state.modelInfo.viewNormals);
+					ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.1f, 0.8f, 0.7f));
+					if (ImGui::SmallButton("Apply texture"))
+					{
+						LoadTexture(state.modelInfo.index);
+					}
+					ImGui::PopStyleColor(1);
 				}
 			}
 
@@ -224,22 +251,30 @@ namespace finnsie {
 
 	// Run on init
 	// TODO(CK): Get rid of C++17 nonsense
-	void Gui::getFolders()
+	// Get folders based off of folder (objects , primitves) 
+	void Gui::getFolders(std::string folder)
 	{ 
 		objFile obj = {};
 		obj.loadModel = false;
 		obj.loaded = false;
-		std::string path = "content\\objects";
+		std::string path = "content\\" + folder;
 		for (auto& d : fs::recursive_directory_iterator(path))
 		{
 			if (d.path().extension() == ".obj")
 			{
 				obj.path = d.path().generic_string();
 				obj.name = d.path().filename().generic_string();
-				objPaths.push_back(obj);
+
+				if (folder == "objects")
+				{
+					objPaths.push_back(obj);
+				}
+				else if (folder == "primitives")
+				{
+					primitivePaths.push_back(obj);
+				}
 			}
 		}
-
 		// TODO(CK): Compare this with save file and set obj.loaded to true
 
 	}

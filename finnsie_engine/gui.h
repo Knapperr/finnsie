@@ -54,7 +54,8 @@ namespace finnsie {
 		bool showAnotherWindow = false;
 
 		std::vector<objFile> objPaths;
-		void getFolders();
+		std::vector<objFile> primitivePaths;
+		void getFolders(std::string folder);
 	};
 }
 
