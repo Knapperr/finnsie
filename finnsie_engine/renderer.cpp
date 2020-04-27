@@ -31,6 +31,12 @@ namespace finnsie {
 		initShaders();
 		initUniforms();
 
+
+		// TODO(CK): CLEAN UP
+		// FOR LIGHTING
+		// -------------------
+		this->lightPos = glm::vec3(2.2f, 1.0f, 2.0f);
+
 	}
 
 	Renderer::~Renderer()
@@ -47,6 +53,7 @@ namespace finnsie {
 										   (float)1080 / (float)720, 
 											1.0f, 1000.0f); // NOTE(CK): near and far clipping distance
 		this->view = cam.GetViewMatrix();
+		this->camPos = cam.Position;
 	}
 
 	void Renderer::DrawModel(Model& model)
@@ -86,9 +93,17 @@ namespace finnsie {
 				glBindTexture(GL_TEXTURE_2D, model.meshes[i].textures[j].id);
 			}
 			
+			// TODO(CK): CLEAN UP
 			// Water distortion
 			// --------------------
 			glUniform1f(glGetUniformLocation(activeModelShaderId, "time"), glfwGetTime());
+
+			glUniform3fv(glGetUniformLocation(activeModelShaderId, "light.position"), 1, &lightPos[0]);
+			glUniform3fv(glGetUniformLocation(activeModelShaderId, "viewPos"), 1, &camPos[0]); // getting updated in BeginRender (probably not good)
+			glUniform3f(glGetUniformLocation(activeModelShaderId, "light.ambient"), 0.2f, 0.2f, 0.2f);
+			glUniform3f(glGetUniformLocation(activeModelShaderId, "light.diffuse"), 0.5f, 0.5f, 0.5f);
+			glUniform3f(glGetUniformLocation(activeModelShaderId, "light.specular"), 1.0f, 1.0f, 1.0f);
+			glUniform1f(glGetUniformLocation(activeModelShaderId, "material.shininess"), 64.0f);
 
 
 			// Set position, rotation and scale

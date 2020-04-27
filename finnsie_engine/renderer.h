@@ -40,6 +40,8 @@ namespace finnsie {
 		std::vector<float> indicesVector;
 		
 		glm::vec3 lampPos;
+		glm::vec3 lightPos;
+		glm::vec3 camPos;
 		glm::vec3 color;
 		
 		glm::mat4 projection;
