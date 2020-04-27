@@ -31,11 +31,10 @@ namespace finnsie {
 		initShaders();
 		initUniforms();
 
-
 		// TODO(CK): CLEAN UP
 		// FOR LIGHTING
 		// -------------------
-		this->lightPos = glm::vec3(2.2f, 1.0f, 2.0f);
+		this->lightPos = glm::vec3(-180.0f, -60.0f, -100.0f);
 
 	}
 
@@ -100,7 +99,7 @@ namespace finnsie {
 
 			glUniform3fv(glGetUniformLocation(activeModelShaderId, "light.position"), 1, &lightPos[0]);
 			glUniform3fv(glGetUniformLocation(activeModelShaderId, "viewPos"), 1, &camPos[0]); // getting updated in BeginRender (probably not good)
-			glUniform3f(glGetUniformLocation(activeModelShaderId, "light.ambient"), 0.2f, 0.2f, 0.2f);
+			glUniform3f(glGetUniformLocation(activeModelShaderId, "light.ambient"), 0.8f, 0.8f, 0.8f);
 			glUniform3f(glGetUniformLocation(activeModelShaderId, "light.diffuse"), 0.5f, 0.5f, 0.5f);
 			glUniform3f(glGetUniformLocation(activeModelShaderId, "light.specular"), 1.0f, 1.0f, 1.0f);
 			glUniform1f(glGetUniformLocation(activeModelShaderId, "material.shininess"), 64.0f);
