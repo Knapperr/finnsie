@@ -17,6 +17,7 @@ struct Material {
 
 struct Light {
     vec3 position;
+
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
@@ -33,13 +34,12 @@ uniform sampler2D texture_normal1;
 uniform sampler2D texture_normal2;
 uniform float time;
 
-vec3 FlowUVW(vec2 uv, vec2 flowVector, vec2 jump, float time, bool flowB) 
+vec3 FlowUVW(vec2 uv, vec2 flowVector, float time, bool flowB) 
 {
     float phaseOffset = flowB ? 0.5 : 0;
     float progress = fract(time + phaseOffset);
     vec3 uvw; 
-    uvw.xy = uv - flowVector * progress + phaseOffset;
-    uvw.xy += (time - progress) * jump;
+    uvw.xy = uv - flowVector * progress;
     uvw.z = 1 - abs(1 - 2 * progress);
     return uvw;
 }
@@ -63,39 +63,28 @@ void main()
 	An easy way to visualize your normals is to draw them using lines, 
 	using {position, position + normal} as the start & end points.
 	*/
-    vec3 greyScale = texture(texture_diffuse1, fs_in.TexCoords).rrr;
-
-    float uJump = 0.24;
-    float vJump = 0.24;
-
 	vec2 flowVector = texture2D(texture_normal1, fs_in.TexCoords).rg * 2 - 1;
 	float noise = texture2D(texture_normal1, fs_in.TexCoords).a;
 	float newTime = time + noise;
-    vec2 jump = vec2(uJump, vJump);
 
-	vec3 uvwA = FlowUVW(fs_in.TexCoords, flowVector, jump, newTime, false);
-    vec3 uvwB = FlowUVW(fs_in.TexCoords, flowVector, jump, newTime, true);
+	vec3 uvwA = FlowUVW(fs_in.TexCoords, flowVector, newTime, false);
+    vec3 uvwB = FlowUVW(fs_in.TexCoords, flowVector, newTime, true);
 
-    vec4 texA = texture2D(texture_diffuse1, uvwA.xy).rrrr * uvwA.z;
-    vec4 texB = texture2D(texture_diffuse1, uvwB.xy).rrrr * uvwB.z;
+    vec4 texA = texture2D(texture_diffuse1, uvwA.xy) * uvwA.z;
+    vec4 texB = texture2D(texture_diffuse1, uvwB.xy) * uvwB.z;
+    vec4 lightingCoords = texA + texB;
 
-    vec4 _color = vec4(1.0, 1.0, 1.0, 1.0);
-	vec4 flowCol = (texA + texB) * _color;
-    vec3 color = vec3(flowCol);
+	vec4 flowCol = (texA + texB);
 
 	// calculate normals
-    //vec3 normal = texture(texture_normal2, fs_in.TexCoords).rgb;
-    vec4 normalA = texture(texture_normal2, uvwA.xy) * uvwA.z;
-    vec4 normalB = texture(texture_normal2, uvwB.xy) * uvwB.z; 
-    //normal = normalize(normal * 2.0 - 1.0); // this normal is in tangent space
-    vec3 normal = normalize((normalA.xyz + normalB.xyz) * 2.0 - 1.0);
+    vec3 normal = texture(texture_normal2, fs_in.TexCoords).rgb;
+    normal = normalize(normal * 2.0 - 1.0); // this normal is in tangent space
 
-    // NOTE(CK): This doesn't need to be used the diffuse color we just use the flowCol we found above
-    // diffuse color
-    //vec3 color = texture(texture_diffuse1, flowCoords.xy * flowCoords.z).rgb;
+    // diffuse color 
+    vec3 color = texture(texture_diffuse1, fs_in.TexCoords).rgb;
     
     // ambient
-    vec3 ambient = (0.1 * color);
+    vec3 ambient = 0.1 * color;
     // diffuse
     vec3 lightDir = normalize(fs_in.TangentLightPos - fs_in.TangentFragPos);
     float diff = max(dot(lightDir, normal), 0.0);

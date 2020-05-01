@@ -25,13 +25,20 @@ namespace finnsie {
 
 		if (data)
 		{
-			GLenum format;
+			GLenum format = GL_RGB;
 			if (nrComponents == 1)
 				format = GL_RED;
 			else if (nrComponents == 3)
 				format = GL_RGB;
 			else if (nrComponents == 4)
 				format = GL_RGBA;
+			//GLenum format;
+			//if (nrComponents == 1)
+			//	format = GL_RED;
+			//else if (nrComponents == 3)
+			//	format = GL_RGB;
+			//else if (nrComponents == 4)
+			//	format = GL_RGBA;
 
 				
 			glBindTexture(GL_TEXTURE_2D, textureID);
@@ -85,10 +92,10 @@ namespace finnsie {
 		// TODO(CK): [TEST] bind textures to water
 		// WE WILL HAVE TO PUSH THIS TEXTURE TO THE TEXUTES OF THE QUAD 
 		// IN model.h
-		std::string uvpath = "content/textures/water/uv.png";
+		std::string uvpath = "content/textures/water/water.png";
 		std::string uvdirectory = uvpath.substr(0, uvpath.find_last_of('/'));
 		Texture uvtexture = {};
-		uvtexture.id = LoadTextureFile("uv.png", uvdirectory);
+		uvtexture.id = LoadTextureFile("water.png", uvdirectory);
 		uvtexture.type = "texture_diffuse";
 		uvtexture.path = uvpath;
 		
@@ -99,9 +106,17 @@ namespace finnsie {
 		flowtexture.type = "texture_normal";
 		flowtexture.path = flowpath;
 
+		std::string normalpath = "content/textures/water/water-normal.png";
+		std::string normaldir = normalpath.substr(0, normalpath.find_last_of('/'));
+		Texture normaltexture = {};
+		normaltexture.id = LoadTextureFile("water-normal.png", normaldir);
+		normaltexture.type = "texture_normal2";
+		normaltexture.path = normalpath;
+
 		// NOTE(CK): For now only using this for primitives (can use mesh index 0)
 		g_models[index]->meshes[0].textures.push_back(uvtexture);
 		g_models[index]->meshes[0].textures.push_back(flowtexture);
+		g_models[index]->meshes[0].textures.push_back(normaltexture);
 		return true;
 	}
 
