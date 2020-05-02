@@ -76,6 +76,7 @@ void main()
 	vec3 uvwA = FlowUVW(fs_in.TexCoords, flowVector, jump, newTime, false);
     vec3 uvwB = FlowUVW(fs_in.TexCoords, flowVector, jump, newTime, true);
 
+    // NOTE(CK): Using single channel (GL_RED) have to fill the remaining channels
     vec4 texA = texture2D(texture_diffuse1, uvwA.xy).rrrr * uvwA.z;
     vec4 texB = texture2D(texture_diffuse1, uvwB.xy).rrrr * uvwB.z;
 
