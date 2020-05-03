@@ -34,7 +34,7 @@ namespace finnsie {
 		// TODO(CK): CLEAN UP
 		// FOR LIGHTING
 		// -------------------
-		this->lightPos = glm::vec3(-180.0f, -60.0f, -100.0f);
+		this->lightPos = glm::vec3(-120.0f, -40.0f, -50.0f);
 
 	}
 

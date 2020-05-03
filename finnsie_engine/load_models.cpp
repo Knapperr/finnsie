@@ -86,7 +86,7 @@ namespace finnsie {
 	}
 
 	// TODO(CK): Temp function for loading all of the texture to the quad
-	bool LoadTexture(int index)
+	bool LoadTexture(int index)  
 	{
 		// CREATE A BASIC SHAPE LOADER replace ASSIMP
 		// TODO(CK): [TEST] bind textures to water
@@ -106,10 +106,10 @@ namespace finnsie {
 		flowtexture.type = "texture_normal";
 		flowtexture.path = flowpath;
 
-		std::string normalpath = "content/textures/water/water-normal.png";
+		std::string normalpath = "content/textures/water/water-derivative-height.png";
 		std::string normaldir = normalpath.substr(0, normalpath.find_last_of('/'));
 		Texture normaltexture = {};
-		normaltexture.id = LoadTextureFile("water-normal.png", normaldir);
+		normaltexture.id = LoadTextureFile("water-derivative-height.png", normaldir);
 		normaltexture.type = "texture_normal2";
 		normaltexture.path = normalpath;
 
