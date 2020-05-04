@@ -18,6 +18,7 @@ namespace finnsie {
 		~Renderer();
 		void BeginRender(Camera& cam);
 		void DrawModel(Model& model);
+		void DrawWater();
 		void EndRender();
 		void Shutdown();
 
@@ -35,6 +36,8 @@ namespace finnsie {
 	private:
 		Shader modelShader;
 		Shader normalShader;
+
+		Model* waterQuad;
 
 		std::vector<float> verticesVector;
 		std::vector<float> indicesVector;

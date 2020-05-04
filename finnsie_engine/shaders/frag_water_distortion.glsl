@@ -76,7 +76,7 @@ void main()
     vec4 texA = texture2D(texture_diffuse1, uvwA.xy).aaaa * uvwA.z;
     vec4 texB = texture2D(texture_diffuse1, uvwB.xy).aaaa * uvwB.z;
 
-    vec4 _color = vec4(0.3, 0.6, 0.74, 1.0);
+    vec4 _color = vec4(0.3, 0.6, 0.8, 1.0);
     // NOTE(CK): This is the diffuse colour for the normals
 	vec4 flowCol = (texA + texB) * _color;
 

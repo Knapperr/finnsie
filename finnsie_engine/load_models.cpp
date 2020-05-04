@@ -27,7 +27,7 @@ namespace finnsie {
 		{
 			GLenum format = GL_RGB;
 			if (nrComponents == 1)
-				format = GL_RED;
+				format = GL_ALPHA;
 			else if (nrComponents == 3)
 				format = GL_RGB;
 			else if (nrComponents == 4)
@@ -99,10 +99,10 @@ namespace finnsie {
 		uvtexture.type = "texture_diffuse";
 		uvtexture.path = uvpath;
 		
-		std::string flowpath = "content/textures/water/flowmapA.png";
+		std::string flowpath = "content/textures/water/flow-speed-noise.png";
 		std::string flowdirectory = flowpath.substr(0, flowpath.find_last_of('/'));
 		Texture flowtexture = {};
-		flowtexture.id = LoadTextureFile("flowmapA.png", flowdirectory);
+		flowtexture.id = LoadTextureFile("flow-speed-noise.png", flowdirectory);
 		flowtexture.type = "texture_normal";
 		flowtexture.path = flowpath;
 
@@ -110,7 +110,7 @@ namespace finnsie {
 		std::string normaldir = normalpath.substr(0, normalpath.find_last_of('/'));
 		Texture normaltexture = {};
 		normaltexture.id = LoadTextureFile("water-derivative-height.png", normaldir);
-		normaltexture.type = "texture_normal2";
+		normaltexture.type = "texture_normal";
 		normaltexture.path = normalpath;
 
 		// NOTE(CK): For now only using this for primitives (can use mesh index 0)

@@ -96,7 +96,13 @@ namespace finnsie {
 		}
 		=================================================================
 	*/
+	void waterWindow(bool* p_open)
+	{
+		ImGui::Begin("WATER", p_open);
 
+
+		ImGui::End();
+	}
 
 	void Gui::Update()
 	{
@@ -111,11 +117,16 @@ namespace finnsie {
 		if (showDemoWindow)
 			ImGui::ShowDemoWindow(&showDemoWindow);
 
+		if (showWaterWindow)
+			waterWindow(&showWaterWindow);
+
 		// Show a simple window that we create ourselves. We use a begin/end pair to create a named window
 		{
 			// Only update the gui if its active
 			ImGui::Begin("DEBUG MENU");
 			ImGui::Checkbox("Demo Window", &showDemoWindow);
+			ImGui::SameLine();
+			ImGui::Checkbox("Water Window", &showWaterWindow);
 
 			ImGui::SliderFloat("Camera Speed", this->state.cameraSpeed, 0.0f, 100.0f);
 

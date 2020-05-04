@@ -36,6 +36,13 @@ namespace finnsie {
 		// -------------------
 		this->lightPos = glm::vec3(-120.0f, -40.0f, -50.0f);
 
+
+		this->waterQuad = new Model("water",
+									false,
+									glm::vec3(-100.0f, -30.0f, 0.0f),
+									glm::vec3(0.0f, 0.0f, 0.0f),
+									10.0f,
+									"content/primitives/quad/basic_quad.obj");
 	}
 
 	Renderer::~Renderer()
@@ -87,6 +94,7 @@ namespace finnsie {
 					number = std::to_string(heightNr++);
 
 				// now set the sampler to the correct texture unit
+				int loc = glGetUniformLocation(activeModelShaderId, (name + number).c_str());
 				glUniform1i(glGetUniformLocation(activeModelShaderId, (name + number).c_str()), j);
 				// and finally bind the texture		
 				glBindTexture(GL_TEXTURE_2D, model.meshes[i].textures[j].id);
@@ -166,6 +174,108 @@ namespace finnsie {
 			DrawModel(model);
 			drawingNormals = false;
 		}
+	}
+
+	void Renderer::DrawWater()
+	{
+		startShader(modelShader.id, objModelLoc, objProjLoc, objViewLoc);
+
+		for (unsigned int i = 0; i < waterQuad->meshes.size(); i++)
+		{
+			unsigned int diffuseNr = 1;
+			unsigned int specularNr = 1;
+			unsigned int normalNr = 1;
+			unsigned int heightNr = 1;
+
+			for (unsigned int j = 0; j < waterQuad->meshes[i].textures.size(); ++j)
+			{
+				glActiveTexture(GL_TEXTURE0 + j); // activate the proper texture unit before binding
+				// retrieve texture number (the N in diffuse_TextureN)
+				std::string number;
+				std::string name = waterQuad->meshes[i].textures[j].type;
+
+				if (name == "texture_diffuse")
+					number = std::to_string(diffuseNr++);
+				else if (name == "texture_specular")
+					number = std::to_string(specularNr++);
+				else if (name == "texture_normal")
+					number = std::to_string(normalNr++);
+				else if (name == "texture_height")
+					number = std::to_string(heightNr++);
+
+				// now set the sampler to the correct texture unit
+				glUniform1i(glGetUniformLocation(activeModelShaderId, (name + number).c_str()), j);
+				// and finally bind the texture		
+				glBindTexture(GL_TEXTURE_2D, waterQuad->meshes[i].textures[j].id);
+			}
+
+			// TODO(CK): CLEAN UP
+			// Water distortion
+			// --------------------
+			glUniform1f(glGetUniformLocation(activeModelShaderId, "time"), glfwGetTime());
+
+			glUniform3fv(glGetUniformLocation(activeModelShaderId, "light.position"), 1, &lightPos[0]);
+			glUniform3fv(glGetUniformLocation(activeModelShaderId, "viewPos"), 1, &camPos[0]); // getting updated in BeginRender (probably not good)
+			glUniform3f(glGetUniformLocation(activeModelShaderId, "light.ambient"), 0.8f, 0.8f, 0.8f);
+			glUniform3f(glGetUniformLocation(activeModelShaderId, "light.diffuse"), 0.5f, 0.5f, 0.5f);
+			glUniform3f(glGetUniformLocation(activeModelShaderId, "light.specular"), 1.0f, 1.0f, 1.0f);
+			glUniform1f(glGetUniformLocation(activeModelShaderId, "material.shininess"), 64.0f);
+
+
+			// Set position, rotation and scale
+			glm::mat4 matModel = glm::mat4(1.0f);
+
+			glm::mat4 matTranslate = glm::translate(glm::mat4(1.0f),
+													glm::vec3(waterQuad->pos.x, waterQuad->pos.y, waterQuad->pos.z));
+			matModel = matModel * matTranslate;
+
+			glm::mat4 rotateZ = glm::rotate(glm::mat4(1.0f),
+											waterQuad->orientation.z,
+											glm::vec3(0.0f, 0.0f, 1.0f));
+			matModel = matModel * rotateZ;
+
+			glm::mat4 rotateY = glm::rotate(glm::mat4(1.0f),
+											waterQuad->orientation.y,
+											glm::vec3(0.0f, 1.0f, 0.0f));
+			matModel = matModel * rotateY;
+
+			glm::mat4 rotateX = glm::rotate(glm::mat4(1.0f),
+											waterQuad->orientation.x,
+											glm::vec3(1.0f, 0.0f, 0.0f));
+			matModel = matModel * rotateX;
+
+			glm::mat4 matScale = glm::scale(glm::mat4(1.0f),
+											glm::vec3(waterQuad->scale, waterQuad->scale, waterQuad->scale));
+
+			matModel = matModel * matScale;
+			glUniformMatrix4fv(activeModelLoc, 1, GL_FALSE, glm::value_ptr(matModel));
+
+			/*
+			// INVERSE WAS FROM GRAPHICS CLASS
+				GLint matModel_loc = glGetUniformLocation(shaderProgID, "matModel");
+				GLint matModelInvTran_loc = glGetUniformLocation(shaderProgID, "matModelInvTrans");
+			*/
+
+			if (waterQuad->wireFrame)
+			{
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			}
+			else
+			{
+				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			}
+
+			// Draw mesh
+			glBindVertexArray(waterQuad->meshes[i].VAO);
+			glDrawElements(GL_TRIANGLES, waterQuad->meshes[i].indices.size(), GL_UNSIGNED_INT, 0);
+			glBindVertexArray(0);
+
+			// Always good practice to set everything back to defaults once configured
+			// NOTE(CK): bind texture must be AFTER glActiveTexture or it will not unbind properly
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, 0);
+		}
+		return;
 	}
 
 	void Renderer::EndRender()

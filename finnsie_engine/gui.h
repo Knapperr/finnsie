@@ -22,9 +22,22 @@ namespace finnsie {
 		bool viewNormals = false;
 	};
 
+	struct water_info
+	{
+		float uJump = 0.25f;
+		float vJump = 0.25f;
+		float tiling = 3.0f;
+		float speed = 0.5f;
+		float flowStrength = 0.1f;
+		float flowOffset = 0.0f;
+		float heightScale = 0.1f;
+		float heightScaleModulated = 9.0f;
+	};
+
 	struct gui_state
 	{
 		model_info modelInfo;
+		water_info waterInfo;
 		float active = false;
 		float *cameraSpeed = 0; // set to the camera object's speed
 		float gameDeltaTime;
@@ -50,6 +63,7 @@ namespace finnsie {
 		float playerVelocity;
 		gui_state state;
 	private:
+		bool showWaterWindow = false;
 		bool showDemoWindow = false;
 		bool showAnotherWindow = false;
 
