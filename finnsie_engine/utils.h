@@ -2,6 +2,7 @@
 #define UTILS_HG_
 
 #include <string>
+#include "global.h"
 
 namespace finnsie {
 	unsigned int LoadTextureFile(const char* path, const std::string& directory, bool gamma);
@@ -9,5 +10,6 @@ namespace finnsie {
 	bool LoadTexture(int index);
 	bool LoadModels(std::string path);
 	bool UnloadModel(std::string name);
+	Model* LoadWater();
 }
 #endif

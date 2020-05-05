@@ -36,6 +36,7 @@ namespace finnsie {
 	private:
 		Shader modelShader;
 		Shader normalShader;
+		Shader waterShader;
 
 		Model* waterQuad;
 
@@ -64,6 +65,9 @@ namespace finnsie {
 		int normalProjLoc;
 		int normalViewLoc;
 		int normalModelLoc;
+		int watProjLoc;
+		int watViewLoc;
+		int watModelLoc;
 
 		float colorChange;
 		

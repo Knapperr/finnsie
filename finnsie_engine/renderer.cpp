@@ -8,6 +8,8 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <fstream>
 
+#include "utils.h"
+
 namespace finnsie {
 
 	// NOTE(CK): Global ResourceManager 
@@ -36,13 +38,8 @@ namespace finnsie {
 		// -------------------
 		this->lightPos = glm::vec3(-120.0f, -40.0f, -50.0f);
 
+		this->waterQuad = LoadWater();
 
-		this->waterQuad = new Model("water",
-									false,
-									glm::vec3(-100.0f, -30.0f, 0.0f),
-									glm::vec3(0.0f, 0.0f, 0.0f),
-									10.0f,
-									"content/primitives/quad/basic_quad.obj");
 	}
 
 	Renderer::~Renderer()
@@ -178,7 +175,7 @@ namespace finnsie {
 
 	void Renderer::DrawWater()
 	{
-		startShader(modelShader.id, objModelLoc, objProjLoc, objViewLoc);
+		startShader(waterShader.id, watModelLoc, watProjLoc, watViewLoc);
 
 		for (unsigned int i = 0; i < waterQuad->meshes.size(); i++)
 		{
@@ -204,7 +201,7 @@ namespace finnsie {
 					number = std::to_string(heightNr++);
 
 				// now set the sampler to the correct texture unit
-				glUniform1i(glGetUniformLocation(activeModelShaderId, (name + number).c_str()), j);
+				glUniform1i(glGetUniformLocation(waterShader.id, (name + number).c_str()), j);
 				// and finally bind the texture		
 				glBindTexture(GL_TEXTURE_2D, waterQuad->meshes[i].textures[j].id);
 			}
@@ -212,14 +209,14 @@ namespace finnsie {
 			// TODO(CK): CLEAN UP
 			// Water distortion
 			// --------------------
-			glUniform1f(glGetUniformLocation(activeModelShaderId, "time"), glfwGetTime());
+			glUniform1f(glGetUniformLocation(waterShader.id, "time"), glfwGetTime());
 
-			glUniform3fv(glGetUniformLocation(activeModelShaderId, "light.position"), 1, &lightPos[0]);
-			glUniform3fv(glGetUniformLocation(activeModelShaderId, "viewPos"), 1, &camPos[0]); // getting updated in BeginRender (probably not good)
-			glUniform3f(glGetUniformLocation(activeModelShaderId, "light.ambient"), 0.8f, 0.8f, 0.8f);
-			glUniform3f(glGetUniformLocation(activeModelShaderId, "light.diffuse"), 0.5f, 0.5f, 0.5f);
-			glUniform3f(glGetUniformLocation(activeModelShaderId, "light.specular"), 1.0f, 1.0f, 1.0f);
-			glUniform1f(glGetUniformLocation(activeModelShaderId, "material.shininess"), 64.0f);
+			glUniform3fv(glGetUniformLocation(waterShader.id, "light.position"), 1, &lightPos[0]);
+			glUniform3fv(glGetUniformLocation(waterShader.id, "viewPos"), 1, &camPos[0]); // getting updated in BeginRender (probably not good)
+			glUniform3f(glGetUniformLocation(waterShader.id, "light.ambient"), 0.8f, 0.8f, 0.8f);
+			glUniform3f(glGetUniformLocation(waterShader.id, "light.diffuse"), 0.5f, 0.5f, 0.5f);
+			glUniform3f(glGetUniformLocation(waterShader.id, "light.specular"), 1.0f, 1.0f, 1.0f);
+			glUniform1f(glGetUniformLocation(waterShader.id, "material.shininess"), 64.0f);
 
 
 			// Set position, rotation and scale
@@ -248,7 +245,7 @@ namespace finnsie {
 											glm::vec3(waterQuad->scale, waterQuad->scale, waterQuad->scale));
 
 			matModel = matModel * matScale;
-			glUniformMatrix4fv(activeModelLoc, 1, GL_FALSE, glm::value_ptr(matModel));
+			glUniformMatrix4fv(watModelLoc, 1, GL_FALSE, glm::value_ptr(matModel));
 
 			/*
 			// INVERSE WAS FROM GRAPHICS CLASS
@@ -380,6 +377,7 @@ namespace finnsie {
 		// could be different...
 		this->modelShader = ::finnsie::g_resourceManager->GenerateShader(001, "shaders/vert_model.glsl", "shaders/frag_model.glsl", NULL);
 		this->normalShader = ::finnsie::g_resourceManager->GenerateShader(002, "shaders/vert_normal_model.glsl", "shaders/frag_normal_model.glsl", "shaders/geo_normal_model.glsl");
+		this->waterShader = ::finnsie::g_resourceManager->GenerateShader(003, "shaders/vert_water_distortion.glsl", "shaders/frag_water_distortion.glsl", NULL);
 	}
 
 	void Renderer::initUniforms()
@@ -392,5 +390,10 @@ namespace finnsie {
 		this->normalProjLoc = glGetUniformLocation(normalShader.id, "projection");
 		this->normalViewLoc = glGetUniformLocation(normalShader.id, "view");
 		this->normalModelLoc = glGetUniformLocation(normalShader.id, "model");
+
+		this->watProjLoc = glGetUniformLocation(waterShader.id, "projection");
+		this->watViewLoc = glGetUniformLocation(waterShader.id, "view");
+		this->watModelLoc = glGetUniformLocation(waterShader.id, "model");
 	}
+
 }

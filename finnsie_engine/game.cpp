@@ -53,7 +53,9 @@ namespace finnsie {
 			for (unsigned int i = 0; i < g_models.size(); i++)
 			{
 				renderer->DrawModel(*g_models[i]);
+				
 			}
+		renderer->DrawWater();
 		renderer->EndRender();
 
 		gui->Render();

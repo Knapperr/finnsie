@@ -1,6 +1,4 @@
 #include "utils.h"
-#include "global.h"
-#include "model.h"
 
 #include <iostream>
 #include <sstream>
@@ -118,6 +116,47 @@ namespace finnsie {
 		g_models[index]->meshes[0].textures.push_back(flowtexture);
 		g_models[index]->meshes[0].textures.push_back(normaltexture);
 		return true;
+	}
+
+	Model* LoadWater()
+	{
+		Model* water =  new Model("water",
+							  false,
+							  glm::vec3(-100.0f, -30.0f, 0.0f),
+							  glm::vec3(0.0f, 0.0f, 0.0f),
+							  16.0f,
+							  "content/primitives/quad/basic_quad.obj");
+
+		// CREATE A BASIC SHAPE LOADER replace ASSIMP
+		// TODO(CK): [TEST] bind textures to water
+		// WE WILL HAVE TO PUSH THIS TEXTURE TO THE TEXUTES OF THE QUAD 
+		// IN model.h
+		std::string uvpath = "content/textures/water/water.png";
+		std::string uvdirectory = uvpath.substr(0, uvpath.find_last_of('/'));
+		Texture uvtexture = {};
+		uvtexture.id = LoadTextureFile("water.png", uvdirectory);
+		uvtexture.type = "texture_diffuse";
+		uvtexture.path = uvpath;
+
+		std::string flowpath = "content/textures/water/flow-speed-noise.png";
+		std::string flowdirectory = flowpath.substr(0, flowpath.find_last_of('/'));
+		Texture flowtexture = {};
+		flowtexture.id = LoadTextureFile("flow-speed-noise.png", flowdirectory);
+		flowtexture.type = "texture_normal";
+		flowtexture.path = flowpath;
+
+		std::string normalpath = "content/textures/water/water-derivative-height.png";
+		std::string normaldir = normalpath.substr(0, normalpath.find_last_of('/'));
+		Texture normaltexture = {};
+		normaltexture.id = LoadTextureFile("water-derivative-height.png", normaldir);
+		normaltexture.type = "texture_normal";
+		normaltexture.path = normalpath;
+
+		water->meshes[0].textures.push_back(uvtexture);
+		water->meshes[0].textures.push_back(flowtexture);
+		water->meshes[0].textures.push_back(normaltexture);
+
+		return water;
 	}
 
 	/* NOTE(CK): OG (USE THIS FOR LOADING TEXTURES FROM GUI )
