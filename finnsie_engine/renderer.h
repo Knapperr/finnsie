@@ -5,6 +5,7 @@
 #include "shader_manager.h"
 #include "model.h"
 #include "camera.h"
+#include "gui.h"
 
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -18,7 +19,7 @@ namespace finnsie {
 		~Renderer();
 		void BeginRender(Camera& cam);
 		void DrawModel(Model& model);
-		void DrawWater();
+		void DrawWater(Model& water, gui_state& state);
 		void EndRender();
 		void Shutdown();
 
@@ -37,8 +38,6 @@ namespace finnsie {
 		Shader modelShader;
 		Shader normalShader;
 		Shader waterShader;
-
-		Model* waterQuad;
 
 		std::vector<float> verticesVector;
 		std::vector<float> indicesVector;

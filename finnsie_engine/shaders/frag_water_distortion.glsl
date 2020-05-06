@@ -25,6 +25,15 @@ uniform sampler2D texture_normal2;
 // Water controls
 uniform float time;
 
+uniform float uJump;
+uniform float vJump;
+uniform float tiling;
+uniform float speed;
+uniform float flowStrength;
+uniform float flowOffset;
+uniform float heightScale;
+uniform float heightScaleModulated;
+
 
 vec3 FlowUVW(vec2 uv, vec2 flowVector, vec2 jump, float flowOffset, float tiling, float time, bool flowB) 
 {
@@ -48,16 +57,6 @@ vec3 UnpackDerivativeHeight(vec4 textureData)
 
 void main()
 {   
-    // TODO(CK): Make these all uniforms
-    float uJump = 0.25;
-    float vJump = 0.25;
-    float tiling = 3;
-    float speed = 0.5;
-    float flowStrength = 0.1;
-    float flowOffset = 0;
-    float heightScale = 0.1;
-    float heightScaleModulated = 9;
-    // ----------------------------------
 
 	//vec2 flowVector = texture2D(texture_normal1, fs_in.TexCoords).rg * 2 - 1;
     // NOTE(CK): Sample the stored speed vectors in the flow map instead of 

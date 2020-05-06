@@ -39,6 +39,8 @@ namespace finnsie {
 		bool isGuiHovered = true;
 		Gui *gui;
 
+		Model *water;
+
 		void processCamera(float dt);
 	};
 }

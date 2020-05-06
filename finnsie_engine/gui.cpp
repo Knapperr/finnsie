@@ -96,13 +96,7 @@ namespace finnsie {
 		}
 		=================================================================
 	*/
-	void waterWindow(bool* p_open)
-	{
-		ImGui::Begin("WATER", p_open);
 
-
-		ImGui::End();
-	}
 
 	void Gui::Update()
 	{
@@ -238,6 +232,26 @@ namespace finnsie {
 		{
 			state.active = false;
 		}
+	}
+
+	void Gui::waterWindow(bool* p_open)
+	{
+		ImGui::Begin("WATER", p_open);
+
+		ImGui::SliderFloat("U Jump", &state.waterInfo.uJump, 0.0f, 0.25f); // 0.25
+		ImGui::SliderFloat("V Jump", &state.waterInfo.vJump, 0.0f, 0.25f);  // 0.25
+		ImGui::SliderFloat("Tiling", &state.waterInfo.tiling, 0.0f, 3.0f); // 3.0
+		ImGui::SliderFloat("Speed", &state.waterInfo.speed, 0.0f, 0.5f); // 0.5
+		ImGui::SliderFloat("Flow Strength", &state.waterInfo.flowStrength, 0.0f, 1.0f); // 0.1
+		ImGui::SliderFloat("Flow Offset", &state.waterInfo.flowOffset, 0.0f, 1.0f); // 0.0
+		ImGui::SliderFloat("Height Scale", &state.waterInfo.heightScale, 0.0f, 0.1f); // 0.1
+		ImGui::SliderFloat("Height Scale Modulated", &state.waterInfo.heightScaleModulated, 0.0f, 9.0f); // 9.0
+
+		ImGui::SliderFloat("Light X", &state.waterInfo.lightX, -200.0f, 200.0f);
+		ImGui::SliderFloat("Light Y", &state.waterInfo.lightY, -200.0f, 200.0f);
+		ImGui::SliderFloat("Light Z", &state.waterInfo.lightZ, -200.0f, 200.0f);
+		
+		ImGui::End();
 	}
 
 	void Gui::Render()

@@ -3,6 +3,8 @@
 #include <glm/gtc/matrix_transform.hpp> 
 #include <glm/gtc/type_ptr.hpp>
 
+#include "utils.h"
+
 namespace finnsie {
 
 	void Game::Init(GLFWwindow &wnd)
@@ -14,7 +16,7 @@ namespace finnsie {
 		this->camera = new Camera();
 
 		gui->Init(*this->window, camera->MovementSpeed);
-
+		water = LoadWater();
 		// Load models based off of text file
 		//LoadModels("PATHHERE");
 
@@ -55,7 +57,7 @@ namespace finnsie {
 				renderer->DrawModel(*g_models[i]);
 				
 			}
-		renderer->DrawWater();
+		renderer->DrawWater(*water, gui->state);
 		renderer->EndRender();
 
 		gui->Render();

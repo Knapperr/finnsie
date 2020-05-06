@@ -32,6 +32,9 @@ namespace finnsie {
 		float flowOffset = 0.0f;
 		float heightScale = 0.1f;
 		float heightScaleModulated = 9.0f;
+		float lightX = -138.843f;
+		float lightY = -19.247f;
+		float lightZ = -14.226f;
 	};
 
 	struct gui_state
@@ -63,12 +66,14 @@ namespace finnsie {
 		float playerVelocity;
 		gui_state state;
 	private:
-		bool showWaterWindow = false;
+		bool showWaterWindow = true;
 		bool showDemoWindow = false;
 		bool showAnotherWindow = false;
 
 		std::vector<objFile> objPaths;
 		std::vector<objFile> primitivePaths;
+
+		void waterWindow(bool* p_open);
 		void getFolders(std::string folder);
 	};
 }

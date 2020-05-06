@@ -20,7 +20,6 @@ uniform mat4 projection;
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 
-// water distortion
 uniform sampler2D texture_diffuse1;
 uniform sampler2D texture_normal1;
 
