@@ -240,13 +240,17 @@ namespace finnsie {
 
 		ImGui::SliderFloat("U Jump", &state.waterInfo.uJump, 0.0f, 0.25f); // 0.25
 		ImGui::SliderFloat("V Jump", &state.waterInfo.vJump, 0.0f, 0.25f);  // 0.25
+		ImGui::Separator();
 		ImGui::SliderFloat("Tiling", &state.waterInfo.tiling, 0.0f, 3.0f); // 3.0
 		ImGui::SliderFloat("Speed", &state.waterInfo.speed, 0.0f, 0.5f); // 0.5
+		ImGui::Separator();
 		ImGui::SliderFloat("Flow Strength", &state.waterInfo.flowStrength, 0.0f, 1.0f); // 0.1
-		ImGui::SliderFloat("Flow Offset", &state.waterInfo.flowOffset, 0.0f, 1.0f); // 0.0
+		ImGui::SliderFloat("Flow Offset", &state.waterInfo.flowOffset, -10.0f, 10.0f); // 0.0
+		ImGui::Separator();
 		ImGui::SliderFloat("Height Scale", &state.waterInfo.heightScale, 0.0f, 0.1f); // 0.1
 		ImGui::SliderFloat("Height Scale Modulated", &state.waterInfo.heightScaleModulated, 0.0f, 9.0f); // 9.0
 
+		ImGui::Separator();
 		ImGui::SliderFloat("Light X", &state.waterInfo.lightX, -200.0f, 200.0f);
 		ImGui::SliderFloat("Light Y", &state.waterInfo.lightY, -200.0f, 200.0f);
 		ImGui::SliderFloat("Light Z", &state.waterInfo.lightZ, -200.0f, 200.0f);

@@ -28,8 +28,8 @@ namespace finnsie {
 		float vJump = 0.25f;
 		float tiling = 3.0f;
 		float speed = 0.5f;
-		float flowStrength = 0.1f;
-		float flowOffset = 0.0f;
+		float flowStrength = 0.07f;
+		float flowOffset = -0.207f;
 		float heightScale = 0.1f;
 		float heightScaleModulated = 9.0f;
 		float lightX = -138.843f;

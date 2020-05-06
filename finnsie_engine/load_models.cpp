@@ -118,7 +118,7 @@ namespace finnsie {
 		return true;
 	}
 
-	Model* LoadWater()
+	Model* LoadDistortedWater()
 	{
 		Model* water =  new Model("water",
 							  false,

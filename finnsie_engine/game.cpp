@@ -16,7 +16,7 @@ namespace finnsie {
 		this->camera = new Camera();
 
 		gui->Init(*this->window, camera->MovementSpeed);
-		water = LoadWater();
+		water = LoadDistortedWater();
 		// Load models based off of text file
 		//LoadModels("PATHHERE");
 
