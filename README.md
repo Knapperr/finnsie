@@ -4,13 +4,15 @@ This engine is being built while I study the [handmade hero series](https://hand
 
 I am using this project as an opportunity to expand on my journey of learning game engines.
 
+--------------------
 #### Libraries used
 * glad 
 * glfw
-* glm - math library
+* glm
 * imgui
 * stb_image
-
-![Alt text](finnsie_engine/content/screenshots/screen1.png?raw=true) 
+* Assimp
+--------------------
+![Alt text](finnsie_engine/content/screenshots/water_distort.png?raw=true) 
 
 
