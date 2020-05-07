@@ -160,7 +160,6 @@
     <ClCompile Include="load_models.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="primitive_model.cpp" />
-    <ClCompile Include="obj_loader.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="resource_manager.cpp" />
     <ClCompile Include="shader_manager.cpp" />

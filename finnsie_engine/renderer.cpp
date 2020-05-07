@@ -220,14 +220,7 @@ namespace finnsie {
 			glUniform1f(glGetUniformLocation(waterShader.id, "flowOffset"), state.waterInfo.flowOffset);
 			glUniform1f(glGetUniformLocation(waterShader.id, "heightScale"), state.waterInfo.heightScale);
 			glUniform1f(glGetUniformLocation(waterShader.id, "heightScaleModulated"), state.waterInfo.heightScaleModulated);
-
-			// NOT NEEDED ANYMORE USING NORMAL MAP
-			//glUniform3f(glGetUniformLocation(waterShader.id, "light.ambient"), 0.8f, 0.8f, 0.8f);
-			//glUniform3f(glGetUniformLocation(waterShader.id, "light.diffuse"), 0.5f, 0.5f, 0.5f);
-			//glUniform3f(glGetUniformLocation(waterShader.id, "light.specular"), 1.0f, 1.0f, 1.0f);
-			//glUniform1f(glGetUniformLocation(waterShader.id, "material.shininess"), 64.0f);
 			
-
 			// Set position, rotation and scale
 			glm::mat4 matModel = glm::mat4(1.0f);
 
