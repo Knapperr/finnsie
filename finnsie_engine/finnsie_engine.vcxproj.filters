@@ -16,9 +16,6 @@
     <Filter Include="shaders">
       <UniqueIdentifier>{6fa59166-3b85-455b-84cc-ce23c86ed157}</UniqueIdentifier>
     </Filter>
-    <Filter Include="vertices">
-      <UniqueIdentifier>{64d12859-aa80-4c85-9ba4-417d1246038d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="imgui">
       <UniqueIdentifier>{654d9b8c-40bf-42ec-9bc1-f26c002bb7f6}</UniqueIdentifier>
     </Filter>
@@ -42,19 +39,10 @@
     <ClCompile Include="resource_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sprite_renderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="game_object.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="primitive_model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="load_models.cpp">
@@ -81,9 +69,6 @@
     <ClCompile Include="include\imgui\imgui_widgets.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="game2D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -101,25 +86,10 @@
     <ClInclude Include="resource_manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="sprite_renderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="game_object.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="renderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="render_helpers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="obj_loader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="primitive_model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="mesh.h">
@@ -160,9 +130,6 @@
     </ClInclude>
     <ClInclude Include="include\imgui\imstb_truetype.h">
       <Filter>imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="game2D.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="game.h">
       <Filter>Header Files</Filter>
@@ -220,22 +187,5 @@
     <None Include="vert_normal_model.glsl">
       <Filter>shaders</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="basic_lighting_vertices.txt">
-      <Filter>vertices</Filter>
-    </Text>
-    <Text Include="textureindices.txt">
-      <Filter>vertices</Filter>
-    </Text>
-    <Text Include="texturenormalvert.txt">
-      <Filter>vertices</Filter>
-    </Text>
-    <Text Include="texturevert.txt">
-      <Filter>vertices</Filter>
-    </Text>
-    <Text Include="vertices.txt">
-      <Filter>vertices</Filter>
-    </Text>
   </ItemGroup>
 </Project>

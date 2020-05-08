@@ -13,7 +13,6 @@
 #include "shader_manager.h"
 #include "texture_manager.h"
 #include "game.h"
-#include "primitive_model.h"
 #include "model.h"
 #include "renderer.h"
 #include "utils.h"

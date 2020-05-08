@@ -1,15 +1,13 @@
 #ifndef RENDERER_HG_
 #define RENDERER_HG_
 
-#include "primitive_model.h"
+#include "global.h"
 #include "shader_manager.h"
-#include "model.h"
 #include "camera.h"
 #include "gui.h"
 
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <vector>
 
 namespace finnsie {
 
@@ -22,17 +20,6 @@ namespace finnsie {
 		void DrawWater(Model& water, gui_state& state);
 		void EndRender();
 		void Shutdown();
-
-
-		// Deprecated functions
-		void DrawTextureCube(unsigned int shaderId, PrimitiveModel textureCube, glm::vec3 cubePositions[],
-							 int projLoc, int viewLoc, int modelLoc, glm::mat4 projection, glm::mat4 view);
-		void DrawLamp(unsigned int shaderId, PrimitiveModel lightCube, unsigned int lightModelLoc,
-					  unsigned int lightProjLoc, unsigned int lightViewLoc, glm::mat4 projection, 
-					  glm::mat4 view, glm::vec3 lampPos);
-		void DrawTextureNormalCube(unsigned int shaderId, PrimitiveModel textureCube, glm::vec3 cubePositions[], int projLoc,
-								   int viewLoc, int modelLoc, glm::mat4 projection, glm::mat4 view, 
-								   glm::vec3 cameraPos, glm::vec3 lightPos, unsigned int specularMap, unsigned int diffuseMap);
 
 	private:
 		Shader modelShader;

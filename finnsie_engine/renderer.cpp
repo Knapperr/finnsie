@@ -1,6 +1,5 @@
 #include "renderer.h"
 
-#include "global.h"
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp> 
 #include <glm/mat4x4.hpp> 
@@ -291,80 +290,6 @@ namespace finnsie {
 		this->activeModelShaderId = shaderId;
 		this->activeModelLoc = modelLoc;
 	}
-
-	void Renderer::DrawTextureCube(unsigned int shaderId, PrimitiveModel textureCube, glm::vec3 cubePositions[],
-		int projLoc, int viewLoc, int modelLoc, glm::mat4 projection, glm::mat4 view)
-	{
-		glUseProgram(shaderId);
-		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-		glBindVertexArray(textureCube.VAO);
-		for (unsigned int i = 0; i < 10; i++)
-		{
-			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, cubePositions[i]);
-
-			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}
-	}
-
-	void Renderer::DrawLamp(unsigned int shaderId, PrimitiveModel lightCube, unsigned int lightModelLoc,
-							unsigned int lightProjLoc, unsigned int lightViewLoc, glm::mat4 projection,
-							glm::mat4 view, glm::vec3 lampPos)
-	{
-		glUseProgram(shaderId);
-		glUniformMatrix4fv(lightProjLoc, 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(lightViewLoc, 1, GL_FALSE, glm::value_ptr(view));
-
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, lampPos);
-		model = glm::scale(model, glm::vec3(0.2f));
-		glUniformMatrix4fv(lightModelLoc, 1, GL_FALSE, glm::value_ptr(model));
-
-		glBindVertexArray(lightCube.VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-	}
-
-	void Renderer::DrawTextureNormalCube(unsigned int shaderId, PrimitiveModel textureCube, glm::vec3 cubePositions[],
-		int projLoc, int viewLoc, int modelLoc, glm::mat4 projection,
-		glm::mat4 view, glm::vec3 cameraPos, glm::vec3 lightPos, unsigned int specularMap, unsigned int diffuseMap)
-	{
-		glUseProgram(shaderId);
-		glUniform3fv(glGetUniformLocation(shaderId, "light.position"), 1, &lightPos[0]);
-		glUniform3fv(glGetUniformLocation(shaderId, "viewPos"), 1, &cameraPos[0]);
-
-		glUniform3f(glGetUniformLocation(shaderId, "light.ambient"), 0.2f, 0.2f, 0.2f);
-		glUniform3f(glGetUniformLocation(shaderId, "light.diffuse"), 0.5f, 0.5f, 0.5f);
-		glUniform3f(glGetUniformLocation(shaderId, "light.specular"), 1.0f, 1.0f, 1.0f);
-
-		glUniform1f(glGetUniformLocation(shaderId, "material.shininess"), 64.0f);
-
-		// set the projection and view from the camera
-		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-
-		for (unsigned int i = 0; i < 10; ++i)
-		{
-			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, cubePositions[i]);
-
-			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-
-			// now bind the diffuse and specular maps
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, diffuseMap);
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, specularMap);
-
-			glBindVertexArray(textureCube.VAO);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-
-		}
-		// set back to defaults the active texture is now 0 again
-		glActiveTexture(GL_TEXTURE0);
-	}
-
 
 	void Renderer::Shutdown()
 	{

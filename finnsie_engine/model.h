@@ -1,7 +1,7 @@
 #ifndef MODEL_HG_
 #define MODEL_HG_
 
-#include "global.h"
+#include <glm/glm.hpp>	
 #include <glm/gtc/matrix_transform.hpp>
 #include <stb_image/stb_image.h>
 #include <assimp/Importer.hpp>
@@ -15,8 +15,8 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include <map>
 #include <vector>
+#include <map>
 
 namespace finnsie {
 
