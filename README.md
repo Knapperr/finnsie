@@ -1,8 +1,7 @@
 # Finnsie Engine
 
-This engine is being built while I study the [handmade hero series](https://handmadehero.org/) and read **Game Engine Architechure** by *Jason Gregory*.
-
-I am using this project as an opportunity to expand on my journey of learning game engines.
+This engine is being built while I study the [handmade hero series](https://handmadehero.org/), read **Game Engine Architechure** by *Jason Gregory*
+and learn graphics programming.
 
 --------------------
 #### Libraries used

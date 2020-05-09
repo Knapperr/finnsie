@@ -7,7 +7,7 @@
 
 namespace finnsie {
 
-	void Game::Init(GLFWwindow &wnd)
+	Game::Game(GLFWwindow& wnd)
 	{
 		this->mode = Mode::EDIT;
 		this->window = &wnd;
@@ -15,12 +15,11 @@ namespace finnsie {
 		this->renderer = new Renderer();
 		this->camera = new Camera();
 
-		gui->Init(*this->window, camera->MovementSpeed);
-		water = LoadDistortedWater();
-		// Load models based off of text file
-		//LoadModels("PATHHERE");
 
+		gui->Init(*this->window, camera->MovementSpeed);
+		LoadDistortedWater(water);
 	}
+
 
 	// TODO(CK): Wont need this if i just put the gui object in this class.... 
 	// TODO(CK): Not sure if the gui should be in this class or not
@@ -57,7 +56,7 @@ namespace finnsie {
 				renderer->DrawModel(*g_models[i]);
 				
 			}
-		renderer->DrawWater(*water, gui->state);
+		renderer->DrawWater(water, gui->state);
 		renderer->EndRender();
 
 		gui->Render();

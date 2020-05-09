@@ -9,13 +9,7 @@
 
 #include <iostream>
 
-#include "camera.h"
-#include "shader_manager.h"
-#include "texture_manager.h"
 #include "game.h"
-#include "model.h"
-#include "renderer.h"
-#include "utils.h"
 #include "gui.h"
 
 #include <windows.h>
@@ -37,7 +31,7 @@ const unsigned int SCREEN_HEIGHT = 720;
 // NOTE(CK): Can't init here its outside of the finnsie namespace
 // ResourceManager* g_resourceManager; 
 
-Game* game = new Game();
+Game* game = NULL;
 
 float lastX = SCREEN_WIDTH / 2.0f;
 float lastY = SCREEN_HEIGHT / 2.0f;
@@ -119,7 +113,7 @@ int main(int argc, char** argv)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
-	game->Init(*window);
+	game = new Game(*window);
 
 	// Get wall clock speed
 	LARGE_INTEGER lastCounter = GetWallClock();

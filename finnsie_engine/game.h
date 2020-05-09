@@ -1,11 +1,10 @@
 #ifndef GAME_HG_
 #define GAME_HG_
 
-#include "gl_common.h"
-#include "global.h"
-#include "renderer.h"
+
 #include "camera.h"
 #include "gui.h"
+#include "renderer.h"
 
 #include <glm/vec3.hpp> // glm::vec3
 #include <glm/vec4.hpp> // glm::vec4
@@ -21,7 +20,7 @@ namespace finnsie {
 	class Game
 	{
 	public:
-		void Init(GLFWwindow& wnd);
+		Game(GLFWwindow& wnd);
 		void Render();
 		void Update(float dt);
 		void SetGuiState(gui_state& state);
@@ -38,8 +37,8 @@ namespace finnsie {
 	private:
 		bool isGuiHovered = true;
 		Gui *gui;
+		Model water;
 
-		Model *water;
 
 		void processCamera(float dt);
 	};

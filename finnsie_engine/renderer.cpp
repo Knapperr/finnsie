@@ -3,8 +3,6 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp> 
 #include <glm/mat4x4.hpp> 
-#include <glm/gtc/matrix_transform.hpp> 
-#include <glm/gtc/type_ptr.hpp>
 #include <fstream>
 
 namespace finnsie {
@@ -16,6 +14,8 @@ namespace finnsie {
 	Renderer::Renderer()
 	{
 		::finnsie::g_resourceManager = new ResourceManager();
+
+		uniformManager = new UniformManager();
 
 		this->color = glm::vec3(0.1f, 0.5f, 0.31f);
 		this->colorChange = 0.01f;
@@ -210,16 +210,15 @@ namespace finnsie {
 			glUniform3fv(glGetUniformLocation(waterShader.id, "lightPos"), 1, &lightPos[0]);
 			glUniform3fv(glGetUniformLocation(waterShader.id, "viewPos"), 1, &camPos[0]); // getting updated in BeginRender (probably not good)
 
-			// TODO(CK): Create vector of uniform location (uniform location manager)
-			glUniform1f(glGetUniformLocation(waterShader.id, "uJump"), state.waterInfo.uJump);
-			glUniform1f(glGetUniformLocation(waterShader.id, "vJump"), state.waterInfo.vJump);
-			glUniform1f(glGetUniformLocation(waterShader.id, "tiling"), state.waterInfo.tiling);
-			glUniform1f(glGetUniformLocation(waterShader.id, "speed"), state.waterInfo.speed);
-			glUniform1f(glGetUniformLocation(waterShader.id, "flowStrength"), state.waterInfo.flowStrength);
-			glUniform1f(glGetUniformLocation(waterShader.id, "flowOffset"), state.waterInfo.flowOffset);
-			glUniform1f(glGetUniformLocation(waterShader.id, "heightScale"), state.waterInfo.heightScale);
-			glUniform1f(glGetUniformLocation(waterShader.id, "heightScaleModulated"), state.waterInfo.heightScaleModulated);
-			
+			glUniform1f(this->uniformManager->GetLocation("uJump"), state.waterInfo.uJump);
+			glUniform1f(this->uniformManager->GetLocation("vJump"), state.waterInfo.vJump);
+			glUniform1f(this->uniformManager->GetLocation("tiling"), state.waterInfo.tiling);
+			glUniform1f(this->uniformManager->GetLocation("speed"), state.waterInfo.speed);
+			glUniform1f(this->uniformManager->GetLocation("flowStrength"), state.waterInfo.flowStrength);
+			glUniform1f(this->uniformManager->GetLocation("flowOffset"), state.waterInfo.flowOffset);
+			glUniform1f(this->uniformManager->GetLocation("heightScale"), state.waterInfo.heightScale);
+			glUniform1f(this->uniformManager->GetLocation("heightScaleModulated"), state.waterInfo.heightScaleModulated);
+
 			// Set position, rotation and scale
 			glm::mat4 matModel = glm::mat4(1.0f);
 
@@ -321,7 +320,15 @@ namespace finnsie {
 		this->watProjLoc = glGetUniformLocation(waterShader.id, "projection");
 		this->watViewLoc = glGetUniformLocation(waterShader.id, "view");
 		this->watModelLoc = glGetUniformLocation(waterShader.id, "model");
-		
+
+		this->uniformManager->CreateUniform("uJump", waterShader.id);
+		this->uniformManager->CreateUniform("vJump", waterShader.id);
+		this->uniformManager->CreateUniform("tiling", waterShader.id);
+		this->uniformManager->CreateUniform("speed", waterShader.id);
+		this->uniformManager->CreateUniform("flowStrength", waterShader.id);
+		this->uniformManager->CreateUniform("flowOffset", waterShader.id);
+		this->uniformManager->CreateUniform("heightScale", waterShader.id);
+		this->uniformManager->CreateUniform("heightScaleModulated", waterShader.id);
 	}
 
 }

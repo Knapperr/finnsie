@@ -45,6 +45,19 @@ namespace finnsie {
 		bool wireFrame;
 
 		/* Methods */
+
+		// Default const for use with utility functions
+		Model()
+		{
+			this->pos = glm::vec3(1.0);
+			this->orientation = glm::vec3(1.0);
+			this->scale = 0;
+			this->modelName = "";
+			this->wireFrame = false;
+			this->viewNormals = false;
+			this->loaded = false;
+		}
+
 		Model(std::string modelName, 
 			  bool wireFrame, 
 			  glm::vec3 pos,

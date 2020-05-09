@@ -5,6 +5,7 @@
 #include "shader_manager.h"
 #include "camera.h"
 #include "gui.h"
+#include "uniform.h"
 
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -26,6 +27,8 @@ namespace finnsie {
 		Shader normalShader;
 		Shader waterShader;
 
+		UniformManager* uniformManager;
+
 		std::vector<float> verticesVector;
 		std::vector<float> indicesVector;
 		
@@ -44,6 +47,7 @@ namespace finnsie {
 		unsigned int activeModelShaderId;
 		int activeModelLoc;
 		int activeViewLoc;
+
 
 		int objProjLoc;
 		int objViewLoc;
