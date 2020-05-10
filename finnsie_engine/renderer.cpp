@@ -289,9 +289,9 @@ namespace finnsie {
 		// TODO(CK): The game probably should pass the shaders to the renderer
 		// the renderer shouldn't have the shaders init inside because the shaders
 		// could be different...
-		this->modelShader = ::finnsie::g_resourceManager->GenerateShader(001, "shaders/vert_model.glsl", "shaders/frag_model.glsl", NULL);
-		this->normalShader = ::finnsie::g_resourceManager->GenerateShader(002, "shaders/vert_onlynormal_model.glsl", "shaders/frag_onlynormal_model.glsl", "shaders/geo_onlynormal_model.glsl");
-		this->waterShader = ::finnsie::g_resourceManager->GenerateShader(003, "shaders/vert_water_distortion.glsl", "shaders/frag_water_distortion.glsl", NULL);
+		this->modelShader = ::finnsie::g_resourceManager->GenerateShader(001, "shaders/model_vert.glsl", "shaders/model_frag.glsl", NULL);
+		this->normalShader = ::finnsie::g_resourceManager->GenerateShader(002, "shaders/onlynormals_model_vert.glsl", "shaders/onlynormals_model_frag.glsl", "shaders/onlynormals_model_geo.glsl");
+		this->waterShader = ::finnsie::g_resourceManager->GenerateShader(003, "shaders/waterdistortion_vert.glsl", "shaders/waterdistortion_frag.glsl", NULL);
 	}
 
 	void Renderer::initUniforms()
