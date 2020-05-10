@@ -161,7 +161,7 @@
     <ClCompile Include="resource_manager.cpp" />
     <ClCompile Include="shader_manager.cpp" />
     <ClCompile Include="texture_manager.cpp" />
-    <ClCompile Include="uniform.cpp" />
+    <ClCompile Include="uniform_manager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
@@ -183,7 +183,7 @@
     <ClInclude Include="resource_manager.h" />
     <ClInclude Include="shader_manager.h" />
     <ClInclude Include="texture_manager.h" />
-    <ClInclude Include="uniform.h" />
+    <ClInclude Include="uniform_manager.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>

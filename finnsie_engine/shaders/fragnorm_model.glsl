@@ -34,47 +34,15 @@ uniform sampler2D texture_normal1;
 uniform sampler2D texture_normal2;
 uniform float time;
 
-vec3 FlowUVW(vec2 uv, vec2 flowVector, float time, bool flowB) 
-{
-    float phaseOffset = flowB ? 0.5 : 0;
-    float progress = fract(time + phaseOffset);
-    vec3 uvw; 
-    uvw.xy = uv - flowVector * progress;
-    uvw.z = 1 - abs(1 - 2 * progress);
-    return uvw;
-}
-
 void main()
 {   
-    /* NOTE(CK): CANT USE THIS FOR THE WATER SHADER! (MAYBE I CAN)
-    ================================================================
-	Remove white pixels on texture (using diffuse for now)
-	vec4 texColor = texture(texture_diffuse1, TexCoords);
-	vec4 texColor = texture(texture_diffuse1, TexCoords);
-	//texColor.z += texture(texture_normal1, TexCoords);
+	// Remove white pixels on texture (using diffuse for now)
+	vec4 texColor = texture(texture_diffuse1, fs_in.TexCoords);
 	if (texColor.a < 0.1)
 	{
 		discard;
 	}
-    ================================================================
-    */
 
-	/*
-	An easy way to visualize your normals is to draw them using lines, 
-	using {position, position + normal} as the start & end points.
-	*/
-	vec2 flowVector = texture2D(texture_normal1, fs_in.TexCoords).rg * 2 - 1;
-	float noise = texture2D(texture_normal1, fs_in.TexCoords).a;
-	float newTime = time + noise;
-
-	vec3 uvwA = FlowUVW(fs_in.TexCoords, flowVector, newTime, false);
-    vec3 uvwB = FlowUVW(fs_in.TexCoords, flowVector, newTime, true);
-
-    vec4 texA = texture2D(texture_diffuse1, uvwA.xy) * uvwA.z;
-    vec4 texB = texture2D(texture_diffuse1, uvwB.xy) * uvwB.z;
-    vec4 lightingCoords = texA + texB;
-
-	vec4 flowCol = (texA + texB);
 
 	// calculate normals
     vec3 normal = texture(texture_normal2, fs_in.TexCoords).rgb;

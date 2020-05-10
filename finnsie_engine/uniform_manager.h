@@ -1,5 +1,5 @@
-#ifndef UNIFORM_HG_
-#define UNIFORM_HG_
+#ifndef UNIFORM_MANAGER_HG_
+#define UNIFORM_MANAGER_HG_
 
 #include <glad/glad.h>
 #include <string>
