@@ -302,7 +302,7 @@ namespace finnsie {
 		// the renderer shouldn't have the shaders init inside because the shaders
 		// could be different...
 		this->modelShader = ::finnsie::g_resourceManager->GenerateShader(001, "shaders/vert_model.glsl", "shaders/frag_model.glsl", NULL);
-		this->normalShader = ::finnsie::g_resourceManager->GenerateShader(002, "shaders/vert_normal_model.glsl", "shaders/frag_normal_model.glsl", "shaders/geo_normal_model.glsl");
+		this->normalShader = ::finnsie::g_resourceManager->GenerateShader(002, "shaders/vert_onlynormal_model.glsl", "shaders/frag_onlynormal_model.glsl", "shaders/geo_onlynormal_model.glsl");
 		this->waterShader = ::finnsie::g_resourceManager->GenerateShader(003, "shaders/vert_water_distortion.glsl", "shaders/frag_water_distortion.glsl", NULL);
 	}
 
