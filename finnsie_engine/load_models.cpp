@@ -125,7 +125,7 @@ namespace finnsie {
 						glm::vec3(-100.0f, -30.0f, 0.0f),
 						glm::vec3(0.0f, 0.0f, 0.0f),
 						16.0f,
-						"content/primitives/quad/basic_quad.obj");
+						"content/objects/quad/basic_quad.obj");
 
 		// CREATE A BASIC SHAPE LOADER replace ASSIMP
 		// TODO(CK): [TEST] bind textures to water

@@ -38,7 +38,6 @@ namespace finnsie {
 		state = {};
 		// Grab obj files in the folders
 		getFolders("objects");
-		getFolders("primitives");
 		// could use this and then create a glm::vec4 from this field to change colour in the game
 		//ImVec4 clearColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f); <-- can use a vec4 to control colours 
 
@@ -123,26 +122,6 @@ namespace finnsie {
 			ImGui::Checkbox("Water Window", &showWaterWindow);
 
 			ImGui::SliderFloat("Camera Speed", this->state.cameraSpeed, 0.0f, 100.0f);
-
-			if (ImGui::CollapsingHeader("Primitives"))
-			{
-				for (int i = 0; i < primitivePaths.size(); i++)
-				{
-					ImGui::Checkbox(primitivePaths[i].name.c_str(), &primitivePaths[i].loadModel);
-
-					// Load model do this once based off of loaded
-					if (primitivePaths[i].loadModel && !primitivePaths[i].loaded)
-					{
-						LoadModel(primitivePaths[i].name, primitivePaths[i].path);
-						primitivePaths[i].loaded = true;
-					}
-					if (!primitivePaths[i].loadModel && primitivePaths[i].loaded)
-					{
-						UnloadModel(primitivePaths[i].name);
-						primitivePaths[i].loaded = false;
-					}
-				}
-			}
 
 			if (ImGui::CollapsingHeader("Models"))
 			{
@@ -297,10 +276,6 @@ namespace finnsie {
 				if (folder == "objects")
 				{
 					objPaths.push_back(obj);
-				}
-				else if (folder == "primitives")
-				{
-					primitivePaths.push_back(obj);
 				}
 			}
 		}

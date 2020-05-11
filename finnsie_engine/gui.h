@@ -71,7 +71,6 @@ namespace finnsie {
 		bool showAnotherWindow = false;
 
 		std::vector<objFile> objPaths;
-		std::vector<objFile> primitivePaths;
 
 		void waterWindow(bool* p_open);
 		void getFolders(std::string folder);
