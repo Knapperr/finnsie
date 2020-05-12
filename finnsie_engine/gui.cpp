@@ -190,6 +190,12 @@ namespace finnsie {
 				}
 			}
 
+			
+			ImGui::SliderFloat("Light X", &state.lightInfo.lightX, -200.0f, 200.0f);
+			ImGui::SliderFloat("Light Y", &state.lightInfo.lightY, -200.0f, 200.0f);
+			ImGui::SliderFloat("Light Z", &state.lightInfo.lightZ, -200.0f, 200.0f);
+			ImGui::Separator();
+
 			ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.1f, 0.8f, 0.7f));
 			if (ImGui::SmallButton("Save Models"))
 			{
@@ -228,11 +234,6 @@ namespace finnsie {
 		ImGui::Separator();
 		ImGui::SliderFloat("Height Scale", &state.waterInfo.heightScale, 0.0f, 0.1f); // 0.1
 		ImGui::SliderFloat("Height Scale Modulated", &state.waterInfo.heightScaleModulated, 0.0f, 9.0f); // 9.0
-
-		ImGui::Separator();
-		ImGui::SliderFloat("Light X", &state.waterInfo.lightX, -200.0f, 200.0f);
-		ImGui::SliderFloat("Light Y", &state.waterInfo.lightY, -200.0f, 200.0f);
-		ImGui::SliderFloat("Light Z", &state.waterInfo.lightZ, -200.0f, 200.0f);
 		
 		ImGui::End();
 	}

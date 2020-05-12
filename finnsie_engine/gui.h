@@ -32,6 +32,10 @@ namespace finnsie {
 		float flowOffset = -0.207f;
 		float heightScale = 0.1f;
 		float heightScaleModulated = 9.0f;
+	};
+
+	struct light_info
+	{
 		float lightX = -138.843f;
 		float lightY = -19.247f;
 		float lightZ = -14.226f;
@@ -41,6 +45,7 @@ namespace finnsie {
 	{
 		model_info modelInfo;
 		water_info waterInfo;
+		light_info lightInfo;
 		float active = false;
 		float *cameraSpeed = 0; // set to the camera object's speed
 		float gameDeltaTime;

@@ -20,7 +20,6 @@ namespace finnsie {
 		LoadDistortedWater(water);
 	}
 
-
 	// TODO(CK): Wont need this if i just put the gui object in this class.... 
 	// TODO(CK): Not sure if the gui should be in this class or not
 	void Game::SetGuiState(gui_state &state)

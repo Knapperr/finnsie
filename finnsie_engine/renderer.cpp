@@ -194,7 +194,7 @@ namespace finnsie {
 			glUniform1f(glGetUniformLocation(waterShader.id, "time"), glfwGetTime());
 
 			// TODO(CK): Clean this up
-			this->lightPos = glm::vec3(state.waterInfo.lightX, state.waterInfo.lightY, state.waterInfo.lightZ);
+			this->lightPos = glm::vec3(state.lightInfo.lightX, state.lightInfo.lightY, state.lightInfo.lightZ);
 			glUniform3fv(glGetUniformLocation(waterShader.id, "lightPos"), 1, &lightPos[0]);
 			glUniform3fv(glGetUniformLocation(waterShader.id, "viewPos"), 1, &camPos[0]); // getting updated in BeginRender (probably not good)
 
