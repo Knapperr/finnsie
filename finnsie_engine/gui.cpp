@@ -246,6 +246,26 @@ namespace finnsie {
 		ImGui::BeginGroup();
 		ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
 		ImGui::Text("MyObject: %d", selected);
+
+		// Modal for loading meshes
+		if (ImGui::Button("Load Mesh.."))
+			ImGui::OpenPopup("Load Mesh");
+		if (ImGui::BeginPopupModal("Load Mesh", NULL))
+		{
+			for (int i = 0; i < objPaths.size(); i++)
+			{
+				if (ImGui::SmallButton(objPaths[i].name.c_str()))
+				{
+					LoadEmptyModel(selected, objPaths[i].name, objPaths[i].path);
+					ImGui::CloseCurrentPopup();
+				}
+			}
+
+			if (ImGui::Button("Close"))
+				ImGui::CloseCurrentPopup();
+			ImGui::EndPopup();
+		}
+
 		ImGui::Separator();
 		if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
 		{
