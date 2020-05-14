@@ -67,7 +67,7 @@ namespace finnsie {
 		return true;
 	}
 
-	// STUPID DO something different
+	
 	bool LoadEmptyModel(int index, std::string name, std::string path)
 	{
 		// NOTE(CK): Do I need to delete pointer before setting it to a new memory?

@@ -1,11 +1,9 @@
 #include "gui.h"
-
 #include "global.h"
 #include "utils.h"
-
-
 #include <iostream>
 #include <filesystem>
+
 namespace fs = std::filesystem;
 
 namespace finnsie {
@@ -59,19 +57,19 @@ namespace finnsie {
 		ImGui::Text("application average %.3f ms/frame (%.1f FPS", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 		ImGui::Text("Delta Time from game %.2f ms/frame", (double)state.gameDeltaTime * 1000.0f);
 
-	    // Color buttons, demonstrate using PushID() to add unique identifier in the ID stack, and changing style.
-        for (int i = 0; i < 7; i++)
-        {
-            if (i > 0)
-                ImGui::SameLine();
-            ImGui::PushID(i);
-            ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(i/7.0f, 0.6f, 0.6f));
-            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(i/7.0f, 0.7f, 0.7f));
-            ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(i/7.0f, 0.8f, 0.8f));
-            ImGui::Button("Click");
-            ImGui::PopStyleColor(3);
-            ImGui::PopID();
-        }
+		// Color buttons, demonstrate using PushID() to add unique identifier in the ID stack, and changing style.
+		for (int i = 0; i < 7; i++)
+		{
+			if (i > 0)
+				ImGui::SameLine();
+			ImGui::PushID(i);
+			ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(i/7.0f, 0.6f, 0.6f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(i/7.0f, 0.7f, 0.7f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(i/7.0f, 0.8f, 0.8f));
+			ImGui::Button("Click");
+			ImGui::PopStyleColor(3);
+			ImGui::PopID();
+		}
 
 		// DROP DOWN COMBOBOX EXAMPLE
 		static ImGuiComboFlags flags = 0;
@@ -102,16 +100,14 @@ namespace finnsie {
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
-		
 
-		// deal with object loading checkboxes
 
-		// This sample code is located in ImGui::ShowDemoWindow()
 		if (showDemoWindow)
 			ImGui::ShowDemoWindow(&showDemoWindow);
-
 		if (showWaterWindow)
 			waterWindow(&showWaterWindow);
+		if (showModelWindow)
+			modelWindow(&showModelWindow);
 
 		// Show a simple window that we create ourselves. We use a begin/end pair to create a named window
 		{
@@ -120,22 +116,10 @@ namespace finnsie {
 			ImGui::Checkbox("Demo Window", &showDemoWindow);
 			ImGui::SameLine();
 			ImGui::Checkbox("Water Window", &showWaterWindow);
-
-			ImGui::SliderFloat("Camera Speed", this->state.cameraSpeed, 0.0f, 100.0f);
-
+			ImGui::SameLine();
+			ImGui::Checkbox("Model Window", &showModelWindow);
 			
-			if (ImGui::SmallButton("Load Model"))
-			{
-				LoadEmptyModel(0, objPaths[0].name, objPaths[0].path);
-			}
-
-			ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.4f, 0.2f, 0.7f));
-			if (ImGui::SmallButton("Create Model"))
-			{
-				CreateEmptyModel();
-			}
-			ImGui::PopStyleColor(1);
-
+			ImGui::SliderFloat("Camera Speed", this->state.cameraSpeed, 0.0f, 100.0f);
 
 			if (ImGui::CollapsingHeader("Models"))
 			{
@@ -168,8 +152,8 @@ namespace finnsie {
 					// Arrow buttons with Repeater
 					float spacing = ImGui::GetStyle().ItemInnerSpacing.x;
 					ImGui::PushButtonRepeat(true);
-					if (ImGui::ArrowButton("##left", ImGuiDir_Left)) 
-					{ 
+					if (ImGui::ArrowButton("##left", ImGuiDir_Left))
+					{
 						if (state.modelInfo.index > 0)
 						{
 							state.modelInfo.index--;
@@ -178,8 +162,8 @@ namespace finnsie {
 						}
 					}
 					ImGui::SameLine(0.0f, spacing);
-					if (ImGui::ArrowButton("##right", ImGuiDir_Right)) 
-					{ 
+					if (ImGui::ArrowButton("##right", ImGuiDir_Right))
+					{
 						if (state.modelInfo.index < g_models.size() - 1)
 						{
 							state.modelInfo.index++;
@@ -189,7 +173,7 @@ namespace finnsie {
 					}
 					ImGui::PopButtonRepeat();
 					ImGui::SameLine();
-					
+
 					ImGui::Separator();
 
 					// Options on models
@@ -204,7 +188,7 @@ namespace finnsie {
 				}
 			}
 
-			
+
 			ImGui::SliderFloat("Light X", &state.lightInfo.lightX, -200.0f, 200.0f);
 			ImGui::SliderFloat("Light Y", &state.lightInfo.lightY, -200.0f, 200.0f);
 			ImGui::SliderFloat("Light Z", &state.lightInfo.lightZ, -200.0f, 200.0f);
@@ -218,9 +202,8 @@ namespace finnsie {
 			ImGui::PopStyleColor(1);
 
 			ImGui::End();
-			
-		}
 
+		}
 
 		ImGuiIO& io = ImGui::GetIO();
 		if (io.WantCaptureMouse)
@@ -231,6 +214,65 @@ namespace finnsie {
 		{
 			state.active = false;
 		}
+	}
+
+	void Gui::modelWindow(bool* p_open)
+	{
+		ImGui::Begin("Example: Simple layout", p_open);
+		//if (ImGui::BeginMenuBar())
+		//{
+		//	if (ImGui::BeginMenu("File"))
+		//	{
+		//		if (ImGui::MenuItem("Close")) *p_open = false;
+		//		ImGui::EndMenu();
+		//	}
+		//	ImGui::EndMenuBar();
+		//}
+
+		// left pane
+		static int selected = 0;
+		ImGui::BeginChild("left pane", ImVec2(150, 0), true);
+		for (int i = 0; i < g_models.size(); i++)
+		{
+			char label[128];
+			sprintf_s(label, "Model %d", i);
+			if (ImGui::Selectable(label, selected == i))
+				selected = i;
+		}
+		ImGui::EndChild();
+		ImGui::SameLine();
+
+		// right
+		ImGui::BeginGroup();
+		ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
+		ImGui::Text("MyObject: %d", selected);
+		ImGui::Separator();
+		if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
+		{
+			if (ImGui::BeginTabItem("Description"))
+			{
+				ImGui::TextWrapped("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ");
+				ImGui::EndTabItem();
+			}
+			if (ImGui::BeginTabItem("Details"))
+			{
+				ImGui::Text("ID: 0123456789");
+				ImGui::EndTabItem();
+			}
+			ImGui::EndTabBar();
+		}
+		ImGui::EndChild();
+
+		// TODO(CK): Create a better approach rather than creating pointers maybe
+		// have an array of ints that mimics the size of g_models (more light weight)
+		// or is creating an empty object fine!?!?
+		if (ImGui::Button("New Model")) 
+		{
+			CreateEmptyModel();
+		}
+		
+		ImGui::EndGroup();
+		ImGui::End();
 	}
 
 	void Gui::waterWindow(bool* p_open)

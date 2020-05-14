@@ -73,13 +73,19 @@ namespace finnsie {
 		gui_state state;
 	private:
 		bool showWaterWindow = true;
+		bool showModelWindow = false;
+
+		
 		bool showDemoWindow = false;
 		bool showAnotherWindow = false;
+		
 
 		// TODO(CK): Remove replace with local function
 		std::vector<objFile> objPaths;
+		
 
 		void waterWindow(bool* p_open);
+		void modelWindow(bool* p_open);
 
 		// TODO(CK): Remove replace with local function
 		void getFolders(std::string folder);
