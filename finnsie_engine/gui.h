@@ -51,6 +51,7 @@ namespace finnsie {
 		float gameDeltaTime;
 	};
 
+	// TODO(CK): Remove replace with local function
 	struct objFile
 	{
 		std::string path;
@@ -75,9 +76,12 @@ namespace finnsie {
 		bool showDemoWindow = false;
 		bool showAnotherWindow = false;
 
+		// TODO(CK): Remove replace with local function
 		std::vector<objFile> objPaths;
 
 		void waterWindow(bool* p_open);
+
+		// TODO(CK): Remove replace with local function
 		void getFolders(std::string folder);
 	};
 }

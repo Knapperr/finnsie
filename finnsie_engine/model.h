@@ -46,7 +46,7 @@ namespace finnsie {
 
 		/* Methods */
 
-		// Default const for use with utility functions
+		// NOTE(CK): For use with utility functions
 		Model()
 		{
 			this->pos = glm::vec3(1.0);

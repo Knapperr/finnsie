@@ -43,7 +43,7 @@ namespace finnsie {
 		// Update game with data from gui
 		if (!g_models.empty())
 		{
-			g_models[gui->state.modelInfo.index]->SetInfo(gui->state);
+				g_models[gui->state.modelInfo.index]->SetInfo(gui->state);
 		}
 	}
 

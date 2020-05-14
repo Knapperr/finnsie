@@ -123,6 +123,20 @@ namespace finnsie {
 
 			ImGui::SliderFloat("Camera Speed", this->state.cameraSpeed, 0.0f, 100.0f);
 
+			
+			if (ImGui::SmallButton("Load Model"))
+			{
+				LoadEmptyModel(0, objPaths[0].name, objPaths[0].path);
+			}
+
+			ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.4f, 0.2f, 0.7f));
+			if (ImGui::SmallButton("Create Model"))
+			{
+				CreateEmptyModel();
+			}
+			ImGui::PopStyleColor(1);
+
+
 			if (ImGui::CollapsingHeader("Models"))
 			{
 				for (int i = 0; i < objPaths.size(); i++)

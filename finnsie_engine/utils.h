@@ -6,6 +6,8 @@
 
 namespace finnsie {
 	unsigned int LoadTextureFile(const char* path, const std::string& directory, bool gamma);
+	bool CreateEmptyModel();
+	bool LoadEmptyModel(int index, std::string name, std::string path);
 	bool LoadModel(std::string name, std::string path);
 	bool LoadTexture(int index);
 	bool LoadModels(std::string path);
