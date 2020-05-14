@@ -72,25 +72,21 @@ namespace finnsie {
 	{
 		// NOTE(CK): Do I need to delete pointer before setting it to a new memory?
 		delete g_models[index];
-		g_models.erase(std::remove(g_models.begin(), g_models.end(), g_models[index]), g_models.end());
+		//g_models.erase(std::remove(g_models.begin(), g_models.end(), g_models[index]), g_models.end());
+		g_models[index] = new Model(name,
+									false,
+									glm::vec3(-100.0f, -30.0f, 0.0f),
+									glm::vec3(0.0f, 0.0f, 0.0f),
+									10.0f,
+									path);
+		return true;
 
-		if (g_models.size() > 0)
-		{
-			g_models[index] = new Model(name,
-										false,
-										glm::vec3(-100.0f, -30.0f, 0.0f),
-										glm::vec3(0.0f, 0.0f, 0.0f),
-										10.0f,
-										path);
-			return true;
-		}
 		
 		// vector is empty push back instead
-		g_models.push_back(new Model(name, false,
-									 glm::vec3(-100.0f, -30.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f),
-									 10.0f,
-									 path));
-		return true;
+		//g_models.push_back(new Model(name, false,
+		//							 glm::vec3(-100.0f, -30.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f),
+		//							 10.0f,
+		//							 path));
 	}
 
 	bool LoadModel(std::string name, std::string path)
@@ -345,6 +341,12 @@ namespace finnsie {
 		if (!found) { return false; }
 
 		g_models.erase(std::remove(g_models.begin(), g_models.end(), model), g_models.end());
+		return true;
+	}
+
+	bool UnloadModel(int index)
+	{
+		g_models.erase(std::remove(g_models.begin(), g_models.end(), g_models[index]), g_models.end());
 		return true;
 	}
 }

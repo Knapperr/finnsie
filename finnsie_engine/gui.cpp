@@ -147,47 +147,8 @@ namespace finnsie {
 				{
 					ImGui::AlignTextToFramePadding();
 					ImGui::Text("Current model %s", g_models[state.modelInfo.index]->modelName.c_str());
-					ImGui::SameLine();
-
-					// Arrow buttons with Repeater
-					float spacing = ImGui::GetStyle().ItemInnerSpacing.x;
-					ImGui::PushButtonRepeat(true);
-					if (ImGui::ArrowButton("##left", ImGuiDir_Left))
-					{
-						if (state.modelInfo.index > 0)
-						{
-							state.modelInfo.index--;
-							// TODO(CK): Need to set the modelInfo to 
-							// the current scale and viewNormals of the object
-						}
-					}
-					ImGui::SameLine(0.0f, spacing);
-					if (ImGui::ArrowButton("##right", ImGuiDir_Right))
-					{
-						if (state.modelInfo.index < g_models.size() - 1)
-						{
-							state.modelInfo.index++;
-							// TODO(CK): Need to set the modelInfo to 
-							// the current scale and viewNormals of the object
-						}
-					}
-					ImGui::PopButtonRepeat();
-					ImGui::SameLine();
-
-					ImGui::Separator();
-
-					// Options on models
-					ImGui::SliderFloat("scale", &state.modelInfo.scale, 0.0f, 30.0f);
-					ImGui::Checkbox("show normals", &state.modelInfo.viewNormals);
-					ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.1f, 0.8f, 0.7f));
-					if (ImGui::SmallButton("Apply texture"))
-					{
-						LoadTexture(state.modelInfo.index);
-					}
-					ImGui::PopStyleColor(1);
 				}
 			}
-
 
 			ImGui::SliderFloat("Light X", &state.lightInfo.lightX, -200.0f, 200.0f);
 			ImGui::SliderFloat("Light Y", &state.lightInfo.lightY, -200.0f, 200.0f);
@@ -218,18 +179,8 @@ namespace finnsie {
 
 	void Gui::modelWindow(bool* p_open)
 	{
-		ImGui::Begin("Example: Simple layout", p_open);
-		//if (ImGui::BeginMenuBar())
-		//{
-		//	if (ImGui::BeginMenu("File"))
-		//	{
-		//		if (ImGui::MenuItem("Close")) *p_open = false;
-		//		ImGui::EndMenu();
-		//	}
-		//	ImGui::EndMenuBar();
-		//}
-
-		// left pane
+		ImGui::Begin("Model Control", p_open);
+		// Left pane
 		static int selected = 0;
 		ImGui::BeginChild("left pane", ImVec2(150, 0), true);
 		for (int i = 0; i < g_models.size(); i++)
@@ -237,61 +188,75 @@ namespace finnsie {
 			char label[128];
 			sprintf_s(label, "Model %d", i);
 			if (ImGui::Selectable(label, selected == i))
+			{
 				selected = i;
+				// NOTE(CK): Also set model index state
+				state.modelInfo.index = i;
+			}
+		}
+		// TODO(CK): Create a better approach rather than creating pointers maybe
+		// have an array of ints that mimics the size of g_models (more light weight)
+		// or is creating an empty object fine!?!?
+		ImGui::Separator();
+		if (ImGui::Button("New Model"))
+		{
+			CreateEmptyModel();
 		}
 		ImGui::EndChild();
 		ImGui::SameLine();
 
-		// right
-		ImGui::BeginGroup();
-		ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
-		ImGui::Text("MyObject: %d", selected);
-
-		// Modal for loading meshes
-		if (ImGui::Button("Load Mesh.."))
-			ImGui::OpenPopup("Load Mesh");
-		if (ImGui::BeginPopupModal("Load Mesh", NULL))
+		// Right pane models need to exist
+		if (!g_models.empty())
 		{
-			for (int i = 0; i < objPaths.size(); i++)
+			ImGui::BeginGroup();
+			ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
+			ImGui::Text("MyObject: %d", selected);
+
+			// Modal for loading meshes
+			if (ImGui::Button("Load Mesh.."))
+				ImGui::OpenPopup("Load Mesh");
+			if (ImGui::BeginPopupModal("Load Mesh", NULL))
 			{
-				if (ImGui::SmallButton(objPaths[i].name.c_str()))
+				for (int i = 0; i < objPaths.size(); i++)
 				{
-					LoadEmptyModel(selected, objPaths[i].name, objPaths[i].path);
-					ImGui::CloseCurrentPopup();
+					if (ImGui::SmallButton(objPaths[i].name.c_str()))
+					{
+						LoadEmptyModel(selected, objPaths[i].name, objPaths[i].path);
+						ImGui::CloseCurrentPopup();
+					}
 				}
+
+				if (ImGui::Button("Close"))
+					ImGui::CloseCurrentPopup();
+				ImGui::EndPopup();
 			}
 
-			if (ImGui::Button("Close"))
-				ImGui::CloseCurrentPopup();
-			ImGui::EndPopup();
-		}
-
-		ImGui::Separator();
-		if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
-		{
-			if (ImGui::BeginTabItem("Description"))
+			ImGui::Separator();
+			if (ImGui::BeginTabBar("##Tabs", ImGuiTabBarFlags_None))
 			{
-				ImGui::TextWrapped("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ");
-				ImGui::EndTabItem();
+				if (ImGui::BeginTabItem("Controls"))
+				{
+					//ImGui::TextWrapped("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ");
+					ImGui::SliderFloat("scale", &state.modelInfo.scale, 0.0f, 30.0f);
+					ImGui::Checkbox("show normals", &state.modelInfo.viewNormals);
+					ImGui::EndTabItem();
+				}
+				if (ImGui::BeginTabItem("Details"))
+				{
+					ImGui::Text("ID: 0123456789");
+					ImGui::EndTabItem();
+				}
+				ImGui::EndTabBar();
 			}
-			if (ImGui::BeginTabItem("Details"))
-			{
-				ImGui::Text("ID: 0123456789");
-				ImGui::EndTabItem();
-			}
-			ImGui::EndTabBar();
-		}
-		ImGui::EndChild();
 
-		// TODO(CK): Create a better approach rather than creating pointers maybe
-		// have an array of ints that mimics the size of g_models (more light weight)
-		// or is creating an empty object fine!?!?
-		if (ImGui::Button("New Model")) 
-		{
-			CreateEmptyModel();
+			if (ImGui::SmallButton("DELETE"))
+			{
+				UnloadModel(state.modelInfo.index);
+			}
+
+			ImGui::EndChild();
+			ImGui::EndGroup();
 		}
-		
-		ImGui::EndGroup();
 		ImGui::End();
 	}
 

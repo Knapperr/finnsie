@@ -12,6 +12,7 @@ namespace finnsie {
 	bool LoadTexture(int index);
 	bool LoadModels(std::string path);
 	bool UnloadModel(std::string name);
+	bool UnloadModel(int index);
 	void LoadDistortedWater(Model &water);
 }
 #endif
