@@ -70,23 +70,17 @@ namespace finnsie {
 	
 	bool LoadEmptyModel(int index, std::string name, std::string path)
 	{
-		// NOTE(CK): Do I need to delete pointer before setting it to a new memory?
+		// Delete the memory and then erase it from the vector
 		delete g_models[index];
-		//g_models.erase(std::remove(g_models.begin(), g_models.end(), g_models[index]), g_models.end());
-		g_models[index] = new Model(name,
+		g_models.erase(std::remove(g_models.begin(), g_models.end(), g_models[index]), g_models.end());
+
+		g_models.push_back(new Model(name,
 									false,
 									glm::vec3(-100.0f, -30.0f, 0.0f),
 									glm::vec3(0.0f, 0.0f, 0.0f),
 									10.0f,
-									path);
+									path));
 		return true;
-
-		
-		// vector is empty push back instead
-		//g_models.push_back(new Model(name, false,
-		//							 glm::vec3(-100.0f, -30.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f),
-		//							 10.0f,
-		//							 path));
 	}
 
 	bool LoadModel(std::string name, std::string path)
