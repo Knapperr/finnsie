@@ -1,7 +1,6 @@
 #ifndef RENDERER_HG_
 #define RENDERER_HG_
 
-#include "global.h"
 #include "shader_manager.h"
 #include "camera.h"
 #include "gui.h"
@@ -12,13 +11,16 @@
 
 namespace finnsie {
 
+	//struct water_info;
+	//struct light_info;
+
 	class Renderer {
 	public:
 		Renderer();
 		~Renderer();
 		void BeginRender(Camera& cam);
 		void DrawModel(Model& model);
-		void DrawWater(Model& water, gui_state& state);
+		void DrawWater(Model& water, draw_info& drawInfo);
 		void EndRender();
 		void Shutdown();
 

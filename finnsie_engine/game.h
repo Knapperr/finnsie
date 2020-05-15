@@ -23,7 +23,6 @@ namespace finnsie {
 		Game(GLFWwindow& wnd);
 		void Render();
 		void Update(float dt);
-		void SetGuiState(gui_state& state);
 		void ProcessInput(int key, int action, int scancode, int mods, float dt);
 		void ProcessMouseButtons(int button, int action, int mods);
 		void Shutdown();
@@ -35,10 +34,9 @@ namespace finnsie {
 		Renderer *renderer;
 
 	private:
-		bool isGuiHovered = true;
 		Gui *gui;
 		Model water;
-
+		draw_info drawInfo;
 
 		void processCamera(float dt);
 	};

@@ -77,11 +77,30 @@ namespace finnsie {
 			loadModel(path);
 		}
 
-		// Helper for setting info in game.cpp
-		void SetInfo(gui_state& state)
+		// TODO(CK): Might be better to just use the delete pointer method in case 
+		// this causes issues with the way a model is loaded
+
+		// Load a mesh onto an object created with default constructor
+		// Same as the constructor
+		void LoadEmptyModel(std::string modelName,
+							bool wireFrame,
+							glm::vec3 pos,
+							glm::vec3 orientation,
+							float scale,
+							std::string const& path,
+							bool gamma = false)
 		{
-			this->viewNormals = state.modelInfo.viewNormals;
-			this->scale = state.modelInfo.scale;
+			this->gammaCorrection = gamma;
+			this->wireFrame = wireFrame;
+			this->pos = pos;
+			this->orientation = orientation;
+			this->scale = scale;
+			this->modelName = modelName;
+
+			this->viewNormals = false;
+			this->loaded = false;
+
+			loadModel(path);
 		}
 
 	private:

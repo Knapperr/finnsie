@@ -63,6 +63,7 @@ namespace finnsie {
 	bool CreateEmptyModel()
 	{
 		Model* model = new Model();
+		model->modelName = "empty";
 		g_models.push_back(model);
 		return true;
 	}
@@ -70,7 +71,15 @@ namespace finnsie {
 	
 	bool LoadEmptyModel(int index, std::string name, std::string path)
 	{
-		// Delete the memory and then erase it from the vector
+		// Delete the memory and then erase it from the vector 
+		// avoid dangling pointer
+
+		// TODO(CK): instead of doing this we should just create an empty model then 
+		// run the load mesh function on it that will be part of the model class
+		// still have to figure out how to load up a different mesh
+
+		// UPDATE(MAY 14): Might be better to just do it this way in case the mesh is changed
+		/* THIS IMPLEMENTATION WON'T WORK
 		delete g_models[index];
 		g_models.erase(std::remove(g_models.begin(), g_models.end(), g_models[index]), g_models.end());
 
@@ -80,6 +89,15 @@ namespace finnsie {
 									glm::vec3(0.0f, 0.0f, 0.0f),
 									10.0f,
 									path));
+		*/
+		delete g_models[index];
+		
+		g_models[index] = new Model(name,
+									 false,
+									 glm::vec3(-100.0f, -30.0f, 0.0f),
+									 glm::vec3(0.0f, 0.0f, 0.0f),
+									 10.0f,
+									 path);
 		return true;
 	}
 
@@ -335,11 +353,13 @@ namespace finnsie {
 		if (!found) { return false; }
 
 		g_models.erase(std::remove(g_models.begin(), g_models.end(), model), g_models.end());
+		delete model;
 		return true;
 	}
 
 	bool UnloadModel(int index)
 	{
+		delete g_models[index];
 		g_models.erase(std::remove(g_models.begin(), g_models.end(), g_models[index]), g_models.end());
 		return true;
 	}

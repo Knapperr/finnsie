@@ -1,6 +1,4 @@
 #include "gui.h"
-#include "global.h"
-#include "utils.h"
 #include <iostream>
 #include <filesystem>
 
@@ -44,9 +42,13 @@ namespace finnsie {
 		this->state.cameraSpeed = &cameraSpeed;
 	}
 
-	void Gui::SetActive(bool active)
+	bool Gui::Active()
 	{
-		this->state.active = active;
+		ImGuiIO& io = ImGui::GetIO();
+		if (io.WantCaptureMouse)
+			return true;
+		else 
+			return false;
 	}
 
 	/*
@@ -95,7 +97,7 @@ namespace finnsie {
 	*/
 
 
-	void Gui::Update()
+	void Gui::Update(draw_info& drawInfo)
 	{
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
@@ -105,7 +107,7 @@ namespace finnsie {
 		if (showDemoWindow)
 			ImGui::ShowDemoWindow(&showDemoWindow);
 		if (showWaterWindow)
-			waterWindow(&showWaterWindow);
+			waterWindow(&showWaterWindow, drawInfo);
 		if (showModelWindow)
 			modelWindow(&showModelWindow);
 
@@ -121,59 +123,13 @@ namespace finnsie {
 			
 			ImGui::SliderFloat("Camera Speed", this->state.cameraSpeed, 0.0f, 100.0f);
 
-			if (ImGui::CollapsingHeader("Models"))
-			{
-				for (int i = 0; i < objPaths.size(); i++)
-				{
-					ImGui::Checkbox(objPaths[i].name.c_str(), &objPaths[i].loadModel);
 
-					// Load model do this once based off of loaded
-					if (objPaths[i].loadModel && !objPaths[i].loaded)
-					{
-						LoadModel(objPaths[i].name, objPaths[i].path);
-						objPaths[i].loaded = true;
-					}
-					if (!objPaths[i].loadModel && objPaths[i].loaded)
-					{
-						UnloadModel(objPaths[i].name);
-						objPaths[i].loaded = false;
-					}
-				}
-			}
-
-			if (ImGui::CollapsingHeader("Model Edit"))
-			{
-				if (!g_models.empty())
-				{
-					ImGui::AlignTextToFramePadding();
-					ImGui::Text("Current model %s", g_models[state.modelInfo.index]->modelName.c_str());
-				}
-			}
-
-			ImGui::SliderFloat("Light X", &state.lightInfo.lightX, -200.0f, 200.0f);
-			ImGui::SliderFloat("Light Y", &state.lightInfo.lightY, -200.0f, 200.0f);
-			ImGui::SliderFloat("Light Z", &state.lightInfo.lightZ, -200.0f, 200.0f);
+			ImGui::SliderFloat("Light X", &drawInfo.lightInfo.lightX, -200.0f, 200.0f);
+			ImGui::SliderFloat("Light Y", &drawInfo.lightInfo.lightY, -200.0f, 200.0f);
+			ImGui::SliderFloat("Light Z", &drawInfo.lightInfo.lightZ, -200.0f, 200.0f);
 			ImGui::Separator();
 
-			ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(0.1f, 0.8f, 0.7f));
-			if (ImGui::SmallButton("Save Models"))
-			{
-
-			}
-			ImGui::PopStyleColor(1);
-
 			ImGui::End();
-
-		}
-
-		ImGuiIO& io = ImGui::GetIO();
-		if (io.WantCaptureMouse)
-		{
-			state.active = true;
-		}
-		else
-		{
-			state.active = false;
 		}
 	}
 
@@ -186,12 +142,10 @@ namespace finnsie {
 		for (int i = 0; i < g_models.size(); i++)
 		{
 			char label[128];
-			sprintf_s(label, "Model %d", i);
+			sprintf_s(label, "%s %d", g_models[i]->modelName.c_str(), i);
 			if (ImGui::Selectable(label, selected == i))
 			{
 				selected = i;
-				// NOTE(CK): Also set model index state
-				state.modelInfo.index = i;
 			}
 		}
 		// TODO(CK): Create a better approach rather than creating pointers maybe
@@ -210,7 +164,7 @@ namespace finnsie {
 		{
 			ImGui::BeginGroup();
 			ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
-			ImGui::Text("MyObject: %d", selected);
+			ImGui::Text("%s", g_models[selected]->modelName.c_str());
 
 			// Modal for loading meshes
 			if (ImGui::Button("Load Mesh.."))
@@ -237,8 +191,8 @@ namespace finnsie {
 				if (ImGui::BeginTabItem("Controls"))
 				{
 					//ImGui::TextWrapped("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ");
-					ImGui::SliderFloat("scale", &state.modelInfo.scale, 0.0f, 30.0f);
-					ImGui::Checkbox("show normals", &state.modelInfo.viewNormals);
+					ImGui::SliderFloat("scale", &g_models[selected]->scale, 0.0f, 30.0f);
+					ImGui::Checkbox("show normals", &g_models[selected]->viewNormals);
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Details"))
@@ -251,7 +205,11 @@ namespace finnsie {
 
 			if (ImGui::SmallButton("DELETE"))
 			{
-				UnloadModel(state.modelInfo.index);
+				UnloadModel(selected);
+				// Selected is greater than size of vector
+				// don't move down if empty
+				if (selected >= g_models.size() && !g_models.empty())
+					selected -= 1;
 			}
 
 			ImGui::EndChild();
@@ -260,21 +218,21 @@ namespace finnsie {
 		ImGui::End();
 	}
 
-	void Gui::waterWindow(bool* p_open)
+	void Gui::waterWindow(bool* p_open, draw_info& drawInfo)
 	{
 		ImGui::Begin("WATER", p_open);
 
-		ImGui::SliderFloat("U Jump", &state.waterInfo.uJump, 0.0f, 0.25f); // 0.25
-		ImGui::SliderFloat("V Jump", &state.waterInfo.vJump, 0.0f, 0.25f);  // 0.25
+		ImGui::SliderFloat("U Jump", &drawInfo.waterInfo.uJump, 0.0f, 0.25f); // 0.25
+		ImGui::SliderFloat("V Jump", &drawInfo.waterInfo.vJump, 0.0f, 0.25f);  // 0.25
 		ImGui::Separator();
-		ImGui::SliderFloat("Tiling", &state.waterInfo.tiling, 0.0f, 3.0f); // 3.0
-		ImGui::SliderFloat("Speed", &state.waterInfo.speed, 0.0f, 0.5f); // 0.5
+		ImGui::SliderFloat("Tiling", &drawInfo.waterInfo.tiling, 0.0f, 3.0f); // 3.0
+		ImGui::SliderFloat("Speed", &drawInfo.waterInfo.speed, 0.0f, 0.5f); // 0.5
 		ImGui::Separator();
-		ImGui::SliderFloat("Flow Strength", &state.waterInfo.flowStrength, 0.0f, 1.0f); // 0.1
-		ImGui::SliderFloat("Flow Offset", &state.waterInfo.flowOffset, -10.0f, 10.0f); // 0.0
+		ImGui::SliderFloat("Flow Strength", &drawInfo.waterInfo.flowStrength, 0.0f, 1.0f); // 0.1
+		ImGui::SliderFloat("Flow Offset", &drawInfo.waterInfo.flowOffset, -10.0f, 10.0f); // 0.0
 		ImGui::Separator();
-		ImGui::SliderFloat("Height Scale", &state.waterInfo.heightScale, 0.0f, 0.1f); // 0.1
-		ImGui::SliderFloat("Height Scale Modulated", &state.waterInfo.heightScaleModulated, 0.0f, 9.0f); // 9.0
+		ImGui::SliderFloat("Height Scale", &drawInfo.waterInfo.heightScale, 0.0f, 0.1f); // 0.1
+		ImGui::SliderFloat("Height Scale Modulated", &drawInfo.waterInfo.heightScaleModulated, 0.0f, 9.0f); // 9.0
 		
 		ImGui::End();
 	}

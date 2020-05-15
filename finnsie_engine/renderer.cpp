@@ -154,7 +154,7 @@ namespace finnsie {
 		}
 	}
 
-	void Renderer::DrawWater(Model& water, gui_state& state)
+	void Renderer::DrawWater(Model& water, draw_info& drawInfo)
 	{
 		startShader(waterShader.id, watModelLoc, watProjLoc, watViewLoc);
 
@@ -194,18 +194,18 @@ namespace finnsie {
 			glUniform1f(glGetUniformLocation(waterShader.id, "time"), glfwGetTime());
 
 			// TODO(CK): Clean this up
-			this->lightPos = glm::vec3(state.lightInfo.lightX, state.lightInfo.lightY, state.lightInfo.lightZ);
+			this->lightPos = glm::vec3(drawInfo.lightInfo.lightX, drawInfo.lightInfo.lightY, drawInfo.lightInfo.lightZ);
 			glUniform3fv(glGetUniformLocation(waterShader.id, "lightPos"), 1, &lightPos[0]);
 			glUniform3fv(glGetUniformLocation(waterShader.id, "viewPos"), 1, &camPos[0]); // getting updated in BeginRender (probably not good)
 
-			glUniform1f(this->uniformManager->GetLocation("uJump"), state.waterInfo.uJump);
-			glUniform1f(this->uniformManager->GetLocation("vJump"), state.waterInfo.vJump);
-			glUniform1f(this->uniformManager->GetLocation("tiling"), state.waterInfo.tiling);
-			glUniform1f(this->uniformManager->GetLocation("speed"), state.waterInfo.speed);
-			glUniform1f(this->uniformManager->GetLocation("flowStrength"), state.waterInfo.flowStrength);
-			glUniform1f(this->uniformManager->GetLocation("flowOffset"), state.waterInfo.flowOffset);
-			glUniform1f(this->uniformManager->GetLocation("heightScale"), state.waterInfo.heightScale);
-			glUniform1f(this->uniformManager->GetLocation("heightScaleModulated"), state.waterInfo.heightScaleModulated);
+			glUniform1f(this->uniformManager->GetLocation("uJump"), drawInfo.waterInfo.uJump);
+			glUniform1f(this->uniformManager->GetLocation("vJump"), drawInfo.waterInfo.vJump);
+			glUniform1f(this->uniformManager->GetLocation("tiling"), drawInfo.waterInfo.tiling);
+			glUniform1f(this->uniformManager->GetLocation("speed"), drawInfo.waterInfo.speed);
+			glUniform1f(this->uniformManager->GetLocation("flowStrength"), drawInfo.waterInfo.flowStrength);
+			glUniform1f(this->uniformManager->GetLocation("flowOffset"), drawInfo.waterInfo.flowOffset);
+			glUniform1f(this->uniformManager->GetLocation("heightScale"), drawInfo.waterInfo.heightScale);
+			glUniform1f(this->uniformManager->GetLocation("heightScaleModulated"), drawInfo.waterInfo.heightScaleModulated);
 
 			// Set position, rotation and scale
 			glm::mat4 matModel = glm::mat4(1.0f);

@@ -3,8 +3,6 @@
 #include <glm/gtc/matrix_transform.hpp> 
 #include <glm/gtc/type_ptr.hpp>
 
-#include "utils.h"
-
 namespace finnsie {
 
 	Game::Game(GLFWwindow& wnd)
@@ -20,16 +18,9 @@ namespace finnsie {
 		LoadDistortedWater(water);
 	}
 
-	// TODO(CK): Wont need this if i just put the gui object in this class.... 
-	// TODO(CK): Not sure if the gui should be in this class or not
-	void Game::SetGuiState(gui_state &state)
-	{
-		//guiState = &state;
-	}
-
 	void Game::Update(float dt)
 	{
-		gui->Update();
+		gui->Update(drawInfo);
 
 		// Do this first
 		if (leftMousePressed)
@@ -38,13 +29,7 @@ namespace finnsie {
 		}
 
 		// get info from gui
-		isGuiHovered = gui->state.active;
-
-		// Update game with data from gui
-		if (!g_models.empty())
-		{
-				g_models[gui->state.modelInfo.index]->SetInfo(gui->state);
-		}
+		//isGuiHovered = gui->Active();
 	}
 
 	void Game::Render()
@@ -55,7 +40,8 @@ namespace finnsie {
 				renderer->DrawModel(*g_models[i]);
 				
 			}
-		renderer->DrawWater(water, gui->state);
+		// TODO(CK): Gui State can be removed. we should be updating the data directly from the gui
+		renderer->DrawWater(water, drawInfo);
 		renderer->EndRender();
 
 		gui->Render();
@@ -89,7 +75,7 @@ namespace finnsie {
 		// NOTE(CK): (hack?)
 		// This interacts with the gui well because if the mouse button is held down
 		// the gui wont register to the mouse
-		if (!isGuiHovered && button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+		if (!gui->Active() && button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 		{
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 			leftMousePressed = true;

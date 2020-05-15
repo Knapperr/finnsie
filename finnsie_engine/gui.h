@@ -13,41 +13,15 @@
 #include <string>
 #include <stb_image/stb_image.h>
 
+#include "utils.h"
+
 namespace finnsie {
-
-	struct model_info
-	{
-		int index = 0;
-		float scale = 0.0f;
-		bool viewNormals = false;
-	};
-
-	struct water_info
-	{
-		float uJump = 0.25f;
-		float vJump = 0.25f;
-		float tiling = 3.0f;
-		float speed = 0.5f;
-		float flowStrength = 0.07f;
-		float flowOffset = -0.207f;
-		float heightScale = 0.1f;
-		float heightScaleModulated = 9.0f;
-	};
-
-	struct light_info
-	{
-		float lightX = -138.843f;
-		float lightY = -19.247f;
-		float lightZ = -14.226f;
-	};
+	// forward decl
+	struct draw_info;
 
 	struct gui_state
 	{
-		model_info modelInfo;
-		water_info waterInfo;
-		light_info lightInfo;
-		float active = false;
-		float *cameraSpeed = 0; // set to the camera object's speed
+		float *cameraSpeed = 0; // TODO(CK): JUST UPDATE DIRECTLY LOL set to the camera object's speed
 		float gameDeltaTime;
 	};
 
@@ -64,29 +38,24 @@ namespace finnsie {
 	{
 	public:
 		void Init(GLFWwindow& window, float& cameraSpeed);
-		void SetActive(bool active);
-		void Update();
+		void Update(draw_info& drawInfo);
+		bool Active();
 		void Render();
 		void Shutdown();
 
 		float playerVelocity;
 		gui_state state;
 	private:
-		bool showWaterWindow = true;
-		bool showModelWindow = false;
-
-		
 		bool showDemoWindow = false;
+		bool showWaterWindow = false;
+		bool showModelWindow = false;
 		bool showAnotherWindow = false;
 		
-
 		// TODO(CK): Remove replace with local function
 		std::vector<objFile> objPaths;
 		
-
-		void waterWindow(bool* p_open);
+		void waterWindow(bool* p_open, draw_info& drawInfo);
 		void modelWindow(bool* p_open);
-
 		// TODO(CK): Remove replace with local function
 		void getFolders(std::string folder);
 	};
