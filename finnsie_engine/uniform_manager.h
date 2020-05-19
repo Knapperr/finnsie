@@ -21,6 +21,7 @@ namespace finnsie {
 	class UniformManager
 	{
 	public:
+		// TODO(CK): Change to a map... need to retrieve by name and id
 		std::vector<uniform*> uniforms;
 		void CreateUniform(std::string name, int shaderId);
 		int GetLocation(std::string name);

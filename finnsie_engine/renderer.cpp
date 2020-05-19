@@ -263,6 +263,118 @@ namespace finnsie {
 		return;
 	}
 
+	void Renderer::DrawDirWater(Model& water, draw_info& drawInfo)
+	{
+		glUseProgram(waterDirShader.id);
+		glUniformMatrix4fv(this->uniformManager->GetLocation("projection"), 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(this->uniformManager->GetLocation("view"), 1, GL_FALSE, glm::value_ptr(view));
+
+		for (unsigned int i = 0; i < water.meshes.size(); i++)
+		{
+			unsigned int diffuseNr = 1;
+			unsigned int specularNr = 1;
+			unsigned int normalNr = 1;
+			unsigned int heightNr = 1;
+
+			for (unsigned int j = 0; j < water.meshes[i].textures.size(); ++j)
+			{
+				glActiveTexture(GL_TEXTURE0 + j); // activate the proper texture unit before binding
+				// retrieve texture number (the N in diffuse_TextureN)
+				std::string number;
+				std::string name = water.meshes[i].textures[j].type;
+
+				if (name == "texture_diffuse")
+					number = std::to_string(diffuseNr++);
+				else if (name == "texture_specular")
+					number = std::to_string(specularNr++);
+				else if (name == "texture_normal")
+					number = std::to_string(normalNr++);
+				else if (name == "texture_height")
+					number = std::to_string(heightNr++);
+
+				// now set the sampler to the correct texture unit
+				glUniform1i(glGetUniformLocation(waterDirShader.id, (name + number).c_str()), j);
+				// and finally bind the texture		
+				glBindTexture(GL_TEXTURE_2D, water.meshes[i].textures[j].id);
+			}
+
+			// TODO(CK): CLEAN UP
+			// Water direction
+			// --------------------
+
+			glUniform1f(glGetUniformLocation(waterDirShader.id, "time"), glfwGetTime());
+
+			// TODO(CK): Clean this up
+			this->lightPos = glm::vec3(drawInfo.lightInfo.lightX, drawInfo.lightInfo.lightY, drawInfo.lightInfo.lightZ);
+			glUniform3fv(glGetUniformLocation(waterDirShader.id, "lightPos"), 1, &lightPos[0]);
+			glUniform3fv(glGetUniformLocation(waterDirShader.id, "viewPos"), 1, &camPos[0]); // getting updated in BeginRender (probably not good)
+
+			//glUniform1f(this->uniformManager->GetLocation("uJump"), drawInfo.waterInfo.uJump);
+			//glUniform1f(this->uniformManager->GetLocation("vJump"), drawInfo.waterInfo.vJump);
+			glUniform1f(this->uniformManager->GetLocation("tiling2"), drawInfo.waterInfo.tiling);
+			int a = this->uniformManager->GetLocation("tiling2");
+			//glUniform1f(this->uniformManager->GetLocation("speed"), drawInfo.waterInfo.speed);
+			//glUniform1f(this->uniformManager->GetLocation("flowStrength"), drawInfo.waterInfo.flowStrength);
+			//glUniform1f(this->uniformManager->GetLocation("flowOffset"), drawInfo.waterInfo.flowOffset);
+			//glUniform1f(this->uniformManager->GetLocation("heightScale"), drawInfo.waterInfo.heightScale);
+			//glUniform1f(this->uniformManager->GetLocation("heightScaleModulated"), drawInfo.waterInfo.heightScaleModulated);
+
+			// Set position, rotation and scale
+			glm::mat4 matModel = glm::mat4(1.0f);
+
+			glm::mat4 matTranslate = glm::translate(glm::mat4(1.0f),
+													glm::vec3(water.pos.x, water.pos.y, water.pos.z));
+			matModel = matModel * matTranslate;
+
+			glm::mat4 rotateZ = glm::rotate(glm::mat4(1.0f),
+											water.orientation.z,
+											glm::vec3(0.0f, 0.0f, 1.0f));
+			matModel = matModel * rotateZ;
+
+			glm::mat4 rotateY = glm::rotate(glm::mat4(1.0f),
+											water.orientation.y,
+											glm::vec3(0.0f, 1.0f, 0.0f));
+			matModel = matModel * rotateY;
+
+			glm::mat4 rotateX = glm::rotate(glm::mat4(1.0f),
+											water.orientation.x,
+											glm::vec3(1.0f, 0.0f, 0.0f));
+			matModel = matModel * rotateX;
+
+			glm::mat4 matScale = glm::scale(glm::mat4(1.0f),
+											glm::vec3(water.scale, water.scale, water.scale));
+
+			matModel = matModel * matScale;
+			glUniformMatrix4fv(this->uniformManager->GetLocation("model"), 1, GL_FALSE, glm::value_ptr(matModel));
+
+			/*
+			// INVERSE WAS FROM GRAPHICS CLASS
+				GLint matModel_loc = glGetUniformLocation(shaderProgID, "matModel");
+				GLint matModelInvTran_loc = glGetUniformLocation(shaderProgID, "matModelInvTrans");
+			*/
+
+			if (water.wireFrame)
+			{
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			}
+			else
+			{
+				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			}
+
+			// Draw mesh
+			glBindVertexArray(water.meshes[i].VAO);
+			glDrawElements(GL_TRIANGLES, water.meshes[i].indices.size(), GL_UNSIGNED_INT, 0);
+			glBindVertexArray(0);
+
+			// Always good practice to set everything back to defaults once configured
+			// NOTE(CK): bind texture must be AFTER glActiveTexture or it will not unbind properly
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, 0);
+		}
+		return;
+	}
+
 	void Renderer::EndRender()
 	{
 		return;
@@ -292,6 +404,7 @@ namespace finnsie {
 		this->modelShader = ::finnsie::g_resourceManager->GenerateShader(001, "shaders/model_vert.glsl", "shaders/model_frag.glsl", NULL);
 		this->normalShader = ::finnsie::g_resourceManager->GenerateShader(002, "shaders/onlynormals_model_vert.glsl", "shaders/onlynormals_model_frag.glsl", "shaders/onlynormals_model_geo.glsl");
 		this->waterShader = ::finnsie::g_resourceManager->GenerateShader(003, "shaders/waterdistortion_vert.glsl", "shaders/waterdistortion_frag.glsl", NULL);
+		this->waterDirShader = ::finnsie::g_resourceManager->GenerateShader(004, "shaders/waterdirection_vert.glsl", "shaders/waterdirection_frag.glsl", NULL);
 	}
 
 	void Renderer::initUniforms()
@@ -305,6 +418,10 @@ namespace finnsie {
 		this->normalViewLoc = glGetUniformLocation(normalShader.id, "view");
 		this->normalModelLoc = glGetUniformLocation(normalShader.id, "model");
 
+		// TODO(CK): Change to manager 
+
+		// FLAW IN MANAGER... IF TWO SHADERS HAVE THE SAME NAME CAN NOT RETRIEVE
+
 		this->watProjLoc = glGetUniformLocation(waterShader.id, "projection");
 		this->watViewLoc = glGetUniformLocation(waterShader.id, "view");
 		this->watModelLoc = glGetUniformLocation(waterShader.id, "model");
@@ -317,6 +434,12 @@ namespace finnsie {
 		this->uniformManager->CreateUniform("flowOffset", waterShader.id);
 		this->uniformManager->CreateUniform("heightScale", waterShader.id);
 		this->uniformManager->CreateUniform("heightScaleModulated", waterShader.id);
+
+	
+		this->uniformManager->CreateUniform("projection",waterDirShader.id);
+		this->uniformManager->CreateUniform("view", waterDirShader.id);
+		this->uniformManager->CreateUniform("model", waterDirShader.id);
+		this->uniformManager->CreateUniform("tiling2", waterDirShader.id);
 	}
 
 }

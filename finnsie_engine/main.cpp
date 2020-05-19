@@ -25,8 +25,12 @@ inline LARGE_INTEGER GetWallClock(void);
 inline float GetSecondsElapsed(LARGE_INTEGER start, LARGE_INTEGER end);
 void processInput(GLFWwindow* window, int key, int action, int scancode, int mods);
 
-const unsigned int SCREEN_WIDTH = 1080;
-const unsigned int SCREEN_HEIGHT = 720;
+//const unsigned int SCREEN_WIDTH = 1080;
+//const unsigned int SCREEN_HEIGHT = 720;
+
+const unsigned int SCREEN_WIDTH = 1440;
+const unsigned int SCREEN_HEIGHT = 900;
+
 
 // NOTE(CK): Can't init here its outside of the finnsie namespace
 // ResourceManager* g_resourceManager; 

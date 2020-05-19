@@ -197,6 +197,33 @@ namespace finnsie {
 		water.meshes[0].textures.push_back(normaltexture);
 	}
 
+	void LoadDirectionalWater(Model& water)
+	{
+		water = Model("water",
+					  false,
+					  glm::vec3(-100.0f, -30.0f, 60.0f),
+					  glm::vec3(0.0f, 190.0f, 0.0f),
+					  16.0f,
+					  "content/objects/quad/basic_quad.obj");
+
+		std::string uvpath = "content/textures/water/ripples-derivative-height.png";
+		std::string uvdirectory = uvpath.substr(0, uvpath.find_last_of('/'));
+		Texture uvtexture = {};
+		uvtexture.id = LoadTextureFile("ripples-derivative-height.png", uvdirectory);
+		uvtexture.type = "texture_diffuse";
+		uvtexture.path = uvpath;
+
+		std::string flowpath = "content/textures/water/flow-speed-noise.png";
+		std::string flowdirectory = flowpath.substr(0, flowpath.find_last_of('/'));
+		Texture flowtexture = {};
+		flowtexture.id = LoadTextureFile("flow-speed-noise.png", flowdirectory);
+		flowtexture.type = "texture_normal";
+		flowtexture.path = flowpath;
+
+		water.meshes[0].textures.push_back(uvtexture);
+		water.meshes[0].textures.push_back(flowtexture);
+	}
+
 	/* NOTE(CK): OG (USE THIS FOR LOADING TEXTURES FROM GUI )
 	bool LoadTexture(int index)
 	{

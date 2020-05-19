@@ -16,6 +16,7 @@ namespace finnsie {
 
 		gui->Init(*this->window, camera->MovementSpeed);
 		LoadDistortedWater(water);
+		LoadDirectionalWater(dirWater);
 	}
 
 	void Game::Update(float dt)
@@ -42,6 +43,7 @@ namespace finnsie {
 			}
 		// TODO(CK): Gui State can be removed. we should be updating the data directly from the gui
 		renderer->DrawWater(water, drawInfo);
+		renderer->DrawDirWater(dirWater, drawInfo);
 		renderer->EndRender();
 
 		gui->Render();
