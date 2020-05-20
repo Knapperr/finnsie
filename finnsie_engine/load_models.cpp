@@ -202,7 +202,7 @@ namespace finnsie {
 		water = Model("water",
 					  false,
 					  glm::vec3(-100.0f, -30.0f, 60.0f),
-					  glm::vec3(0.0f, 190.0f, 0.0f),
+					  glm::vec3(0.0f, 80.0f, 0.0f),
 					  16.0f,
 					  "content/objects/quad/basic_quad.obj");
 

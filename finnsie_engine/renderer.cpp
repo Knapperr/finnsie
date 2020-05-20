@@ -312,8 +312,7 @@ namespace finnsie {
 			//glUniform1f(this->uniformManager->GetLocation("uJump"), drawInfo.waterInfo.uJump);
 			//glUniform1f(this->uniformManager->GetLocation("vJump"), drawInfo.waterInfo.vJump);
 			glUniform1f(this->uniformManager->GetLocation("tiling2"), drawInfo.waterInfo.tiling);
-			int a = this->uniformManager->GetLocation("tiling2");
-			//glUniform1f(this->uniformManager->GetLocation("speed"), drawInfo.waterInfo.speed);
+			glUniform1f(this->uniformManager->GetLocation("speed2"), drawInfo.waterInfo.speed);
 			//glUniform1f(this->uniformManager->GetLocation("flowStrength"), drawInfo.waterInfo.flowStrength);
 			//glUniform1f(this->uniformManager->GetLocation("flowOffset"), drawInfo.waterInfo.flowOffset);
 			//glUniform1f(this->uniformManager->GetLocation("heightScale"), drawInfo.waterInfo.heightScale);
@@ -440,6 +439,8 @@ namespace finnsie {
 		this->uniformManager->CreateUniform("view", waterDirShader.id);
 		this->uniformManager->CreateUniform("model", waterDirShader.id);
 		this->uniformManager->CreateUniform("tiling2", waterDirShader.id);
+		this->uniformManager->CreateUniform("speed2", waterDirShader.id);
+
 	}
 
 }

@@ -11,7 +11,7 @@ namespace finnsie {
 		float uJump = 0.25f;
 		float vJump = 0.25f;
 		float tiling = 3.0f;
-		float speed = 0.5f;
+		float speed = 0.2f;
 		float flowStrength = 0.07f;
 		float flowOffset = -0.207f;
 		float heightScale = 0.1f;

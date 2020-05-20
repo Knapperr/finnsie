@@ -25,10 +25,10 @@ uniform sampler2D texture_normal2;
 // Water controls
 uniform float time;
 uniform float tiling2;
+uniform float speed2;
 
 uniform float uJump;
 uniform float vJump;
-uniform float speed;
 uniform float flowStrength;
 uniform float flowOffset;
 uniform float heightScale;
@@ -52,6 +52,8 @@ vec2 DirectionalFlowUVW (
     vec2 uv,  vec2 flowVector, float tiling, float time
 )
 {
+    vec2 dir = normalize(flowVector.xy);
+    uv = mat2(dir.y, dir.x, -dir.x, dir.y) * uv;
     uv.y -= time;
     return uv * tiling;
 }
@@ -65,26 +67,19 @@ vec3 UnpackDerivativeHeight(vec4 textureData)
 
 void main()
 {   
-    /*
-        NOTE(CK):
-        Instead of using a derivative map and a water texture we use one derivative map
-        this will change the way i am setting the normals
 
-    */
     //vec2 uv = fs_in.TexCoords * tiling2;
-    vec2 uvFlow = DirectionalFlowUVW(fs_in.TexCoords, vec2(0, 1), tiling2, time);
+    float newTime = time * speed2;
+    vec2 uvFlow = DirectionalFlowUVW(fs_in.TexCoords, vec2(1, 1), tiling2, newTime);
     vec3 dh = UnpackDerivativeHeight(texture2D(texture_diffuse1, uvFlow));
-    vec4 _color = vec4(1.0, 1.0, 1.0, 1.0);
-	vec4 flowCol = dh.z * dh.z * _color;    
-    vec3 normal = normalize(vec3(-(dh.xy), 1));
-
-
-    // NOTE(CK): This doesn't need to be used the diffuse color we just use the flowCol we found above
-    // diffuse color
-    //vec3 color = texture(texture_diffuse1, flowCoords.xy * flowCoords.z).rgb;
     
+    vec4 _color = vec4(1.0, 1.0, 1.0, 1.0);
+	//vec4 flowCol = dh.z * dh.z * _color;    
+    vec4 flowCol = vec4(dh, 1.0); // visualize the derivatives 
+    vec3 normal = normalize(vec3(-dh.xy, 1));
+
     // ambient
-    vec3 ambient = (0.1 * flowCol.rgb);
+    vec3 ambient = (0.2 * flowCol.rgb);
     // diffuse
     vec3 lightDir = normalize(fs_in.TangentLightPos - fs_in.TangentFragPos);
     float diff = max(dot(lightDir, normal), 0.0);
@@ -93,7 +88,7 @@ void main()
     vec3 viewDir = normalize(fs_in.TangentViewPos - fs_in.TangentFragPos);
     vec3 reflectDir = reflect(-lightDir, normal);
     vec3 halfwayDir = normalize(lightDir + viewDir);
-    float spec = pow(max(dot(normal, halfwayDir), 0.0), 16.0);
+    float spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
 
     vec3 specular = vec3(0.2) * spec;
 	FragColor = vec4(ambient + diffuse + specular, 1.0);
