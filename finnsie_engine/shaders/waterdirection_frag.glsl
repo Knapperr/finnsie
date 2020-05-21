@@ -49,11 +49,13 @@ vec3 FlowUVW(vec2 uv, vec2 flowVector, vec2 jump, float flowOffset, float tiling
 }
 
 vec2 DirectionalFlowUVW (
-    vec2 uv,  vec2 flowVector, float tiling, float time
+    vec2 uv,  vec2 flowVector, float tiling, float time,
+    out mat2 rotation
 )
 {
     vec2 dir = normalize(flowVector.xy);
-    uv = mat2(dir.y, dir.x, -dir.x, dir.y) * uv;
+    rotation = mat2(dir.y, dir.x, -dir.x, dir.y);
+    uv = mat2(dir.y, -dir.x, dir.x, dir.y) * uv;
     uv.y -= time;
     return uv * tiling;
 }
@@ -70,9 +72,14 @@ void main()
 
     //vec2 uv = fs_in.TexCoords * tiling2;
     float newTime = time * speed2;
-    vec2 uvFlow = DirectionalFlowUVW(fs_in.TexCoords, vec2(1, 1), tiling2, newTime);
+    mat2 derivRotation;
+    vec2 uvFlow = DirectionalFlowUVW(
+        fs_in.TexCoords, vec2(sin(time), cos(time)), tiling2, newTime,
+        derivRotation
+    );
     vec3 dh = UnpackDerivativeHeight(texture2D(texture_diffuse1, uvFlow));
-    
+    dh.xy = derivRotation * dh.xy;
+
     vec4 _color = vec4(1.0, 1.0, 1.0, 1.0);
 	//vec4 flowCol = dh.z * dh.z * _color;    
     vec4 flowCol = vec4(dh, 1.0); // visualize the derivatives 

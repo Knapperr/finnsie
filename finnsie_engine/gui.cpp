@@ -124,9 +124,9 @@ namespace finnsie {
 			ImGui::SliderFloat("Camera Speed", this->state.cameraSpeed, 0.0f, 100.0f);
 
 
-			ImGui::SliderFloat("Light X", &drawInfo.lightInfo.lightX, -200.0f, 200.0f);
-			ImGui::SliderFloat("Light Y", &drawInfo.lightInfo.lightY, -200.0f, 200.0f);
-			ImGui::SliderFloat("Light Z", &drawInfo.lightInfo.lightZ, -200.0f, 200.0f);
+			ImGui::SliderFloat("Light X", &drawInfo.lightInfo.lightX, -200.0f, 400.0f);
+			ImGui::SliderFloat("Light Y", &drawInfo.lightInfo.lightY, -200.0f, 400.0f);
+			ImGui::SliderFloat("Light Z", &drawInfo.lightInfo.lightZ, -200.0f, 400.0f);
 			ImGui::Separator();
 
 			ImGui::End();

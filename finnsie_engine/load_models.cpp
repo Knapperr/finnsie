@@ -164,7 +164,7 @@ namespace finnsie {
 						false,
 						glm::vec3(-100.0f, -30.0f, 0.0f),
 						glm::vec3(0.0f, 0.0f, 0.0f),
-						16.0f,
+						20.0f,
 						"content/objects/quad/basic_quad.obj");
 
 		// CREATE A BASIC SHAPE LOADER replace ASSIMP
@@ -199,11 +199,12 @@ namespace finnsie {
 
 	void LoadDirectionalWater(Model& water)
 	{
+		
 		water = Model("water",
 					  false,
 					  glm::vec3(-100.0f, -30.0f, 60.0f),
-					  glm::vec3(0.0f, 80.0f, 0.0f),
-					  16.0f,
+					  glm::vec3(0.0f, glm::radians(180.0f), 0.0f),
+					  20.0f,
 					  "content/objects/quad/basic_quad.obj");
 
 		std::string uvpath = "content/textures/water/ripples-derivative-height.png";
