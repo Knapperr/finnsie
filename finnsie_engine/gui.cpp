@@ -226,14 +226,19 @@ namespace finnsie {
 		ImGui::SliderFloat("V Jump", &drawInfo.waterInfo.vJump, 0.0f, 0.25f);  // 0.25
 		ImGui::Separator();
 		ImGui::SliderFloat("Tiling", &drawInfo.waterInfo.tiling, 0.0f, 3.0f); // 3.0
-		ImGui::SliderFloat("Speed", &drawInfo.waterInfo.speed, 0.0f, 0.5f); // 0.5
+		ImGui::SliderFloat("TilingModulated", &drawInfo.waterInfo.tilingModulated, 0.0f, 80.0f); // 50
+		ImGui::SliderFloat("Speed", &drawInfo.waterInfo.speed, 0.0f, 5.0f); // 0.5
 		ImGui::Separator();
 		ImGui::SliderFloat("Flow Strength", &drawInfo.waterInfo.flowStrength, 0.0f, 1.0f); // 0.1
 		ImGui::SliderFloat("Flow Offset", &drawInfo.waterInfo.flowOffset, -10.0f, 10.0f); // 0.0
 		ImGui::Separator();
-		ImGui::SliderFloat("Height Scale", &drawInfo.waterInfo.heightScale, 0.0f, 0.1f); // 0.1
-		ImGui::SliderFloat("Height Scale Modulated", &drawInfo.waterInfo.heightScaleModulated, 0.0f, 9.0f); // 9.0
-		
+		ImGui::SliderFloat("Height Scale", &drawInfo.waterInfo.heightScale, 0.0f, 10.0f); // 0.1
+		ImGui::SliderFloat("Height Scale Modulated", &drawInfo.waterInfo.heightScaleModulated, 0.0f, 20.0f); // 9.0
+		ImGui::Separator();
+		ImGui::SliderFloat("gridResolution", &drawInfo.waterInfo.gridResolution, 0.0f, 40.0f); // 10.0
+		ImGui::Checkbox("dualGrid", &drawInfo.waterInfo.dualGrid);
+
+
 		ImGui::End();
 	}
 

@@ -312,11 +312,15 @@ namespace finnsie {
 			//glUniform1f(this->uniformManager->GetLocation("uJump"), drawInfo.waterInfo.uJump);
 			//glUniform1f(this->uniformManager->GetLocation("vJump"), drawInfo.waterInfo.vJump);
 			glUniform1f(this->uniformManager->GetLocation("tiling2"), drawInfo.waterInfo.tiling);
+			glUniform1f(this->uniformManager->GetLocation("tilingModulated"), drawInfo.waterInfo.tilingModulated);
 			glUniform1f(this->uniformManager->GetLocation("speed2"), drawInfo.waterInfo.speed);
-			//glUniform1f(this->uniformManager->GetLocation("flowStrength"), drawInfo.waterInfo.flowStrength);
+			glUniform1f(this->uniformManager->GetLocation("flowStrength2"), drawInfo.waterInfo.flowStrength);
+			glUniform1f(this->uniformManager->GetLocation("heightScale2"), drawInfo.waterInfo.heightScale);
+			glUniform1f(this->uniformManager->GetLocation("heightScaleModulated2"), drawInfo.waterInfo.heightScaleModulated);
+			glUniform1f(this->uniformManager->GetLocation("gridResolution"), drawInfo.waterInfo.gridResolution);
+			glUniform1f(this->uniformManager->GetLocation("dualGrid"), drawInfo.waterInfo.dualGrid);
+
 			//glUniform1f(this->uniformManager->GetLocation("flowOffset"), drawInfo.waterInfo.flowOffset);
-			//glUniform1f(this->uniformManager->GetLocation("heightScale"), drawInfo.waterInfo.heightScale);
-			//glUniform1f(this->uniformManager->GetLocation("heightScaleModulated"), drawInfo.waterInfo.heightScaleModulated);
 
 			// Set position, rotation and scale
 			glm::mat4 matModel = glm::mat4(1.0f);
@@ -439,8 +443,13 @@ namespace finnsie {
 		this->uniformManager->CreateUniform("view", waterDirShader.id);
 		this->uniformManager->CreateUniform("model", waterDirShader.id);
 		this->uniformManager->CreateUniform("tiling2", waterDirShader.id);
+		this->uniformManager->CreateUniform("tilingModulated", waterDirShader.id);
 		this->uniformManager->CreateUniform("speed2", waterDirShader.id);
-
+		this->uniformManager->CreateUniform("flowStrength2", waterDirShader.id);
+		this->uniformManager->CreateUniform("gridResolution", waterDirShader.id);
+		this->uniformManager->CreateUniform("heightScale2", waterDirShader.id);
+		this->uniformManager->CreateUniform("heightScaleModulated2", waterDirShader.id);
+		this->uniformManager->CreateUniform("dualGrid", waterDirShader.id);
 	}
 
 }

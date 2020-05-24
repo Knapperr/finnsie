@@ -16,6 +16,9 @@ namespace finnsie {
 		float flowOffset = -0.207f;
 		float heightScale = 0.1f;
 		float heightScaleModulated = 9.0f;
+		float gridResolution = 10.0f;
+		float tilingModulated = 50.0f;
+		bool dualGrid = false;
 	};
 
 	struct light_info

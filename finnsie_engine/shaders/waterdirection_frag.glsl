@@ -21,44 +21,21 @@ uniform Material material;
 uniform sampler2D texture_diffuse1;
 uniform sampler2D texture_normal1;
 uniform sampler2D texture_normal2;
+uniform float heightScale2;
+uniform float heightScaleModulated2;
+uniform bool dualGrid;
 
 // Water controls
 uniform float time;
 uniform float tiling2;
 uniform float speed2;
+uniform float flowStrength2;
+uniform float gridResolution;
+uniform float tilingModulated;
 
 uniform float uJump;
 uniform float vJump;
-uniform float flowStrength;
 uniform float flowOffset;
-uniform float heightScale;
-uniform float heightScaleModulated;
-
-
-vec3 FlowUVW(vec2 uv, vec2 flowVector, vec2 jump, float flowOffset, float tiling, float time, bool flowB) 
-{
-    float phaseOffset = flowB ? 0.5 : 0;
-    float progress = fract(time + phaseOffset);
-    vec3 uvw; 
-    uvw.xy = uv - flowVector * (progress + flowOffset);
-    uvw.xy *= tiling2;
-    uvw.xy += phaseOffset;
-    uvw.xy += (time - progress) * jump;
-    uvw.z = 1 - abs(1 - 2 * progress);
-    return uvw;
-}
-
-vec2 DirectionalFlowUVW (
-    vec2 uv,  vec2 flowVector, float tiling, float time,
-    out mat2 rotation
-)
-{
-    vec2 dir = normalize(flowVector.xy);
-    rotation = mat2(dir.y, dir.x, -dir.x, dir.y);
-    uv = mat2(dir.y, -dir.x, dir.x, dir.y) * uv;
-    uv.y -= time;
-    return uv * tiling;
-}
 
 vec3 UnpackDerivativeHeight(vec4 textureData)
 {
@@ -67,26 +44,81 @@ vec3 UnpackDerivativeHeight(vec4 textureData)
     return dh;
 }
 
-void main()
-{   
+vec2 DirectionalFlowUVW (
+    vec2 uv,  vec3 flowVectorAndSpeed, float tiling, float time,
+    out mat2 rotation
+)
+{
+    vec2 dir = normalize(flowVectorAndSpeed.xy);
+    rotation = mat2(dir.y, dir.x, -dir.x, dir.y);
+    uv = mat2(dir.y, -dir.x, dir.x, dir.y) * uv;
+    uv.y -= time * flowVectorAndSpeed.z;
+    return uv * tiling;
+}
 
-    //vec2 uv = fs_in.TexCoords * tiling2;
-    float newTime = time * speed2;
+vec3 FlowCell (vec2 uv, vec2 offset, float time, bool gridB)
+{
+    vec2 shift = 1 - offset;
+    shift *= 0.5;
+    offset *= 0.5;
+    if (gridB)
+    {
+        offset += 0.25;
+        shift -= 0.25;
+    }
     mat2 derivRotation;
+    vec2 uvTiled = (floor(uv * gridResolution + offset) + shift) / gridResolution;
+    vec3 flow = texture2D(texture_normal1, uvTiled).rgb;
+    flow.xy = flow.xy * 2 - 1;
+    flow.z *= flowStrength2; 
+    float tiling = flow.z * tilingModulated + tiling2;
     vec2 uvFlow = DirectionalFlowUVW(
-        fs_in.TexCoords, vec2(sin(time), cos(time)), tiling2, newTime,
+        uv + offset, flow, tiling, time,
         derivRotation
     );
     vec3 dh = UnpackDerivativeHeight(texture2D(texture_diffuse1, uvFlow));
     dh.xy = derivRotation * dh.xy;
+    dh *= flow.z * heightScaleModulated2 + heightScale2;
+    return dh;
+}
 
-    vec4 _color = vec4(1.0, 1.0, 1.0, 1.0);
-	//vec4 flowCol = dh.z * dh.z * _color;    
-    vec4 flowCol = vec4(dh, 1.0); // visualize the derivatives 
+vec3 FlowGrid(vec2 uv, float time, bool gridB)
+{
+    vec3 dhA = FlowCell(uv, vec2(0, 0), time, gridB);
+    vec3 dhB = FlowCell(uv, vec2(1, 0), time, gridB);
+    vec3 dhC = FlowCell(uv, vec2(0, 1), time, gridB);
+    vec3 dhD = FlowCell(uv, vec2(1, 1), time, gridB);
+    
+    vec2 t = uv * gridResolution;
+    if (gridB)
+    {
+        t += 0.25;
+    }
+    t = abs(2 * fract(t) - 1);
+    float wA = (1 - t.x) * (1 - t.y);
+    float wB = t.x * (1 - t.y);
+    float wC = (1 - t.x) * t.y;
+    float wD = t.x * t.y;
+    return dhA * wA + dhB * wB + dhC * wC + dhD * wD;
+}
+
+void main()
+{   
+    float newTime = time * speed2;
+    vec2 uv = fs_in.TexCoords;
+    vec3 dh = FlowGrid(uv, newTime, false);
+    if (dualGrid)
+    {
+        dh = (dh + FlowGrid(uv, newTime, true)) * 0.5;
+    }
+    //vec4 _color = vec4(1.0, 1.0, 1.0, 1.0);
+    vec4 _color = vec4(0.3, 0.6, 0.8, 1.0);
+    //vec4 flowCol = vec4(dh, 1.0); // NOTE(CK): visualize the derivatives 
+	vec4 flowCol = dh.z * dh.z * _color;    
     vec3 normal = normalize(vec3(-dh.xy, 1));
 
     // ambient
-    vec3 ambient = (0.2 * flowCol.rgb);
+    vec3 ambient = (0.8 * flowCol.rgb);
     // diffuse
     vec3 lightDir = normalize(fs_in.TangentLightPos - fs_in.TangentFragPos);
     float diff = max(dot(lightDir, normal), 0.0);
