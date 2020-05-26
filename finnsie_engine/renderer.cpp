@@ -17,10 +17,7 @@ namespace finnsie {
 
 		uniformManager = new UniformManager();
 
-		this->color = glm::vec3(0.1f, 0.5f, 0.31f);
-		this->colorChange = 0.01f;
 		this->lampPos = glm::vec3(1.2f, 1.0f, 2.0f);
-
 		this->projection = glm::mat4(1.0f);
 		this->view = glm::mat4(1.0f);
 
@@ -145,6 +142,8 @@ namespace finnsie {
 			glBindTexture(GL_TEXTURE_2D, 0);
 		}
 
+		// TODO(CK): Not sure if this is proper. Look up how to properly draw again..
+		// maybe move this logic into the game again.. if (drawNormals then call with the shader id
 		if (model.viewNormals && !drawingNormals)
 		{
 			// Normals are only drawn on the next draw call
@@ -309,8 +308,6 @@ namespace finnsie {
 			glUniform3fv(glGetUniformLocation(waterDirShader.id, "lightPos"), 1, &lightPos[0]);
 			glUniform3fv(glGetUniformLocation(waterDirShader.id, "viewPos"), 1, &camPos[0]); // getting updated in BeginRender (probably not good)
 
-			//glUniform1f(this->uniformManager->GetLocation("uJump"), drawInfo.waterInfo.uJump);
-			//glUniform1f(this->uniformManager->GetLocation("vJump"), drawInfo.waterInfo.vJump);
 			glUniform1f(this->uniformManager->GetLocation("tiling2"), drawInfo.waterInfo.tiling);
 			glUniform1f(this->uniformManager->GetLocation("tilingModulated"), drawInfo.waterInfo.tilingModulated);
 			glUniform1f(this->uniformManager->GetLocation("speed2"), drawInfo.waterInfo.speed);
@@ -319,8 +316,6 @@ namespace finnsie {
 			glUniform1f(this->uniformManager->GetLocation("heightScaleModulated2"), drawInfo.waterInfo.heightScaleModulated);
 			glUniform1f(this->uniformManager->GetLocation("gridResolution"), drawInfo.waterInfo.gridResolution);
 			glUniform1f(this->uniformManager->GetLocation("dualGrid"), drawInfo.waterInfo.dualGrid);
-
-			//glUniform1f(this->uniformManager->GetLocation("flowOffset"), drawInfo.waterInfo.flowOffset);
 
 			// Set position, rotation and scale
 			glm::mat4 matModel = glm::mat4(1.0f);

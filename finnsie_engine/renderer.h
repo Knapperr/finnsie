@@ -36,7 +36,6 @@ namespace finnsie {
 		glm::vec3 lampPos;
 		glm::vec3 lightPos;
 		glm::vec3 camPos;
-		glm::vec3 color;
 		
 		glm::mat4 projection;
 		glm::mat4 view;
@@ -58,9 +57,7 @@ namespace finnsie {
 		int watProjLoc;
 		int watViewLoc;
 		int watModelLoc;
-
-		float colorChange;
-		
+	
 		bool drawingNormals;
 
 		void initUniforms();

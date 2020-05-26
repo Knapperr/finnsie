@@ -12,7 +12,8 @@ namespace finnsie {
 		this->gui = new Gui();
 		this->renderer = new Renderer();
 		this->camera = new Camera();
-
+		this->state = game_state();
+		this->leftMousePressed = false;
 
 		gui->Init(*this->window, camera->MovementSpeed);
 		LoadDistortedWater(water);

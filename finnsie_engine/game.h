@@ -17,6 +17,11 @@ namespace finnsie {
 		RUN
 	};
 
+	struct game_state
+	{
+		int selectedModel;
+	};
+
 	class Game
 	{
 	public:
@@ -29,6 +34,7 @@ namespace finnsie {
 
 		bool leftMousePressed;
 		Mode mode;
+		game_state state;
 		GLFWwindow* window;
 		Camera *camera;
 		Renderer *renderer;
