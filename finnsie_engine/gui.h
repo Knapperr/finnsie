@@ -21,7 +21,7 @@ namespace finnsie {
 
 	struct gui_state
 	{
-		float *cameraSpeed = 0; // TODO(CK): JUST UPDATE DIRECTLY LOL set to the camera object's speed
+		float *cameraSpeed = 0; // TODO(CK): JUST UPDATE DIRECTLY set to the camera object's speed
 		float gameDeltaTime;
 	};
 

@@ -10,8 +10,6 @@
 
 namespace finnsie {
 
-//class Model; // TODO(CK): Forward declaration
-
 extern ResourceManager* g_resourceManager;
 extern std::vector<Model*> g_models;
 

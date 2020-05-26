@@ -4,10 +4,30 @@
 
 namespace finnsie {
 
-	void Generate(Texture2D* texture, unsigned int width, unsigned int height, unsigned char* data)
+	void Generate(Texture2D* texture, unsigned int width, unsigned int height, unsigned int nrChannels, unsigned char* data)
 	{
 		texture->width = width;
 		texture->height = height;
+
+		switch (nrChannels)
+		{
+			case 1:
+				texture->imageFormat = GL_ALPHA;
+				texture->internalFormat = GL_ALPHA;
+				break;
+			case 3:
+				texture->imageFormat = GL_RGB;
+				texture->internalFormat = GL_RGB;
+				break;
+			case 4:
+				texture->imageFormat = GL_RGBA;
+				texture->internalFormat = GL_RGBA;
+				break;
+			default:
+				texture->imageFormat = GL_RGB;
+				texture->internalFormat = GL_RGB;
+				break;
+		}
 
 		glBindTexture(GL_TEXTURE_2D, texture->id);
 		glTexImage2D(GL_TEXTURE_2D, 0, texture->internalFormat, width, height,

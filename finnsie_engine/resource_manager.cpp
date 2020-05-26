@@ -50,16 +50,10 @@ namespace finnsie {
 		texture.imageFormat = GL_RGB;
 		texture.wrapS = GL_REPEAT;
 		texture.wrapT = GL_REPEAT;
-		texture.filterMin = GL_LINEAR;
+		texture.filterMin = GL_LINEAR_MIPMAP_LINEAR;
 		texture.filterMax = GL_LINEAR;
 
 		glGenTextures(1, &texture.id);
-
-		if (alpha)
-		{
-			texture.internalFormat = GL_RGBA;
-			texture.imageFormat = GL_RGBA;
-		}
 
 		int width, height, nrChannels;
 
@@ -67,11 +61,11 @@ namespace finnsie {
 		unsigned char* image = stbi_load(file, &width, &height, &nrChannels, 0);
 		if (image)
 		{
-			Generate(&texture, width, height, image);
+			Generate(&texture, width, height, nrChannels, image);
 		}
 		else
 		{
-			std::cout << "TEXTURE::ERROR:: Failed  to load texture\n";
+			std::cout << "TEXTURE::ERROR Failed  to load texture\n";
 		}
 		stbi_image_free(image);
 		return texture;

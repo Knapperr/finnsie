@@ -42,11 +42,9 @@ namespace finnsie {
 				renderer->DrawModel(*g_models[i]);
 				
 			}
-		// TODO(CK): Gui State can be removed. we should be updating the data directly from the gui
 		renderer->DrawWater(water, drawInfo);
 		renderer->DrawDirWater(dirWater, drawInfo);
 		renderer->EndRender();
-
 		gui->Render();
 	}
 

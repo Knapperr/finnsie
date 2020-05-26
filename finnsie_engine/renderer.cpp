@@ -142,7 +142,7 @@ namespace finnsie {
 			glBindTexture(GL_TEXTURE_2D, 0);
 		}
 
-		// TODO(CK): Not sure if this is proper. Look up how to properly draw again..
+		// TODO(CK): Not sure if this is proper. Look up how to do this properly
 		// maybe move this logic into the game again.. if (drawNormals then call with the shader id
 		if (model.viewNormals && !drawingNormals)
 		{
@@ -396,9 +396,10 @@ namespace finnsie {
 	void Renderer::initShaders()
 	{
 		// Need a shader for models
-		// TODO(CK): The game probably should pass the shaders to the renderer
-		// the renderer shouldn't have the shaders init inside because the shaders
+		// TODO(CK): The game probably should pass the shaders to the renderer???
+		// the renderer shouldn't have the shaders in it inside because the shaders
 		// could be different...
+		// or does the renderer hold a vector of shaders that will be chosen by the render functions
 		this->modelShader = ::finnsie::g_resourceManager->GenerateShader(001, "shaders/model_vert.glsl", "shaders/model_frag.glsl", NULL);
 		this->normalShader = ::finnsie::g_resourceManager->GenerateShader(002, "shaders/onlynormals_model_vert.glsl", "shaders/onlynormals_model_frag.glsl", "shaders/onlynormals_model_geo.glsl");
 		this->waterShader = ::finnsie::g_resourceManager->GenerateShader(003, "shaders/waterdistortion_vert.glsl", "shaders/waterdistortion_frag.glsl", NULL);
@@ -415,8 +416,6 @@ namespace finnsie {
 		this->normalProjLoc = glGetUniformLocation(normalShader.id, "projection");
 		this->normalViewLoc = glGetUniformLocation(normalShader.id, "view");
 		this->normalModelLoc = glGetUniformLocation(normalShader.id, "model");
-
-		// TODO(CK): Change to manager 
 
 		// FLAW IN MANAGER... IF TWO SHADERS HAVE THE SAME NAME CAN NOT RETRIEVE
 

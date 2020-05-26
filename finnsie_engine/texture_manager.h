@@ -3,6 +3,7 @@
 
 namespace finnsie {
 
+	// TODO(CK): Change to normal texture
 	struct Texture2D
 	{
 		unsigned int id;
@@ -18,7 +19,7 @@ namespace finnsie {
 		unsigned int filterMax;
 	};
 
-	void Generate(Texture2D* texture, unsigned int width, unsigned int height, unsigned char* data);
+	void Generate(Texture2D* texture, unsigned int width, unsigned int height, unsigned int nrChannels, unsigned char* data);
 	void Bind(Texture2D* texture);
 
 }

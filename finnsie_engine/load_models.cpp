@@ -9,7 +9,7 @@ namespace finnsie {
 
 	std::vector<Model*> g_models;
 
-	// TODO(CK): TEMP FUNCTION USE RESOURCE MANAGER
+	// TODO(CK): TEMP FUNCTION USE RESOURCE MANAGER (Create texture with resource manager and pass it to the function)
 	unsigned int LoadTextureFile(const char* path, const std::string& directory, bool gamma = false)
 	{
 		std::string filename = std::string(path);
@@ -128,7 +128,6 @@ namespace finnsie {
 	bool LoadTexture(int index)  
 	{
 		// CREATE A BASIC SHAPE LOADER replace ASSIMP
-		// TODO(CK): [TEST] bind textures to water
 		// WE WILL HAVE TO PUSH THIS TEXTURE TO THE TEXUTES OF THE QUAD 
 		// IN model.h
 		std::string uvpath = "content/textures/water/water.png";
@@ -169,7 +168,6 @@ namespace finnsie {
 						"content/objects/quad/basic_quad.obj");
 
 		// CREATE A BASIC SHAPE LOADER replace ASSIMP
-		// TODO(CK): [TEST] bind textures to water
 		// WE WILL HAVE TO PUSH THIS TEXTURE TO THE TEXUTES OF THE QUAD 
 		// IN model.h
 		std::string uvpath = "content/textures/water/water.png";
@@ -230,7 +228,6 @@ namespace finnsie {
 	bool LoadTexture(int index)
 	{
 		// CREATE A BASIC SHAPE LOADER replace ASSIMP
-		// TODO(CK): [TEST] bind textures to water
 		// WE WILL HAVE TO PUSH THIS TEXTURE TO THE TEXUTES OF THE QUAD 
 		// IN model.h
 		std::string path = "content/textures/water/uv.png";
@@ -248,9 +245,8 @@ namespace finnsie {
 
 	bool LoadModels(std::string path)
 	{
-		// TODO(CK): Change to bool
 		/* TODO(CK): Read a file with all of this data in it. 
-					 An editor would just use one big file
+					 An editor would just use one big file??? maybe not
 		name: 
 		wireFrame: 1 or 0
 		pos: -20.0f, -3.75f, 0.0f
