@@ -37,6 +37,7 @@ namespace finnsie {
 		game_state state;
 		GLFWwindow* window;
 		Camera *camera;
+		Camera* gameCamera;
 		Renderer *renderer;
 
 	private:

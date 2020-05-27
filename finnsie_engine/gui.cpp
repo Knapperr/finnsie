@@ -154,7 +154,9 @@ namespace finnsie {
 		ImGui::Separator();
 		if (ImGui::Button("New Model"))
 		{
+			LOG("Creating empty model");
 			CreateEmptyModel();
+			LOG("Empty model created");
 		}
 		ImGui::EndChild();
 		ImGui::SameLine();
@@ -175,7 +177,9 @@ namespace finnsie {
 				{
 					if (ImGui::SmallButton(objPaths[i].name.c_str()))
 					{
+						LOG("Loading mesh...");
 						LoadEmptyModel(selected, objPaths[i].name, objPaths[i].path);
+						LOG("mesh loaded!");
 						ImGui::CloseCurrentPopup();
 					}
 				}

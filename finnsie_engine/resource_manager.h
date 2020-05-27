@@ -26,8 +26,6 @@ namespace finnsie {
 
 		Texture2D loadTextureFromFile(const char* file, bool alpha);
 	};
-
-
 }
 
 #endif

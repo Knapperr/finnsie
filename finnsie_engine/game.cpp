@@ -7,11 +7,15 @@ namespace finnsie {
 
 	Game::Game(GLFWwindow& wnd)
 	{
+		LOG("Game Init");
+
 		this->mode = Mode::EDIT;
 		this->window = &wnd;
 		this->gui = new Gui();
 		this->renderer = new Renderer();
 		this->camera = new Camera();
+		// TODO(CK): Use game camera
+		this->gameCamera = new Camera();
 		this->state = game_state();
 		this->leftMousePressed = false;
 
@@ -36,7 +40,8 @@ namespace finnsie {
 
 	void Game::Render()
 	{
-		renderer->BeginRender(*camera);
+		// TODO(CK): Use game camera (can switch to gameCamera here)
+		renderer->BeginRender(*camera); 
 			for (unsigned int i = 0; i < g_models.size(); i++)
 			{
 				renderer->DrawModel(*g_models[i]);
@@ -93,6 +98,7 @@ namespace finnsie {
 		renderer->Shutdown();
 		delete renderer;
 		delete camera;
+		delete gameCamera;
 		gui->Shutdown();
 		delete gui;
 	}

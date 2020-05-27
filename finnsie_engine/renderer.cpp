@@ -367,6 +367,7 @@ namespace finnsie {
 
 			// Always good practice to set everything back to defaults once configured
 			// NOTE(CK): bind texture must be AFTER glActiveTexture or it will not unbind properly
+			// because the active texture must be 0
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, 0);
 		}
@@ -432,7 +433,7 @@ namespace finnsie {
 		this->uniformManager->CreateUniform("heightScale", waterShader.id);
 		this->uniformManager->CreateUniform("heightScaleModulated", waterShader.id);
 
-	
+		
 		this->uniformManager->CreateUniform("projection",waterDirShader.id);
 		this->uniformManager->CreateUniform("view", waterDirShader.id);
 		this->uniformManager->CreateUniform("model", waterDirShader.id);

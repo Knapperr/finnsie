@@ -4,9 +4,9 @@
 #include <glm/glm.hpp>	
 #include <vector>
 
+#include "log.h"
 #include "model.h"
 #include "resource_manager.h"
-
 
 namespace finnsie {
 
