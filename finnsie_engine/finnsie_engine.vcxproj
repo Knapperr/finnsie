@@ -156,7 +156,7 @@
     <ClCompile Include="include\imgui\imgui_widgets.cpp" />
     <ClCompile Include="include\stb_image\stb_image.cpp" />
     <ClCompile Include="load_models.cpp" />
-    <ClCompile Include="Log.cpp" />
+    <ClCompile Include="log.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="resource_manager.cpp" />

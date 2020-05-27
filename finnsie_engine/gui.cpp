@@ -154,9 +154,7 @@ namespace finnsie {
 		ImGui::Separator();
 		if (ImGui::Button("New Model"))
 		{
-			LOG("Creating empty model");
 			CreateEmptyModel();
-			LOG("Empty model created");
 		}
 		ImGui::EndChild();
 		ImGui::SameLine();

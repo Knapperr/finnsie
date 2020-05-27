@@ -75,7 +75,7 @@
     <ClCompile Include="uniform_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Log.cpp">
+    <ClCompile Include="log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

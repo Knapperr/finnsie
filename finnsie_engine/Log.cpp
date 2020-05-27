@@ -12,12 +12,15 @@ namespace finnsie {
 
 	void Log::Msg(const char* msg, Severity severity)
 	{
-		// TODO(CK): Don't print to console unless #define VERBOSE
+		// TODO(CK): Don't print to console unless #define VERBOSE 
 		// just write to a file
 		switch (severity)
 		{
 		case Severity::TRACE:
+#if _DEBUG
+#elif PRINT_LOG
 			std::cout << "TRACE: " << msg << '\n';
+#endif
 			break;
 		case Severity::WARN:
 			std::cout << "WARNING: " << msg << '\n';

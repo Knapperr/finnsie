@@ -19,7 +19,6 @@
 
 using namespace finnsie;
 
-
 // TODO(CK): move to game
 inline LARGE_INTEGER GetWallClock(void);
 inline float GetSecondsElapsed(LARGE_INTEGER start, LARGE_INTEGER end);
