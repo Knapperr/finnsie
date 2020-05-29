@@ -1,6 +1,9 @@
 #ifndef LOG_HG_
 #define LOG_HG_
 
+#include <ostream>
+#include <sstream>
+
 namespace finnsie {
 
 	enum class Severity
@@ -15,6 +18,9 @@ namespace finnsie {
 	public:
 		static void Init();
 		static void Msg(const char* msg, Severity severity);
+
+	private:
+
 	};
 }
 

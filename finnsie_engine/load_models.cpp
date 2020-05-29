@@ -4,6 +4,7 @@
 #include <sstream>
 #include <fstream>
 #include <algorithm>
+#include "log.h"
 
 namespace finnsie {
 
@@ -55,7 +56,8 @@ namespace finnsie {
 		}
 		else
 		{
-			std::cout << "Texture failed to load at path: " << path << "\n";
+			std::string msg = "Texture failed to load at path: " + (std::string)path;
+			LOG_WARN(msg.c_str());
 			stbi_image_free(data);
 		}
 		return textureID;
@@ -109,7 +111,8 @@ namespace finnsie {
 		{
 			if (g_models[i]->modelName == name)
 			{
-				std::cout << name << " is already loaded\n";
+				std::string msg = name + " is already loaded\n";
+				LOG_WARN(msg.c_str());
 				return false;
 			}
 		}
