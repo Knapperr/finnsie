@@ -161,14 +161,15 @@ namespace finnsie {
 		return true;
 	}
 
-	void LoadDistortedWater(Model &water)
+	void LoadDistortedWater(Model* water)
 	{
-		water = Model("water",
-						false,
-						glm::vec3(-100.0f, -30.0f, 0.0f),
-						glm::vec3(0.0f, 0.0f, 0.0f),
-						20.0f,
-						"content/objects/quad/basic_quad.obj");
+		// THis is how it worked before it was a pointer
+		//water = new Model("water",
+		//				false,
+		//				glm::vec3(-100.0f, -30.0f, 0.0f),
+		//				glm::vec3(0.0f, 0.0f, 0.0f),
+		//				20.0f,
+		//				"content/objects/quad/basic_quad.obj");
 
 		// CREATE A BASIC SHAPE LOADER replace ASSIMP
 		// WE WILL HAVE TO PUSH THIS TEXTURE TO THE TEXUTES OF THE QUAD 
@@ -194,9 +195,9 @@ namespace finnsie {
 		normaltexture.type = "texture_normal";
 		normaltexture.path = normalpath;
 
-		water.meshes[0].textures.push_back(uvtexture);
-		water.meshes[0].textures.push_back(flowtexture);
-		water.meshes[0].textures.push_back(normaltexture);
+		water->meshes[0].textures.push_back(uvtexture);
+		water->meshes[0].textures.push_back(flowtexture);
+		water->meshes[0].textures.push_back(normaltexture);
 	}
 
 	void LoadDirectionalWater(Model& water)

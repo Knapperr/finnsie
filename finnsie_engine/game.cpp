@@ -18,8 +18,14 @@ namespace finnsie {
 		this->gameCamera = new Camera();
 		this->state = game_state();
 		this->leftMousePressed = false;
-
+		
 		gui->Init(*this->window, camera->MovementSpeed);
+		water = new Model("water",
+						false,
+						glm::vec3(-100.0f, -30.0f, 0.0f),
+						glm::vec3(0.0f, 0.0f, 0.0f),
+						20.0f,
+						"content/objects/quad/basic_quad.obj");
 		LoadDistortedWater(water);
 		LoadDirectionalWater(dirWater);
 	}
@@ -97,6 +103,9 @@ namespace finnsie {
 	{
 		renderer->Shutdown();
 		delete renderer;
+
+		delete water;
+
 		delete camera;
 		delete gameCamera;
 		gui->Shutdown();

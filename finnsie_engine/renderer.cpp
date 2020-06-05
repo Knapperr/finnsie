@@ -153,23 +153,23 @@ namespace finnsie {
 		}
 	}
 
-	void Renderer::DrawWater(Model& water, draw_info& drawInfo)
+	void Renderer::DrawWater(Model* water, draw_info& drawInfo)
 	{
 		startShader(waterShader.id, watModelLoc, watProjLoc, watViewLoc);
 
-		for (unsigned int i = 0; i < water.meshes.size(); i++)
+		for (unsigned int i = 0; i < water->meshes.size(); i++)
 		{
 			unsigned int diffuseNr = 1;
 			unsigned int specularNr = 1;
 			unsigned int normalNr = 1;
 			unsigned int heightNr = 1;
 
-			for (unsigned int j = 0; j < water.meshes[i].textures.size(); ++j)
+			for (unsigned int j = 0; j < water->meshes[i].textures.size(); ++j)
 			{
 				glActiveTexture(GL_TEXTURE0 + j); // activate the proper texture unit before binding
 				// retrieve texture number (the N in diffuse_TextureN)
 				std::string number;
-				std::string name = water.meshes[i].textures[j].type;
+				std::string name = water->meshes[i].textures[j].type;
 
 				if (name == "texture_diffuse")
 					number = std::to_string(diffuseNr++);
@@ -183,7 +183,7 @@ namespace finnsie {
 				// now set the sampler to the correct texture unit
 				glUniform1i(glGetUniformLocation(waterShader.id, (name + number).c_str()), j);
 				// and finally bind the texture		
-				glBindTexture(GL_TEXTURE_2D, water.meshes[i].textures[j].id);
+				glBindTexture(GL_TEXTURE_2D, water->meshes[i].textures[j].id);
 			}
 
 			// TODO(CK): CLEAN UP
@@ -210,26 +210,26 @@ namespace finnsie {
 			glm::mat4 matModel = glm::mat4(1.0f);
 
 			glm::mat4 matTranslate = glm::translate(glm::mat4(1.0f),
-													glm::vec3(water.pos.x, water.pos.y, water.pos.z));
+													glm::vec3(water->pos.x, water->pos.y, water->pos.z));
 			matModel = matModel * matTranslate;
 
 			glm::mat4 rotateZ = glm::rotate(glm::mat4(1.0f),
-											water.orientation.z,
+											water->orientation.z,
 											glm::vec3(0.0f, 0.0f, 1.0f));
 			matModel = matModel * rotateZ;
 
 			glm::mat4 rotateY = glm::rotate(glm::mat4(1.0f),
-											water.orientation.y,
+											water->orientation.y,
 											glm::vec3(0.0f, 1.0f, 0.0f));
 			matModel = matModel * rotateY;
 
 			glm::mat4 rotateX = glm::rotate(glm::mat4(1.0f),
-											water.orientation.x,
+											water->orientation.x,
 											glm::vec3(1.0f, 0.0f, 0.0f));
 			matModel = matModel * rotateX;
 
 			glm::mat4 matScale = glm::scale(glm::mat4(1.0f),
-											glm::vec3(water.scale, water.scale, water.scale));
+											glm::vec3(water->scale, water->scale, water->scale));
 
 			matModel = matModel * matScale;
 			glUniformMatrix4fv(watModelLoc, 1, GL_FALSE, glm::value_ptr(matModel));
@@ -240,7 +240,7 @@ namespace finnsie {
 				GLint matModelInvTran_loc = glGetUniformLocation(shaderProgID, "matModelInvTrans");
 			*/
 
-			if (water.wireFrame)
+			if (water->wireFrame)
 			{
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			}
@@ -250,8 +250,8 @@ namespace finnsie {
 			}
 
 			// Draw mesh
-			glBindVertexArray(water.meshes[i].VAO);
-			glDrawElements(GL_TRIANGLES, water.meshes[i].indices.size(), GL_UNSIGNED_INT, 0);
+			glBindVertexArray(water->meshes[i].VAO);
+			glDrawElements(GL_TRIANGLES, water->meshes[i].indices.size(), GL_UNSIGNED_INT, 0);
 			glBindVertexArray(0);
 
 			// Always good practice to set everything back to defaults once configured
