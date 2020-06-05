@@ -194,6 +194,11 @@ namespace finnsie {
 				{
 					//ImGui::TextWrapped("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ");
 					ImGui::SliderFloat("scale", &g_models[selected]->scale, 0.0f, 30.0f);
+
+					ImGui::SliderFloat("x", &g_models[selected]->pos.x, -1000.0f, 1000.0f);
+					ImGui::SliderFloat("y", &g_models[selected]->pos.y, -1000.0f, 1000.0f);
+					ImGui::SliderFloat("z", &g_models[selected]->pos.z, -1000.0f, 1000.0f);
+					
 					ImGui::Checkbox("show normals", &g_models[selected]->viewNormals);
 					ImGui::EndTabItem();
 				}
