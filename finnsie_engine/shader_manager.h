@@ -17,9 +17,11 @@ namespace finnsie {
 
 		Shader& UseShader(Shader* shader);
 		void LoadUniforms(std::stringstream& shaderFile);
+		void ActivateUniforms();
 		void BuildShader(Shader* shader, const char* vertexText, const char* fragmentText, const char* geometryText = NULL);
-		void CheckCompileErrors(unsigned int shader, std::string type);
-
+		
+	private:
+		void checkCompileErrors(unsigned int shader, std::string type);
 	};
 
 	

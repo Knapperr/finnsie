@@ -300,16 +300,12 @@ namespace finnsie {
 			switch (uniform.type
 			uniform.float / int / bool
 
-
-			if this info matches we can loop through it in the renderer and it will all go as planned
-			relying on knowing parser and data but its fine
-
 		for (int i = 0; shader.uniforms.length; i++)
 		{
-			switch (shader.uniforms[i].type)
+			if (shader.uniforms[i].type == "slider")
 			{
 				case "slider":
-					ImGui::SliderFloat(shader.uniforms[i].name, &shader,uniforms[i].value, 0.0f, 40.0f); // 10.0
+					ImGui::SliderFloat(shader.uniforms[i].name, &shader,uniforms[i].value(floating), 0.0f, 40.0f); // 10.0
 				
 				case "checkmark":
 					

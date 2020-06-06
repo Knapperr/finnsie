@@ -24,13 +24,13 @@ namespace finnsie {
 	{
 	public:
 		int value;
-		std::string type;
+		std::string guiType;
 		std::string name;
 
 		Uniform()
 		{
 			value = 0;
-			type = "";
+			guiType = "";
 			name = "";
 		}
 
@@ -38,13 +38,13 @@ namespace finnsie {
 		{
 			this->value = value;
 			this->name = name;
-			this->type = type;
+			this->guiType = type;
 		}
 
 		Uniform(std::string name, std::string type)
 		{
 			this->name = name;
-			this->type = type;
+			this->guiType = type;
 		}
 	};
 

@@ -73,12 +73,12 @@ namespace finnsie {
 		vertex = glCreateShader(GL_VERTEX_SHADER);
 		glShaderSource(vertex, 1, &vShaderCode, NULL);
 		glCompileShader(vertex);
-		CheckCompileErrors(vertex, "VERTEX");
+		checkCompileErrors(vertex, "VERTEX");
 
 		fragment = glCreateShader(GL_FRAGMENT_SHADER);
 		glShaderSource(fragment, 1, &fShaderCode, NULL);
 		glCompileShader(fragment);
-		CheckCompileErrors(fragment, "FRAGMENT");
+		checkCompileErrors(fragment, "FRAGMENT");
 
 		unsigned int geometry;
 		if (geometryText != nullptr)
@@ -87,7 +87,7 @@ namespace finnsie {
 			geometry = glCreateShader(GL_GEOMETRY_SHADER);
 			glShaderSource(geometry, 1, &gShaderCode, NULL);
 			glCompileShader(geometry);
-			CheckCompileErrors(geometry, "GEOMETRY");
+			checkCompileErrors(geometry, "GEOMETRY");
 		}
 		// Shader program
 		shader->id = glCreateProgram();
@@ -98,7 +98,7 @@ namespace finnsie {
 			glAttachShader(shader->id, geometry);
 		}
 		glLinkProgram(shader->id);
-		CheckCompileErrors(shader->id, "PROGRAM");
+		checkCompileErrors(shader->id, "PROGRAM");
 		// Delete the shaders as they're linked into our program now and no longer necessary
 		glDeleteShader(vertex);
 		glDeleteShader(fragment);
@@ -108,7 +108,7 @@ namespace finnsie {
 		}
 	}
 
-	// Get the uniforms for the shader
+	// Load the uniforms from the shader file
 	void Shader::LoadUniforms(std::stringstream& shaderFile)
 	{
 
@@ -126,16 +126,16 @@ namespace finnsie {
 			{
 				if (type == "int")
 				{
-					uniforms.push_back(Uniform(1.0, temp, type));
+					uniforms.push_back(Uniform(1.0, temp, "slider"));
 				}
 				if (type == "float")
 				{
-					uniforms.push_back(FloatUniform(false, temp, type));
+					uniforms.push_back(FloatUniform(false, temp, "slider"));
 
 				}
 				if (type == "bool")
 				{
-					uniforms.push_back(BoolUniform(1.0f, temp, type));
+					uniforms.push_back(BoolUniform(1.0f, temp, "checkbox"));
 
 				}
 				type = "";
@@ -155,8 +155,40 @@ namespace finnsie {
 		}
 	}
 
+	// Get the uniform
+	void Shader::ActivateUniforms()
+	{
+		// This should work because the "drawInfo" is just the state of that uniforms value
+		// so if we use this method it should be fine its just using the shader itself
+		if (uniforms[0].guiType == "slider")
+		{
+			glUniform1f(glGetUniformLocation(this->id, uniforms[0].name.c_str()), uniforms[0].value);
+		}
+
+		for (int i = 0; i < uniforms.size(); ++i)
+		{
+			// vec3s
+			//glUniform3fv(glGetUniformLocation(waterShader.id, "lightPos"), 1, &lightPos[0]);
+			//glUniform3fv(glGetUniformLocation(waterShader.id, "viewPos"), 1, &camPos[0]); // getting updated in BeginRender (probably not good)
+
+			// floats
+			//glUniform1f(this->uniformManager->GetLocation("uJump"), drawInfo.waterInfo.uJump);
+			//glUniform1f(this->uniformManager->GetLocation("vJump"), drawInfo.waterInfo.vJump);
+			//glUniform1f(this->uniformManager->GetLocation("tiling"), drawInfo.waterInfo.tiling);
+			//glUniform1f(this->uniformManager->GetLocation("speed"), drawInfo.waterInfo.speed);
+			//glUniform1f(this->uniformManager->GetLocation("flowStrength"), drawInfo.waterInfo.flowStrength);
+			//glUniform1f(this->uniformManager->GetLocation("flowOffset"), drawInfo.waterInfo.flowOffset);
+			//glUniform1f(this->uniformManager->GetLocation("heightScale"), drawInfo.waterInfo.heightScale);
+			//glUniform1f(this->uniformManager->GetLocation("heightScaleModulated"), drawInfo.waterInfo.heightScaleModulated);
+
+			// this is a bool but it works?
+			//glUniform1f(this->uniformManager->GetLocation("dualGrid"), drawInfo.waterInfo.dualGrid);
+
+		}
+	}
+
 	// Check shader compilation/linking errors
-	void Shader::CheckCompileErrors(unsigned int shader, std::string type)
+	void Shader::checkCompileErrors(unsigned int shader, std::string type)
 	{
 		int success;
 		char infoLog[1024];
