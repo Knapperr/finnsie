@@ -24,7 +24,7 @@ namespace finnsie {
 	};
 }
 
-#define PRINT_LOG 0
+#define PRINT_LOG 1
 #define LOG(msg) finnsie::Log::Msg(msg, Severity::TRACE)
 #define LOG_WARN(msg) finnsie::Log::Msg(msg, Severity::WARN)
 #define LOG_ERR(msg) finnsie::Log::Msg(msg, Severity::TRACE)

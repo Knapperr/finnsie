@@ -17,8 +17,7 @@ namespace finnsie {
 		switch (severity)
 		{
 		case Severity::TRACE:
-#if _DEBUG
-#elif PRINT_LOG
+#if PRINT_LOG
 			std::cout << "TRACE: " << msg << '\n';
 #endif
 			break;

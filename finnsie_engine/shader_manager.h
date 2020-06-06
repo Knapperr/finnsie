@@ -3,7 +3,9 @@
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
-#include <string>
+
+#include "uniform.h"
+
 
 namespace finnsie {
 
@@ -11,11 +13,18 @@ namespace finnsie {
 	{
 	public:
 		unsigned int id;
+		std::vector<Uniform> uniforms;
+
+		Shader& UseShader(Shader* shader);
+		void LoadUniforms(std::stringstream& shaderFile);
+		void BuildShader(Shader* shader, const char* vertexText, const char* fragmentText, const char* geometryText = NULL);
+		void CheckCompileErrors(unsigned int shader, std::string type);
+
 	};
 
-	Shader& UseShader(Shader* shader);
-	void BuildShader(Shader* shader, const char* vertexText, const char* fragmentText, const char* geometryText = NULL);
-	void CheckCompileErrors(unsigned int shader, std::string type);
+	
+	
+	
 
 }
 

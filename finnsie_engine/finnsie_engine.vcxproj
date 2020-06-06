@@ -185,6 +185,7 @@
     <ClInclude Include="resource_manager.h" />
     <ClInclude Include="shader_manager.h" />
     <ClInclude Include="texture_manager.h" />
+    <ClInclude Include="uniform.h" />
     <ClInclude Include="uniform_manager.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>

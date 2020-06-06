@@ -14,7 +14,7 @@ namespace finnsie {
 	Shader ResourceManager::GenerateShader(int lookupId, const char* vertName, const char* fragName, const char* geoName)
 	{
 		Shader shader = {};
-		BuildShader(&shader, vertName, fragName, geoName);
+		shader.BuildShader(&shader, vertName, fragName, geoName);
 		shaders[lookupId] = shader;
 		return shaders[lookupId];
 	}

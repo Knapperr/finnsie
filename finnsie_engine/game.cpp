@@ -5,10 +5,14 @@
 
 namespace finnsie {
 
+	// Game inits resource manager
+	ResourceManager* g_resourceManager;
+
 	Game::Game(GLFWwindow& wnd)
 	{
 		LOG("Game Init");
 
+		::finnsie::g_resourceManager = new ResourceManager();
 		this->mode = Mode::EDIT;
 		this->window = &wnd;
 		this->gui = new Gui();

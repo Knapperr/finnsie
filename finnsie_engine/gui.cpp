@@ -245,6 +245,79 @@ namespace finnsie {
 		ImGui::SliderFloat("gridResolution", &drawInfo.waterInfo.gridResolution, 0.0f, 40.0f); // 10.0
 		ImGui::SliderFloat("TilingModulated", &drawInfo.waterInfo.tilingModulated, 0.0f, 80.0f); // 50
 		ImGui::Checkbox("dualGrid", &drawInfo.waterInfo.dualGrid);
+		
+
+		/*
+		Render these using a switch
+		pointer to shader set up in the Gui Initializer
+		// or loops throuhg shaders gets them in an array
+		shader = g_resourceManager("getShader");
+		// ----------
+
+		// drawinfo has to be on paralel with uniforms set when uniforms are read?
+		// how to create these dynamically? have to be different types needa generic type to switch off of?
+		Shader.drawInfo = std::vector<DrawInfo>();
+
+		DrawInfo 
+		(how are types added to the struct?
+			
+			
+			// dont even need this just attach it to the uniform class?
+			uniform.name
+			uniform.type
+			uniforn.value <--- int, float, bool???
+			uniform.boolean = false;
+			uniform.integer = 1;
+			uniform.floating = 1.0f;
+
+			can have a BoolUniform <- has bool value : uniform
+					   IntUniform <- int value
+					   FloatUniform <- float value
+
+
+
+			// heavy but works?
+			// best might be floating, integer, and boolean members cause its so lightweight... not user friendly but only for me
+			// templated class is nice tho? might go 
+			templated uniform class?
+			template <class T>
+			Uniform()<T> {
+				T value;
+				std::string name
+				std::string type
+
+				<T> GetValue() { return value; }
+			}
+
+			generic virtual value
+			value gets called when we do the loop to get all uniforms
+
+			then create a std::vector<uniform>  might not be worth it tho?
+			// okay to have these 3 small members
+
+			// this might be difficult how do i just change atype?
+			uniform.SetVal(const char* type)
+			switch (uniform.type
+			uniform.float / int / bool
+
+
+			if this info matches we can loop through it in the renderer and it will all go as planned
+			relying on knowing parser and data but its fine
+
+		for (int i = 0; shader.uniforms.length; i++)
+		{
+			switch (shader.uniforms[i].type)
+			{
+				case "slider":
+					ImGui::SliderFloat(shader.uniforms[i].name, &shader,uniforms[i].value, 0.0f, 40.0f); // 10.0
+				
+				case "checkmark":
+					
+			}
+		
+		}
+		*/
+		
 
 		ImGui::End();
 	}

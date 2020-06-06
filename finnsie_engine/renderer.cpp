@@ -7,14 +7,8 @@
 
 namespace finnsie {
 
-	// NOTE(CK): Global ResourceManager 
-	//			 have to initialize here inside of the namespace
-	ResourceManager* g_resourceManager;
-
 	Renderer::Renderer()
 	{
-		::finnsie::g_resourceManager = new ResourceManager();
-
 		uniformManager = new UniformManager();
 
 		this->lampPos = glm::vec3(1.2f, 1.0f, 2.0f);
@@ -194,6 +188,9 @@ namespace finnsie {
 
 			// TODO(CK): Clean this up
 			this->lightPos = glm::vec3(drawInfo.lightInfo.lightX, drawInfo.lightInfo.lightY, drawInfo.lightInfo.lightZ);
+			
+			// loop through draw info grabbed passed to gui from game. then game passes to renderer
+			// can loop through all uniforms with shader.GetUniforms();
 			glUniform3fv(glGetUniformLocation(waterShader.id, "lightPos"), 1, &lightPos[0]);
 			glUniform3fv(glGetUniformLocation(waterShader.id, "viewPos"), 1, &camPos[0]); // getting updated in BeginRender (probably not good)
 

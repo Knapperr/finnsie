@@ -4,15 +4,17 @@
 #include <sstream>
 #include <fstream>
 
+#include "log.h"
+
 namespace finnsie {
 
-	Shader& UseShader(Shader* shader)
+	Shader& Shader::UseShader(Shader* shader)
 	{
 		glUseProgram(shader->id);
 		return *shader;
 	}
 
-	void BuildShader(Shader* shader, const char* vertexText, const char* fragmentText, const char* geometryText)
+	void Shader::BuildShader(Shader* shader, const char* vertexText, const char* fragmentText, const char* geometryText)
 	{
 		std::string vertCode;
 		std::string fragCode;
@@ -33,6 +35,9 @@ namespace finnsie {
 
 			vertStream << vShaderFile.rdbuf();
 			fragStream << fShaderFile.rdbuf();
+
+			//LoadUniforms(vertStream);
+			LoadUniforms(fragStream);
 
 			vShaderFile.close();
 			fShaderFile.close();
@@ -55,6 +60,9 @@ namespace finnsie {
 		{
 			std::cout << "Error::SHADER: File not successfully read\n";
 		}
+
+		// TODO(CK): Keep the vShaderCode, fShaderCode and gShaderCode 
+		// as members for "hot-reloading"
 
 		const char* vShaderCode = vertCode.c_str();
 		const char* fShaderCode = fragCode.c_str();
@@ -100,8 +108,55 @@ namespace finnsie {
 		}
 	}
 
+	// Get the uniforms for the shader
+	void Shader::LoadUniforms(std::stringstream& shaderFile)
+	{
+
+		std::string lastWord;
+		std::string temp;
+		std::string type;
+		
+			// TODO(CK): don't read the whole entire file
+			// once uniforms are done then exit this...
+		
+		while (shaderFile >> temp)
+		{
+			// after the type has been set we can grab the name
+			if (type != "")
+			{
+				if (type == "int")
+				{
+					uniforms.push_back(Uniform(1.0, temp, type));
+				}
+				if (type == "float")
+				{
+					uniforms.push_back(FloatUniform(false, temp, type));
+
+				}
+				if (type == "bool")
+				{
+					uniforms.push_back(BoolUniform(1.0f, temp, type));
+
+				}
+				type = "";
+			}
+
+			// after getting uniform set the type
+			if (lastWord == "uniform")
+			{
+				type = temp;
+				lastWord = "";
+			}
+			
+			if (temp == "uniform")
+			{
+				lastWord = temp;
+			}
+		}
+	}
+
 	// Check shader compilation/linking errors
-	void CheckCompileErrors(unsigned int shader, std::string type)
+	void Shader::CheckCompileErrors(unsigned int shader, std::string type)
 	{
 		int success;
 		char infoLog[1024];
