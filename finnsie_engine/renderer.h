@@ -4,7 +4,6 @@
 #include "shader_manager.h"
 #include "camera.h"
 #include "gui.h"
-#include "uniform_manager.h"
 
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -31,8 +30,6 @@ namespace finnsie {
 		Shader waterShader;
 		Shader waterDirShader;
 
-		UniformManager* uniformManager;
-		
 		glm::vec3 lampPos;
 		glm::vec3 lightPos;
 		glm::vec3 camPos;

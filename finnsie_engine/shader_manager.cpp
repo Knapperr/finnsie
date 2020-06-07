@@ -14,6 +14,9 @@ namespace finnsie {
 #define MAT4 35767
 #define SAMPLER2D 35678
 
+#define SLIDER "slider"
+#define CHECKBOX "checkbox"
+
 	Shader& Shader::UseShader(Shader* shader)
 	{
 		glUseProgram(shader->id);
@@ -127,63 +130,31 @@ namespace finnsie {
 		
 		int size;
 		unsigned int type;
-		const int bufSize = 28; // max name lenght
-		char name[bufSize]; // variable name in glsl
+		const int bufSize = 28;
+		char name[bufSize];
 		int nameLength;
 
 		for (int i = 0; i < count; i++)
 		{
 			glGetActiveUniform(this->id, (GLuint)i, bufSize, &nameLength, &size, &type, name);
-			
-			switch (type)
+			uniforms.push_back(uniform(name, this->id));
+		}
+	}
+
+	// TODO(CK): Need a better solution to this. Probably more 
+	// expensive doing this than just calling GlGetUniformLocation
+	// since we always know which locations we need could just hold 
+	// a list of ints
+	int Shader::GetLoc(std::string name)
+	{
+		for (int i = 0; i != uniforms.size(); ++i)
+		{
+			if (uniforms[i].name == name)
 			{
-				case FLOAT:
-					uniforms.push_back(Uniform(1.0f, name, "slider"));
-					break;
-				case BOOL:
-					uniforms.push_back(Uniform(false, name, "checkbox"));
-					break;
+				return uniforms[i].location;
 			}
 		}
-	}
-	// Get the uniform
-	void Shader::ActivateUniforms()
-	{
-		// This should work because the "drawInfo" is just the state of that uniforms value
-		// so if we use this method it should be fine its just using the shader itself
-		if (uniforms[0].guiType == "slider")
-		{
-			glUniform1f(glGetUniformLocation(this->id, uniforms[0].name.c_str()), uniforms[0].GetValue());
-		}
-
-		for (int i = 0; i < uniforms.size(); ++i)
-		{
-			// vec3s
-			//glUniform3fv(glGetUniformLocation(waterShader.id, "lightPos"), 1, &lightPos[0]);
-			//glUniform3fv(glGetUniformLocation(waterShader.id, "viewPos"), 1, &camPos[0]); // getting updated in BeginRender (probably not good)
-
-			// floats
-			//glUniform1f(this->uniformManager->GetLocation("uJump"), drawInfo.waterInfo.uJump);
-			//glUniform1f(this->uniformManager->GetLocation("vJump"), drawInfo.waterInfo.vJump);
-			//glUniform1f(this->uniformManager->GetLocation("tiling"), drawInfo.waterInfo.tiling);
-			//glUniform1f(this->uniformManager->GetLocation("speed"), drawInfo.waterInfo.speed);
-			//glUniform1f(this->uniformManager->GetLocation("flowStrength"), drawInfo.waterInfo.flowStrength);
-			//glUniform1f(this->uniformManager->GetLocation("flowOffset"), drawInfo.waterInfo.flowOffset);
-			//glUniform1f(this->uniformManager->GetLocation("heightScale"), drawInfo.waterInfo.heightScale);
-			//glUniform1f(this->uniformManager->GetLocation("heightScaleModulated"), drawInfo.waterInfo.heightScaleModulated);
-
-			// this is a bool but it works?
-			//glUniform1f(this->uniformManager->GetLocation("dualGrid"), drawInfo.waterInfo.dualGrid);
-
-		}
-	}
-
-	void Shader::PrintUniforms()
-	{
-		for (int i = 0; i < uniforms.size(); i++)
-		{
-			std::cout << "Name: " << uniforms[i].name << " Type: " << uniforms[i].guiType << "\n";
-		}
+		return -1;
 	}
 
 	// Check shader compilation/linking errors

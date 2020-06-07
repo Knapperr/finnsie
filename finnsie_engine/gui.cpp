@@ -227,8 +227,18 @@ namespace finnsie {
 
 	void Gui::waterWindow(bool* p_open, draw_info& drawInfo)
 	{
+		// TODO(CK): Need some kind of option to choose between this and the other shader
+		// also load them at start up?
+		// Game will have shaders just use the game shaders somehow... pass them to the gui?
+		// we are doing that with drawInfo it will be the same but gui will have accesss to update
+		// our shaders that we then pass to the game
+		Shader& waterShad = g_resourceManager->GetShader(003);
+
 		ImGui::Begin("WATER", p_open);
 
+		//ImGui::SliderFloat("Flow Strength", &waterShad.uniforms[1].floating, 0.0f, 1.0f); // 0.1
+
+		
 		ImGui::SliderFloat("U Jump", &drawInfo.waterInfo.uJump, 0.0f, 0.25f); // 0.25
 		ImGui::SliderFloat("V Jump", &drawInfo.waterInfo.vJump, 0.0f, 0.25f);  // 0.25
 		ImGui::Separator();
