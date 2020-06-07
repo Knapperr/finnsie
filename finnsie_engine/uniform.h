@@ -6,66 +6,82 @@
 
 namespace finnsie {
 
-	// TODO(CK): Might change this to
-	/*
-		class Uniform
-			int integer
-			float floating
-			bool boolean
+	// NOTE(CK): Instead of having a templated class this Uniform just holds 
+	// three types this way it can be changed on the fly and allows the vector
+	// to just use a Uniform object and not be templated
 
-		instead of using polymorphism just use the std::string type
-		cause thats basically what its doing the type is pointless 
-		in this heirarchy cause thats what is being determined i just 
-		dont want to do type checking in the gui cause thats slow to build
-		the widgets
-	
-	*/
+	// TODO(CK): Possibly figure out a templated solution
 	class Uniform
 	{
 	public:
-		int value;
 		std::string guiType;
 		std::string name;
 
 		Uniform()
 		{
-			value = 0;
+			integer = 0;
+			floating = 0.0f;
+			boolean = false;
 			guiType = "";
 			name = "";
 		}
 
 		Uniform(int value, std::string name, std::string type)
 		{
-			this->value = value;
+			this->integer = value;
 			this->name = name;
 			this->guiType = type;
+
+			this->floating = 0.0f;
+			this->boolean = false;
 		}
+
+		Uniform(float value, std::string name, std::string type)
+		{
+			this->floating = value;
+			this->name = name;
+			this->guiType = type;
+
+			this->integer = 0.0;
+			this->boolean = false;
+		}
+
+		Uniform(bool value, std::string name, std::string type)
+		{
+			this->boolean = value;
+			this->name = name;
+			this->guiType = type;
+
+			this->floating = 0.0f;
+			this->integer = 0.0;
+		}
+
 
 		Uniform(std::string name, std::string type)
 		{
 			this->name = name;
 			this->guiType = type;
 		}
-	};
 
-	class BoolUniform : public Uniform
-	{
-	public:
-		bool value;
-		BoolUniform(bool value, std::string name, std::string type) : Uniform(name, type)
+		int GetInt()
 		{
-			this->value = value;
+			return this->integer;
 		}
-	};
 
-	class FloatUniform : public Uniform
-	{
-	public:
-		float value;
-		FloatUniform(float value, std::string name, std::string type) : Uniform(name, type)
+		float GetFloat()
 		{
-			this->value = value;
+			return this->floating;
 		}
+
+		bool GetBool()
+		{
+			return this->boolean;
+		}
+
+	private:
+		int integer;
+		float floating;
+		bool boolean;
 	};
 }
 

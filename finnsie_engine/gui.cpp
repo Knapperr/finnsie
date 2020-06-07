@@ -304,10 +304,9 @@ namespace finnsie {
 		{
 			if (shader.uniforms[i].type == "slider")
 			{
-				case "slider":
-					ImGui::SliderFloat(shader.uniforms[i].name, &shader,uniforms[i].value(floating), 0.0f, 40.0f); // 10.0
+				ImGui::SliderFloat(shader.uniforms[i].name, &shader,uniforms[i].value(floating), 0.0f, 40.0f); // 10.0
 				
-				case "checkmark":
+			if (*checkmark":
 					
 			}
 		

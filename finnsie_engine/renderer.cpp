@@ -401,7 +401,10 @@ namespace finnsie {
 		this->modelShader = ::finnsie::g_resourceManager->GenerateShader(001, "shaders/model_vert.glsl", "shaders/model_frag.glsl", NULL);
 		this->normalShader = ::finnsie::g_resourceManager->GenerateShader(002, "shaders/onlynormals_model_vert.glsl", "shaders/onlynormals_model_frag.glsl", "shaders/onlynormals_model_geo.glsl");
 		this->waterShader = ::finnsie::g_resourceManager->GenerateShader(003, "shaders/waterdistortion_vert.glsl", "shaders/waterdistortion_frag.glsl", NULL);
+		waterShader.PrintUniforms();
+		
 		this->waterDirShader = ::finnsie::g_resourceManager->GenerateShader(004, "shaders/waterdirection_vert.glsl", "shaders/waterdirection_frag.glsl", NULL);
+		waterDirShader.PrintUniforms();
 	}
 
 	void Renderer::initUniforms()
@@ -420,6 +423,8 @@ namespace finnsie {
 		this->watProjLoc = glGetUniformLocation(waterShader.id, "projection");
 		this->watViewLoc = glGetUniformLocation(waterShader.id, "view");
 		this->watModelLoc = glGetUniformLocation(waterShader.id, "model");
+
+
 
 		this->uniformManager->CreateUniform("uJump", waterShader.id);
 		this->uniformManager->CreateUniform("vJump", waterShader.id);

@@ -8,6 +8,12 @@
 
 namespace finnsie {
 
+#define FLOAT 5126
+#define BOOL 35670
+#define VEC3 35665
+#define MAT4 35767
+#define SAMPLER2D 35678
+
 	Shader& Shader::UseShader(Shader* shader)
 	{
 		glUseProgram(shader->id);
@@ -35,9 +41,6 @@ namespace finnsie {
 
 			vertStream << vShaderFile.rdbuf();
 			fragStream << fShaderFile.rdbuf();
-
-			//LoadUniforms(vertStream);
-			LoadUniforms(fragStream);
 
 			vShaderFile.close();
 			fShaderFile.close();
@@ -106,55 +109,43 @@ namespace finnsie {
 		{
 			glDeleteShader(geometry);
 		}
+
+		GetUniforms();
 	}
 
-	// Load the uniforms from the shader file
-	void Shader::LoadUniforms(std::stringstream& shaderFile)
+	/*
+		You can do full reflection on shader with glGet
+		names, types, uniforms, attributes, samplers, everything
+
+		you could use uniforms blocks/buffers and then share same struct between C code and GLSL code
+		then do glMapBuffer for uniform buffer and memcpy all the data, to update it on GPU
+	*/
+	void Shader::GetUniforms()
 	{
+		int count;
+		glGetProgramiv(this->id, GL_ACTIVE_UNIFORMS, &count);
+		
+		int size;
+		unsigned int type;
+		const int bufSize = 28; // max name lenght
+		char name[bufSize]; // variable name in glsl
+		int nameLength;
 
-		std::string lastWord;
-		std::string temp;
-		std::string type;
-		
-			// TODO(CK): don't read the whole entire file
-			// once uniforms are done then exit this...
-		
-		while (shaderFile >> temp)
+		for (int i = 0; i < count; i++)
 		{
-			// after the type has been set we can grab the name
-			if (type != "")
-			{
-				if (type == "int")
-				{
-					uniforms.push_back(Uniform(1.0, temp, "slider"));
-				}
-				if (type == "float")
-				{
-					uniforms.push_back(FloatUniform(false, temp, "slider"));
-
-				}
-				if (type == "bool")
-				{
-					uniforms.push_back(BoolUniform(1.0f, temp, "checkbox"));
-
-				}
-				type = "";
-			}
-
-			// after getting uniform set the type
-			if (lastWord == "uniform")
-			{
-				type = temp;
-				lastWord = "";
-			}
+			glGetActiveUniform(this->id, (GLuint)i, bufSize, &nameLength, &size, &type, name);
 			
-			if (temp == "uniform")
+			switch (type)
 			{
-				lastWord = temp;
+				case FLOAT:
+					uniforms.push_back(Uniform(1.0f, name, "slider"));
+					break;
+				case BOOL:
+					uniforms.push_back(Uniform(false, name, "checkbox"));
+					break;
 			}
 		}
 	}
-
 	// Get the uniform
 	void Shader::ActivateUniforms()
 	{
@@ -162,7 +153,7 @@ namespace finnsie {
 		// so if we use this method it should be fine its just using the shader itself
 		if (uniforms[0].guiType == "slider")
 		{
-			glUniform1f(glGetUniformLocation(this->id, uniforms[0].name.c_str()), uniforms[0].value);
+			glUniform1f(glGetUniformLocation(this->id, uniforms[0].name.c_str()), uniforms[0].GetValue());
 		}
 
 		for (int i = 0; i < uniforms.size(); ++i)
@@ -184,6 +175,14 @@ namespace finnsie {
 			// this is a bool but it works?
 			//glUniform1f(this->uniformManager->GetLocation("dualGrid"), drawInfo.waterInfo.dualGrid);
 
+		}
+	}
+
+	void Shader::PrintUniforms()
+	{
+		for (int i = 0; i < uniforms.size(); i++)
+		{
+			std::cout << "Name: " << uniforms[i].name << " Type: " << uniforms[i].guiType << "\n";
 		}
 	}
 

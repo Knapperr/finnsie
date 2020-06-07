@@ -16,12 +16,14 @@ namespace finnsie {
 		std::vector<Uniform> uniforms;
 
 		Shader& UseShader(Shader* shader);
-		void LoadUniforms(std::stringstream& shaderFile);
+		void GetUniforms();
 		void ActivateUniforms();
 		void BuildShader(Shader* shader, const char* vertexText, const char* fragmentText, const char* geometryText = NULL);
+		void PrintUniforms();
 		
 	private:
 		void checkCompileErrors(unsigned int shader, std::string type);
+
 	};
 
 	
