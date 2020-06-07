@@ -8,15 +8,6 @@
 
 namespace finnsie {
 
-#define FLOAT 5126
-#define BOOL 35670
-#define VEC3 35665
-#define MAT4 35767
-#define SAMPLER2D 35678
-
-#define SLIDER "slider"
-#define CHECKBOX "checkbox"
-
 	Shader& Shader::UseShader(Shader* shader)
 	{
 		glUseProgram(shader->id);

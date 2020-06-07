@@ -236,19 +236,16 @@ namespace finnsie {
 
 		ImGui::Begin("WATER", p_open);
 
-		//ImGui::SliderFloat("Flow Strength", &waterShad.uniforms[1].floating, 0.0f, 1.0f); // 0.1
-
-		
-		ImGui::SliderFloat("U Jump", &drawInfo.waterInfo.uJump, 0.0f, 0.25f); // 0.25
-		ImGui::SliderFloat("V Jump", &drawInfo.waterInfo.vJump, 0.0f, 0.25f);  // 0.25
+		ImGui::DragFloat("ujump", &drawInfo.waterInfo.uJump, 0.001f, 0.0f, 0.25f, "%.02f");
+		ImGui::DragFloat("vjump", &drawInfo.waterInfo.vJump, 0.001f, 0.0f, 0.25f, "%.02f");
 		ImGui::Separator();
-		ImGui::SliderFloat("Tiling", &drawInfo.waterInfo.tiling, 0.0f, 3.0f); // 3.0
-		ImGui::SliderFloat("Speed", &drawInfo.waterInfo.speed, 0.0f, 5.0f); // 0.5
+		ImGui::DragFloat("Tiling", &drawInfo.waterInfo.tiling, 0.1f, 0.0f, 3.0f, "%.01f"); // 3.0
+		ImGui::DragFloat("Speed", &drawInfo.waterInfo.speed, 0.01f, 0.0f, 2.0f, "%.01f"); // 0.5
 		ImGui::Separator();
-		ImGui::SliderFloat("Flow Strength", &drawInfo.waterInfo.flowStrength, 0.0f, 1.0f); // 0.1
-		ImGui::SliderFloat("Flow Offset", &drawInfo.waterInfo.flowOffset, -10.0f, 10.0f); // 0.0
+		ImGui::DragFloat("Flow Strength", &drawInfo.waterInfo.flowStrength, 0.001f, 0.0f, 0.5f, "%.02f"); // 0.1
+		ImGui::DragFloat("Flow Offset", &drawInfo.waterInfo.flowOffset, 0.001f, -1.5f, 2.0f, "%.02f");
 		ImGui::Separator();
-		ImGui::SliderFloat("Height Scale", &drawInfo.waterInfo.heightScale, 0.0f, 10.0f); // 0.1
+		ImGui::SliderFloat("Height Scale", &drawInfo.waterInfo.heightScale, 0.0f, 5.0f); // 0.1
 		ImGui::SliderFloat("Height Scale Modulated", &drawInfo.waterInfo.heightScaleModulated, 0.0f, 20.0f); // 9.0
 		ImGui::Separator();
 		ImGui::Text("Directional Water ");
@@ -256,74 +253,6 @@ namespace finnsie {
 		ImGui::SliderFloat("TilingModulated", &drawInfo.waterInfo.tilingModulated, 0.0f, 80.0f); // 50
 		ImGui::Checkbox("dualGrid", &drawInfo.waterInfo.dualGrid);
 		
-
-		/*
-		Render these using a switch
-		pointer to shader set up in the Gui Initializer
-		// or loops throuhg shaders gets them in an array
-		shader = g_resourceManager("getShader");
-		// ----------
-
-		// drawinfo has to be on paralel with uniforms set when uniforms are read?
-		// how to create these dynamically? have to be different types needa generic type to switch off of?
-		Shader.drawInfo = std::vector<DrawInfo>();
-
-		DrawInfo 
-		(how are types added to the struct?
-			
-			
-			// dont even need this just attach it to the uniform class?
-			uniform.name
-			uniform.type
-			uniforn.value <--- int, float, bool???
-			uniform.boolean = false;
-			uniform.integer = 1;
-			uniform.floating = 1.0f;
-
-			can have a BoolUniform <- has bool value : uniform
-					   IntUniform <- int value
-					   FloatUniform <- float value
-
-
-
-			// heavy but works?
-			// best might be floating, integer, and boolean members cause its so lightweight... not user friendly but only for me
-			// templated class is nice tho? might go 
-			templated uniform class?
-			template <class T>
-			Uniform()<T> {
-				T value;
-				std::string name
-				std::string type
-
-				<T> GetValue() { return value; }
-			}
-
-			generic virtual value
-			value gets called when we do the loop to get all uniforms
-
-			then create a std::vector<uniform>  might not be worth it tho?
-			// okay to have these 3 small members
-
-			// this might be difficult how do i just change atype?
-			uniform.SetVal(const char* type)
-			switch (uniform.type
-			uniform.float / int / bool
-
-		for (int i = 0; shader.uniforms.length; i++)
-		{
-			if (shader.uniforms[i].type == "slider")
-			{
-				ImGui::SliderFloat(shader.uniforms[i].name, &shader,uniforms[i].value(floating), 0.0f, 40.0f); // 10.0
-				
-			if (*checkmark":
-					
-			}
-		
-		}
-		*/
-		
-
 		ImGui::End();
 	}
 
