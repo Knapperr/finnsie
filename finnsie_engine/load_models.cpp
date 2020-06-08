@@ -163,14 +163,6 @@ namespace finnsie {
 
 	void LoadDistortedWater(Model* water)
 	{
-		// THis is how it worked before it was a pointer
-		//water = new Model("water",
-		//				false,
-		//				glm::vec3(-100.0f, -30.0f, 0.0f),
-		//				glm::vec3(0.0f, 0.0f, 0.0f),
-		//				20.0f,
-		//				"content/objects/quad/basic_quad.obj");
-
 		// CREATE A BASIC SHAPE LOADER replace ASSIMP
 		// WE WILL HAVE TO PUSH THIS TEXTURE TO THE TEXUTES OF THE QUAD 
 		// IN model.h
@@ -200,16 +192,8 @@ namespace finnsie {
 		water->meshes[0].textures.push_back(normaltexture);
 	}
 
-	void LoadDirectionalWater(Model& water)
+	void LoadDirectionalWater(Model* water)
 	{
-		
-		water = Model("water",
-					  false,
-					  glm::vec3(-100.0f, -30.0f, 60.0f),
-					  glm::vec3(0.0f, glm::radians(180.0f), 0.0f),
-					  20.0f,
-					  "content/objects/quad/basic_quad.obj");
-
 		std::string uvpath = "content/textures/water/ripples-derivative-height.png";
 		std::string uvdirectory = uvpath.substr(0, uvpath.find_last_of('/'));
 		Texture uvtexture = {};
@@ -224,8 +208,8 @@ namespace finnsie {
 		flowtexture.type = "texture_normal";
 		flowtexture.path = flowpath;
 
-		water.meshes[0].textures.push_back(uvtexture);
-		water.meshes[0].textures.push_back(flowtexture);
+		water->meshes[0].textures.push_back(uvtexture);
+		water->meshes[0].textures.push_back(flowtexture);
 	}
 
 	/* NOTE(CK): OG (USE THIS FOR LOADING TEXTURES FROM GUI )

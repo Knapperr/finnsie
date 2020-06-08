@@ -194,10 +194,11 @@ namespace finnsie {
 				{
 					//ImGui::TextWrapped("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ");
 					ImGui::SliderFloat("scale", &g_models[selected]->scale, 0.0f, 30.0f);
+					ImGui::DragFloat("fine scale", &g_models[selected]->scale, 0.0001f, 0.0f, 30.0f, "%.02f");
 
-					ImGui::SliderFloat("x", &g_models[selected]->pos.x, -1000.0f, 1000.0f);
-					ImGui::SliderFloat("y", &g_models[selected]->pos.y, -1000.0f, 1000.0f);
-					ImGui::SliderFloat("z", &g_models[selected]->pos.z, -1000.0f, 1000.0f);
+					ImGui::DragFloat("x", &g_models[selected]->pos.x, 0.001f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::DragFloat("y", &g_models[selected]->pos.y, 0.001f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::DragFloat("z", &g_models[selected]->pos.z, 0.001f, -1000.0f, 1000.0f, "%.02f");
 					
 					ImGui::Checkbox("show normals", &g_models[selected]->viewNormals);
 					ImGui::EndTabItem();
@@ -236,24 +237,59 @@ namespace finnsie {
 
 		ImGui::Begin("WATER", p_open);
 
+		static int e = 0;
+		ImGui::RadioButton("distorted water", &e, 0); 
+		ImGui::SameLine();
+		ImGui::RadioButton("directional water", &e, 1);
+
+		if (e == 0)
+		{
+			distortedWaterControls(drawInfo);
+		}
+
+		//ImGui::DragFloat("ujump", &drawInfo.waterInfo.uJump, 0.001f, 0.0f, 0.25f, "%.02f");
+		//ImGui::DragFloat("vjump", &drawInfo.waterInfo.vJump, 0.001f, 0.0f, 0.25f, "%.02f");
+		//ImGui::Separator();
+		//ImGui::DragFloat("Tiling", &drawInfo.waterInfo.tiling, 0.1f, 0.0f, 10.0f, "%.01f"); // 3.0
+		//ImGui::DragFloat("Speed", &drawInfo.waterInfo.speed, 0.01f, 0.0f, 2.0f, "%.01f"); // 0.5
+		//ImGui::Separator();
+		//ImGui::DragFloat("Flow Strength", &drawInfo.waterInfo.flowStrength, 0.001f, 0.0f, 0.5f, "%.02f"); // 0.1
+		//ImGui::DragFloat("Flow Offset", &drawInfo.waterInfo.flowOffset, 0.001f, -1.5f, 2.0f, "%.02f");
+		//ImGui::Separator();
+		//ImGui::SliderFloat("Height Scale", &drawInfo.waterInfo.heightScale, 0.0f, 5.0f); // 0.1
+		//ImGui::SliderFloat("Height Scale Modulated", &drawInfo.waterInfo.heightScaleModulated, 0.0f, 20.0f); // 9.0
+		//ImGui::Separator();
+		//ImGui::Text("Directional Water ");
+		//ImGui::SliderFloat("gridResolution", &drawInfo.waterInfo.gridResolution, 0.0f, 40.0f); // 10.0
+		//ImGui::SliderFloat("TilingModulated", &drawInfo.waterInfo.tilingModulated, 0.0f, 80.0f); // 50
+		//ImGui::Checkbox("dualGrid", &drawInfo.waterInfo.dualGrid);
+		
+		ImGui::End();
+	}
+
+	void Gui::distortedWaterControls(draw_info& drawInfo)
+	{
+
 		ImGui::DragFloat("ujump", &drawInfo.waterInfo.uJump, 0.001f, 0.0f, 0.25f, "%.02f");
 		ImGui::DragFloat("vjump", &drawInfo.waterInfo.vJump, 0.001f, 0.0f, 0.25f, "%.02f");
 		ImGui::Separator();
-		ImGui::DragFloat("Tiling", &drawInfo.waterInfo.tiling, 0.1f, 0.0f, 3.0f, "%.01f"); // 3.0
+
+		ImGui::DragFloat("Tiling", &drawInfo.waterInfo.tiling, 0.1f, 0.0f, 10.0f, "%.01f"); // 3.0
 		ImGui::DragFloat("Speed", &drawInfo.waterInfo.speed, 0.01f, 0.0f, 2.0f, "%.01f"); // 0.5
 		ImGui::Separator();
+
 		ImGui::DragFloat("Flow Strength", &drawInfo.waterInfo.flowStrength, 0.001f, 0.0f, 0.5f, "%.02f"); // 0.1
 		ImGui::DragFloat("Flow Offset", &drawInfo.waterInfo.flowOffset, 0.001f, -1.5f, 2.0f, "%.02f");
 		ImGui::Separator();
+
 		ImGui::SliderFloat("Height Scale", &drawInfo.waterInfo.heightScale, 0.0f, 5.0f); // 0.1
 		ImGui::SliderFloat("Height Scale Modulated", &drawInfo.waterInfo.heightScaleModulated, 0.0f, 20.0f); // 9.0
 		ImGui::Separator();
+
 		ImGui::Text("Directional Water ");
 		ImGui::SliderFloat("gridResolution", &drawInfo.waterInfo.gridResolution, 0.0f, 40.0f); // 10.0
 		ImGui::SliderFloat("TilingModulated", &drawInfo.waterInfo.tilingModulated, 0.0f, 80.0f); // 50
 		ImGui::Checkbox("dualGrid", &drawInfo.waterInfo.dualGrid);
-		
-		ImGui::End();
 	}
 
 	void Gui::Render()
@@ -298,7 +334,5 @@ namespace finnsie {
 				}
 			}
 		}
-		// TODO(CK): Compare this with save file and set obj.loaded to true
-
 	}
 }

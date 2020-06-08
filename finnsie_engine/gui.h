@@ -58,6 +58,8 @@ namespace finnsie {
 		void modelWindow(bool* p_open);
 		// TODO(CK): Remove replace with local function
 		void getFolders(std::string folder);
+		
+		void distortedWaterControls(draw_info& drawInfo);
 	};
 }
 

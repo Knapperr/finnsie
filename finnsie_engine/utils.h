@@ -43,6 +43,6 @@ namespace finnsie {
 	bool UnloadModel(std::string name);
 	bool UnloadModel(int index);
 	void LoadDistortedWater(Model* water);
-	void LoadDirectionalWater(Model& water);
+	void LoadDirectionalWater(Model* water);
 }
 #endif

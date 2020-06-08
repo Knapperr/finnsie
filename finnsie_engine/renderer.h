@@ -20,7 +20,7 @@ namespace finnsie {
 		void BeginRender(Camera& cam);
 		void DrawModel(Model& model);
 		void DrawWater(Model* water, draw_info& drawInfo);
-		void DrawDirWater(Model& dirWater, draw_info& drawInfo);
+		void DrawDirWater(Model* dirWater, draw_info& drawInfo);
 		void EndRender();
 		void Shutdown();
 

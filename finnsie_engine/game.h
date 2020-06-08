@@ -43,7 +43,7 @@ namespace finnsie {
 	private:
 		Gui *gui;
 		Model* water;
-		Model dirWater;
+		Model* dirWater;
 		draw_info drawInfo;
 
 		void processCamera(float dt);
