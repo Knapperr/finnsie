@@ -85,26 +85,26 @@ namespace finnsie {
 			glm::mat4 matModel = glm::mat4(1.0f);
 
 			glm::mat4 matTranslate = glm::translate(glm::mat4(1.0f),
-													glm::vec3(model.pos.x, model.pos.y, model.pos.z));
+													glm::vec3(model.drawInfo->pos.x, model.drawInfo->pos.y, model.drawInfo->pos.z));
 			matModel = matModel * matTranslate;
 
 			glm::mat4 rotateZ = glm::rotate(glm::mat4(1.0f),
-											model.orientation.z,
+											model.drawInfo->orientation.z,
 											glm::vec3(0.0f, 0.0f, 1.0f));
 			matModel = matModel * rotateZ;
 
 			glm::mat4 rotateY = glm::rotate(glm::mat4(1.0f),
-											model.orientation.y,
+											model.drawInfo->orientation.y,
 											glm::vec3(0.0f, 1.0f, 0.0f));
 			matModel = matModel * rotateY;
 
 			glm::mat4 rotateX = glm::rotate(glm::mat4(1.0f),
-											model.orientation.x,
+											model.drawInfo->orientation.x,
 											glm::vec3(1.0f, 0.0f, 0.0f));
 			matModel = matModel * rotateX;
 
 			glm::mat4 matScale = glm::scale(glm::mat4(1.0f),
-								 glm::vec3(model.scale, model.scale, model.scale));
+								 glm::vec3(model.drawInfo->scale, model.drawInfo->scale, model.drawInfo->scale));
 
 			matModel = matModel * matScale;
 			glUniformMatrix4fv(activeModelLoc, 1, GL_FALSE, glm::value_ptr(matModel));
@@ -115,7 +115,7 @@ namespace finnsie {
 				GLint matModelInvTran_loc = glGetUniformLocation(shaderProgID, "matModelInvTrans");
 			*/
 
-			if (model.wireFrame)
+			if (model.drawInfo->wireFrame)
 			{
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			}
@@ -137,7 +137,7 @@ namespace finnsie {
 
 		// TODO(CK): Not sure if this is proper. Look up how to do this properly
 		// maybe move this logic into the game again.. if (drawNormals then call with the shader id
-		if (model.viewNormals && !drawingNormals)
+		if (model.drawInfo->viewNormals && !drawingNormals)
 		{
 			// Normals are only drawn on the next draw call
 			drawingNormals = true;
@@ -207,26 +207,26 @@ namespace finnsie {
 			glm::mat4 matModel = glm::mat4(1.0f);
 
 			glm::mat4 matTranslate = glm::translate(glm::mat4(1.0f),
-													glm::vec3(water->pos.x, water->pos.y, water->pos.z));
+													glm::vec3(water->drawInfo->pos.x, water->drawInfo->pos.y, water->drawInfo->pos.z));
 			matModel = matModel * matTranslate;
 
 			glm::mat4 rotateZ = glm::rotate(glm::mat4(1.0f),
-											water->orientation.z,
+											water->drawInfo->orientation.z,
 											glm::vec3(0.0f, 0.0f, 1.0f));
 			matModel = matModel * rotateZ;
 
 			glm::mat4 rotateY = glm::rotate(glm::mat4(1.0f),
-											water->orientation.y,
+											water->drawInfo->orientation.y,
 											glm::vec3(0.0f, 1.0f, 0.0f));
 			matModel = matModel * rotateY;
 
 			glm::mat4 rotateX = glm::rotate(glm::mat4(1.0f),
-											water->orientation.x,
+											water->drawInfo->orientation.x,
 											glm::vec3(1.0f, 0.0f, 0.0f));
 			matModel = matModel * rotateX;
 
 			glm::mat4 matScale = glm::scale(glm::mat4(1.0f),
-											glm::vec3(water->scale, water->scale, water->scale));
+											glm::vec3(water->drawInfo->scale, water->drawInfo->scale, water->drawInfo->scale));
 
 			matModel = matModel * matScale;
 			glUniformMatrix4fv(watModelLoc, 1, GL_FALSE, glm::value_ptr(matModel));
@@ -237,7 +237,7 @@ namespace finnsie {
 				GLint matModelInvTran_loc = glGetUniformLocation(shaderProgID, "matModelInvTrans");
 			*/
 
-			if (water->wireFrame)
+			if (water->drawInfo->wireFrame)
 			{
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			}
@@ -318,26 +318,26 @@ namespace finnsie {
 			glm::mat4 matModel = glm::mat4(1.0f);
 
 			glm::mat4 matTranslate = glm::translate(glm::mat4(1.0f),
-													glm::vec3(water->pos.x, water->pos.y, water->pos.z));
+													glm::vec3(water->drawInfo->pos.x, water->drawInfo->pos.y, water->drawInfo->pos.z));
 			matModel = matModel * matTranslate;
 
 			glm::mat4 rotateZ = glm::rotate(glm::mat4(1.0f),
-											water->orientation.z,
+											water->drawInfo->orientation.z,
 											glm::vec3(0.0f, 0.0f, 1.0f));
 			matModel = matModel * rotateZ;
 
 			glm::mat4 rotateY = glm::rotate(glm::mat4(1.0f),
-											water->orientation.y,
+											water->drawInfo->orientation.y,
 											glm::vec3(0.0f, 1.0f, 0.0f));
 			matModel = matModel * rotateY;
 
 			glm::mat4 rotateX = glm::rotate(glm::mat4(1.0f),
-											water->orientation.x,
+											water->drawInfo->orientation.x,
 											glm::vec3(1.0f, 0.0f, 0.0f));
 			matModel = matModel * rotateX;
 
 			glm::mat4 matScale = glm::scale(glm::mat4(1.0f),
-											glm::vec3(water->scale, water->scale, water->scale));
+											glm::vec3(water->drawInfo->scale, water->drawInfo->scale, water->drawInfo->scale));
 
 			matModel = matModel * matScale;
 			glUniformMatrix4fv(this->waterDirShader.GetLoc("model"), 1, GL_FALSE, glm::value_ptr(matModel));
@@ -348,7 +348,7 @@ namespace finnsie {
 				GLint matModelInvTran_loc = glGetUniformLocation(shaderProgID, "matModelInvTrans");
 			*/
 
-			if (water->wireFrame)
+			if (water->drawInfo->wireFrame)
 			{
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			}

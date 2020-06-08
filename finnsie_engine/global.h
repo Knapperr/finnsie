@@ -13,6 +13,8 @@ namespace finnsie {
 
 extern ResourceManager* g_resourceManager;
 extern std::vector<Model*> g_models;
+extern WaterModel* g_DistortWater;
+extern WaterModel* g_DirWater;
 
 #define PI32 3.14159265359f
 #define local_persist static 

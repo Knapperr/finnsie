@@ -26,7 +26,6 @@ namespace finnsie {
 		gui->Init(*this->window, camera->MovementSpeed);
 		
 		water = new Model("water",
-						false,
 						glm::vec3(-100.0f, -30.0f, 0.0f),
 						glm::vec3(0.0f, 0.0f, 0.0f),
 						40.0f,
@@ -34,7 +33,6 @@ namespace finnsie {
 		LoadDistortedWater(water);
 
 		dirWater = new Model("water",
-						  false,
 						  glm::vec3(-100.0f, -30.0f, 80.0f),
 						  glm::vec3(0.0f, glm::radians(180.0f), 0.0f),
 						  40.0f,

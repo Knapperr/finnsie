@@ -25,55 +25,52 @@ namespace finnsie {
 	typedef std::vector<Vertex> vertex_vec;
 	typedef std::vector<unsigned int> uint_vec;
 
+	struct DrawInfo
+	{
+		glm::vec3 pos;
+		glm::vec3 orientation;
+
+		std::string modelName;
+
+		float scale;
+		bool viewNormals;
+		bool loaded;
+		bool wireFrame;
+
+	};
 
 	class Model
 	{
 	public:
-		// NOTE(CK): stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once
+		DrawInfo* drawInfo;
 		texture_vec textures_loaded; 
 		mesh_vec meshes;
-		glm::vec3 pos;
-		glm::vec3 orientation;
 		std::string directory;
-		std::string modelName;
-		
-		float scale;
-
 		bool gammaCorrection;
-		bool viewNormals;
-		bool loaded;
-		bool wireFrame;
 
 		/* Methods */
 
 		// NOTE(CK): For use with utility functions
 		Model()
 		{
-			this->pos = glm::vec3(1.0);
-			this->orientation = glm::vec3(1.0);
-			this->scale = 0;
-			this->modelName = "";
-			this->wireFrame = false;
-			this->viewNormals = false;
-			this->loaded = false;
+			drawInfo = new DrawInfo();
 		}
 
-		Model(std::string modelName, 
-			  bool wireFrame, 
-			  glm::vec3 pos,
-			  glm::vec3 orientation,
-			  float scale,
-			  std::string const& path,
+		Model(std::string name, glm::vec3 pos, glm::vec3 orientation, float scale, std::string path)
+		{
+			drawInfo = new DrawInfo();
+			drawInfo->modelName = name;
+			drawInfo->pos = pos;
+			drawInfo->orientation = orientation;
+			drawInfo->scale = scale;
+			drawInfo->viewNormals = false;
+			loadModel(path);
+		}
+
+		Model(std::string const& path,
 			  bool gamma = false) : gammaCorrection(gamma)
 		{
-			this->wireFrame = wireFrame;
-			this->pos = pos;
-			this->orientation = orientation;
-			this->scale = scale;
-			this->modelName = modelName;
-
-			this->viewNormals = false;
-			this->loaded = false;
+			drawInfo = new DrawInfo();
 			loadModel(path);
 		}
 
@@ -82,24 +79,11 @@ namespace finnsie {
 
 		// Load a mesh onto an object created with default constructor
 		// Same as the constructor
-		void LoadEmptyModel(std::string modelName,
-							bool wireFrame,
-							glm::vec3 pos,
-							glm::vec3 orientation,
-							float scale,
-							std::string const& path,
+		void LoadEmptyModel(std::string const& path,
 							bool gamma = false)
 		{
+			drawInfo = new DrawInfo();
 			this->gammaCorrection = gamma;
-			this->wireFrame = wireFrame;
-			this->pos = pos;
-			this->orientation = orientation;
-			this->scale = scale;
-			this->modelName = modelName;
-
-			this->viewNormals = false;
-			this->loaded = false;
-
 			loadModel(path);
 		}
 
@@ -125,7 +109,7 @@ namespace finnsie {
 			processNode(scene->mRootNode, scene);
 
 
-			loaded = true;
+			drawInfo->loaded = true;
 		}
 
 		// process a node in a recursive fashion. processes each individual mesh located at the node and repeats this process on its children nodes
@@ -231,7 +215,7 @@ namespace finnsie {
 			texture_vec heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
 			textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
-			return Mesh(modelName, vertices, indices, textures);
+			return Mesh(vertices, indices, textures);
 			
 		}
 
@@ -313,5 +297,37 @@ namespace finnsie {
 		}
 	};
 
+
+	class WaterModel : public Model
+	{
+		// NOTE(CK): Not necessarily into using inheritance but it makes sense for working with the water model for now
+		// don't want to have to pass a waterInfo struct around to the gui and renderer... can make this global and work on it 
+		// directly?
+
+		struct WaterInfo
+		{
+			float uJump = 0.25f;
+			float vJump = 0.25f;
+			float tiling = 1.0f;
+			float speed = 0.2f;
+			float flowStrength = 0.07f;
+			float flowOffset = -0.207f;
+			float heightScale = 0.1f;
+			float heightScaleModulated = 9.0f;
+			float gridResolution = 10.0f;
+			float tilingModulated = 50.0f;
+			bool dualGrid = false;
+		};
+
+		WaterModel() : Model()
+		{
+			WaterInfo* waterInfo = new WaterInfo();
+		}
+
+		WaterModel(std::string name, glm::vec3 pos, glm::vec3 orientation, float scale, std::string path) : Model(name, pos, orientation, scale, path)
+		{
+			WaterInfo* waterInfo = new WaterInfo();
+		}
+	};
 }
 #endif

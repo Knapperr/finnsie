@@ -142,7 +142,7 @@ namespace finnsie {
 		for (int i = 0; i < g_models.size(); i++)
 		{
 			char label[128];
-			sprintf_s(label, "%s %d", g_models[i]->modelName.c_str(), i);
+			sprintf_s(label, "%s %d", g_models[i]->drawInfo->modelName.c_str(), i);
 			if (ImGui::Selectable(label, selected == i))
 			{
 				selected = i;
@@ -164,7 +164,7 @@ namespace finnsie {
 		{
 			ImGui::BeginGroup();
 			ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
-			ImGui::Text("%s", g_models[selected]->modelName.c_str());
+			ImGui::Text("%s", g_models[selected]->drawInfo->modelName.c_str());
 
 			// Modal for loading meshes
 			if (ImGui::Button("Load Mesh.."))
@@ -193,14 +193,14 @@ namespace finnsie {
 				if (ImGui::BeginTabItem("Controls"))
 				{
 					//ImGui::TextWrapped("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ");
-					ImGui::SliderFloat("scale", &g_models[selected]->scale, 0.0f, 30.0f);
-					ImGui::DragFloat("fine scale", &g_models[selected]->scale, 0.0001f, 0.0f, 30.0f, "%.02f");
+					ImGui::SliderFloat("scale", &g_models[selected]->drawInfo->scale, 0.0f, 30.0f);
+					ImGui::DragFloat("fine scale", &g_models[selected]->drawInfo->scale, 0.0001f, 0.0f, 30.0f, "%.02f");
 
-					ImGui::DragFloat("x", &g_models[selected]->pos.x, 0.001f, -1000.0f, 1000.0f, "%.02f");
-					ImGui::DragFloat("y", &g_models[selected]->pos.y, 0.001f, -1000.0f, 1000.0f, "%.02f");
-					ImGui::DragFloat("z", &g_models[selected]->pos.z, 0.001f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::DragFloat("x", &g_models[selected]->drawInfo->pos.x, 0.001f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::DragFloat("y", &g_models[selected]->drawInfo->pos.y, 0.001f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::DragFloat("z", &g_models[selected]->drawInfo->pos.z, 0.001f, -1000.0f, 1000.0f, "%.02f");
 					
-					ImGui::Checkbox("show normals", &g_models[selected]->viewNormals);
+					ImGui::Checkbox("show normals", &g_models[selected]->drawInfo->viewNormals);
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Details"))

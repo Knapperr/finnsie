@@ -19,6 +19,7 @@ namespace finnsie {
 	};
 
 	// TODO(CK): MOVE TO GLOBAL.cpp ???
+	// or use the texture_manager.h
 	struct Texture 
 	{
 		unsigned int id;
@@ -33,15 +34,12 @@ namespace finnsie {
 		std::vector<unsigned int> indices;
 		std::vector<Texture> textures;
 		unsigned int VAO;
-		std::string meshName;
 
 		// constructor
-		Mesh(std::string meshName,
-			std::vector<Vertex> vertices,
+		Mesh(std::vector<Vertex> vertices,
 			std::vector<unsigned int> indices,
 			std::vector<Texture> textures)
 		{
-			this->meshName = meshName;
 			this->vertices = vertices;
 			this->indices = indices;
 			this->textures = textures;

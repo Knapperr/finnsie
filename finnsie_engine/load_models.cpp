@@ -66,7 +66,7 @@ namespace finnsie {
 	bool CreateEmptyModel()
 	{
 		Model* model = new Model();
-		model->modelName = "empty";
+		model->drawInfo->modelName = "empty";
 		g_models.push_back(model);
 		return true;
 	}
@@ -96,20 +96,20 @@ namespace finnsie {
 		delete g_models[index];
 		
 		g_models[index] = new Model(name,
-									 false,
-									 glm::vec3(-100.0f, -30.0f, 0.0f),
-									 glm::vec3(0.0f, 0.0f, 0.0f),
-									 10.0f,
-									 path);
+									glm::vec3(-100.0f, -30.0f, 0.0f),
+									glm::vec3(0.0f, 0.0f, 0.0f),
+									10.0f,
+									path);
 		return true;
 	}
 
+	/*
 	bool LoadModel(std::string name, std::string path)
 	{
 		// need to check if the model is loaded already
 		for (int i = 0; i < g_models.size(); ++i)
 		{
-			if (g_models[i]->modelName == name)
+			if (g_models[i]->drawInfo->modelName == name)
 			{
 				std::string msg = name + " is already loaded\n";
 				LOG_WARN(msg.c_str());
@@ -117,8 +117,7 @@ namespace finnsie {
 			}
 		}
 		// TODO(CK): Don't really like loading the model with the constructor
-		Model* model = new Model(name,
-								false,
+		Model* model = new Model(false,
 								glm::vec3(-100.0f, -30.0f, 0.0f),
 								glm::vec3(0.0f, 0.0f, 0.0f),
 								10.0f,
@@ -126,6 +125,7 @@ namespace finnsie {
 		g_models.push_back(model);
 		return true;
 	}
+	*/
 
 	// TODO(CK): Temp function for loading all of the texture to the quad
 	bool LoadTexture(int index)  
@@ -311,7 +311,7 @@ namespace finnsie {
 		//								"content/objects/mansion/op_mansion.obj");
 		//g_models.push_back(mansionModel);
 
-
+		/*
 		Model* battlefield = new Model("battle",
 									   false,
 									   glm::vec3(-200.0f, -10.0f, 0.0f),
@@ -348,6 +348,8 @@ namespace finnsie {
 
 
 		return true;
+		*/
+		return false;
 	}
 
 	bool UnloadModel(std::string name)
@@ -356,7 +358,7 @@ namespace finnsie {
 		Model* model;
 		for (int i = 0; i < g_models.size(); ++i)
 		{
-			if (g_models[i]->modelName == name)
+			if (g_models[i]->drawInfo->modelName == name)
 			{
 				model = g_models[i];
 				found = true;
