@@ -139,32 +139,32 @@ namespace finnsie {
 		// Left pane
 		static int selected = 0;
 		ImGui::BeginChild("left pane", ImVec2(150, 0), true);
-		for (int i = 0; i < g_models.size(); i++)
+		for (int i = 0; i < g_objects.size(); i++)
 		{
 			char label[128];
-			sprintf_s(label, "%s %d", g_models[i]->drawInfo->modelName.c_str(), i);
+			sprintf_s(label, "%s %d", g_objects[i]->name.c_str(), i);
 			if (ImGui::Selectable(label, selected == i))
 			{
 				selected = i;
 			}
 		}
 		// TODO(CK): Create a better approach rather than creating pointers maybe
-		// have an array of ints that mimics the size of g_models (more light weight)
+		// have an array of ints that mimics the size of g_objects (more light weight)
 		// or is creating an empty object fine!?!?
 		ImGui::Separator();
 		if (ImGui::Button("New Model"))
 		{
-			CreateEmptyModel();
+			CreateEmptyObject();
 		}
 		ImGui::EndChild();
 		ImGui::SameLine();
 
 		// Right pane models need to exist
-		if (!g_models.empty())
+		if (!g_objects.empty())
 		{
 			ImGui::BeginGroup();
 			ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
-			ImGui::Text("%s", g_models[selected]->drawInfo->modelName.c_str());
+			ImGui::Text("%s", g_objects[selected]->name.c_str());
 
 			// Modal for loading meshes
 			if (ImGui::Button("Load Mesh.."))
@@ -176,7 +176,7 @@ namespace finnsie {
 					if (ImGui::SmallButton(objPaths[i].name.c_str()))
 					{
 						LOG("Loading mesh...");
-						LoadEmptyModel(selected, objPaths[i].name, objPaths[i].path);
+						LoadEmptyObject(selected, objPaths[i].name, objPaths[i].path);
 						LOG("mesh loaded!");
 						ImGui::CloseCurrentPopup();
 					}
@@ -193,14 +193,14 @@ namespace finnsie {
 				if (ImGui::BeginTabItem("Controls"))
 				{
 					//ImGui::TextWrapped("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ");
-					ImGui::SliderFloat("scale", &g_models[selected]->drawInfo->scale, 0.0f, 30.0f);
-					ImGui::DragFloat("fine scale", &g_models[selected]->drawInfo->scale, 0.0001f, 0.0f, 30.0f, "%.02f");
+					ImGui::SliderFloat("scale", &g_objects[selected]->scale, 0.0f, 30.0f);
+					ImGui::DragFloat("fine scale", &g_objects[selected]->scale, 0.0001f, 0.0f, 30.0f, "%.02f");
 
-					ImGui::DragFloat("x", &g_models[selected]->drawInfo->pos.x, 0.001f, -1000.0f, 1000.0f, "%.02f");
-					ImGui::DragFloat("y", &g_models[selected]->drawInfo->pos.y, 0.001f, -1000.0f, 1000.0f, "%.02f");
-					ImGui::DragFloat("z", &g_models[selected]->drawInfo->pos.z, 0.001f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::DragFloat("x", &g_objects[selected]->pos.x, 0.001f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::DragFloat("y", &g_objects[selected]->pos.y, 0.001f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::DragFloat("z", &g_objects[selected]->pos.z, 0.001f, -1000.0f, 1000.0f, "%.02f");
 					
-					ImGui::Checkbox("show normals", &g_models[selected]->drawInfo->viewNormals);
+					ImGui::Checkbox("show normals", &g_objects[selected]->viewNormals);
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Details"))
@@ -213,10 +213,10 @@ namespace finnsie {
 
 			if (ImGui::SmallButton("DELETE"))
 			{
-				UnloadModel(selected);
+				UnloadObject(selected);
 				// Selected is greater than size of vector
 				// don't move down if empty
-				if (selected >= g_models.size() && !g_models.empty())
+				if (selected >= g_objects.size() && !g_objects.empty())
 					selected -= 1;
 			}
 
@@ -228,13 +228,6 @@ namespace finnsie {
 
 	void Gui::waterWindow(bool* p_open, draw_info& drawInfo)
 	{
-		// TODO(CK): Need some kind of option to choose between this and the other shader
-		// also load them at start up?
-		// Game will have shaders just use the game shaders somehow... pass them to the gui?
-		// we are doing that with drawInfo it will be the same but gui will have accesss to update
-		// our shaders that we then pass to the game
-		Shader& waterShad = g_resourceManager->GetShader(003);
-
 		ImGui::Begin("WATER", p_open);
 
 		static int e = 0;

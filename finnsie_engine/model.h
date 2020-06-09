@@ -25,70 +25,29 @@ namespace finnsie {
 	typedef std::vector<Vertex> vertex_vec;
 	typedef std::vector<unsigned int> uint_vec;
 
-	struct DrawInfo
-	{
-		glm::vec3 pos;
-		glm::vec3 orientation;
-
-		std::string modelName;
-
-		float scale;
-		bool viewNormals;
-		bool loaded;
-		bool wireFrame;
-
-	};
-
 	class Model
 	{
 	public:
-		DrawInfo* drawInfo;
 		texture_vec textures_loaded; 
 		mesh_vec meshes;
 		std::string directory;
 		bool gammaCorrection;
 
-		/* Methods */
-
 		// NOTE(CK): For use with utility functions
 		Model()
 		{
-			drawInfo = new DrawInfo();
-		}
-
-		Model(std::string name, glm::vec3 pos, glm::vec3 orientation, float scale, std::string path)
-		{
-			drawInfo = new DrawInfo();
-			drawInfo->modelName = name;
-			drawInfo->pos = pos;
-			drawInfo->orientation = orientation;
-			drawInfo->scale = scale;
-			drawInfo->viewNormals = false;
-			loadModel(path);
+			directory = "";
+			gammaCorrection = false;
 		}
 
 		Model(std::string const& path,
 			  bool gamma = false) : gammaCorrection(gamma)
 		{
-			drawInfo = new DrawInfo();
 			loadModel(path);
 		}
 
-		// TODO(CK): Might be better to just use the delete pointer method in case 
-		// this causes issues with the way a model is loaded
-
-		// Load a mesh onto an object created with default constructor
-		// Same as the constructor
-		void LoadEmptyModel(std::string const& path,
-							bool gamma = false)
-		{
-			drawInfo = new DrawInfo();
-			this->gammaCorrection = gamma;
-			loadModel(path);
-		}
 
 	private:
-		/* Methods */
 		void loadModel(std::string const& path)
 		{
 			// read file via ASSIMP
@@ -107,9 +66,6 @@ namespace finnsie {
 
 			// process ASSIMP's root node recursively
 			processNode(scene->mRootNode, scene);
-
-
-			drawInfo->loaded = true;
 		}
 
 		// process a node in a recursive fashion. processes each individual mesh located at the node and repeats this process on its children nodes
@@ -294,39 +250,6 @@ namespace finnsie {
 				stbi_image_free(data);
 			}
 			return textureID;
-		}
-	};
-
-
-	class WaterModel : public Model
-	{
-		// NOTE(CK): Not necessarily into using inheritance but it makes sense for working with the water model for now
-		// don't want to have to pass a waterInfo struct around to the gui and renderer... can make this global and work on it 
-		// directly?
-
-		struct WaterInfo
-		{
-			float uJump = 0.25f;
-			float vJump = 0.25f;
-			float tiling = 1.0f;
-			float speed = 0.2f;
-			float flowStrength = 0.07f;
-			float flowOffset = -0.207f;
-			float heightScale = 0.1f;
-			float heightScaleModulated = 9.0f;
-			float gridResolution = 10.0f;
-			float tilingModulated = 50.0f;
-			bool dualGrid = false;
-		};
-
-		WaterModel() : Model()
-		{
-			WaterInfo* waterInfo = new WaterInfo();
-		}
-
-		WaterModel(std::string name, glm::vec3 pos, glm::vec3 orientation, float scale, std::string path) : Model(name, pos, orientation, scale, path)
-		{
-			WaterInfo* waterInfo = new WaterInfo();
 		}
 	};
 }

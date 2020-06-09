@@ -25,19 +25,20 @@ namespace finnsie {
 		
 		gui->Init(*this->window, camera->MovementSpeed);
 		
-		water = new Model("water",
-						glm::vec3(-100.0f, -30.0f, 0.0f),
-						glm::vec3(0.0f, 0.0f, 0.0f),
-						40.0f,
-						"content/objects/quad/basic_quad.obj");
-		LoadDistortedWater(water);
+		
+		distortWater = new GameObject("water",
+								glm::vec3(-100.0f, -30.0f, 0.0f),
+								glm::vec3(0.0f, 0.0f, 0.0f),
+								40.0f,
+								"content/objects/quad/basic_quad.obj");
+		LoadDistortedWater(distortWater->model);
 
-		dirWater = new Model("water",
-						  glm::vec3(-100.0f, -30.0f, 80.0f),
-						  glm::vec3(0.0f, glm::radians(180.0f), 0.0f),
-						  40.0f,
-						  "content/objects/quad/basic_quad.obj");
-		LoadDirectionalWater(dirWater);
+		dirWater = new GameObject("water",
+								  glm::vec3(-100.0f, -30.0f, 80.0f),
+								  glm::vec3(0.0f, glm::radians(180.0f), 0.0f),
+								  40.0f,
+								  "content/objects/quad/basic_quad.obj");
+		LoadDirectionalWater(dirWater->model);
 	}
 
 	void Game::Update(float dt)
@@ -58,12 +59,16 @@ namespace finnsie {
 	{
 		// TODO(CK): Use game camera (can switch to gameCamera here)
 		renderer->BeginRender(*camera); 
-			for (unsigned int i = 0; i < g_models.size(); i++)
+			
+			for (unsigned int i = 0; i < g_objects.size(); i++)
 			{
-				renderer->DrawModel(*g_models[i]);
+				if (g_objects[i]->model != NULL)
+				{
+					renderer->DrawModel(*g_objects[i]);
+				}
 				
 			}
-		renderer->DrawWater(water, drawInfo);
+		renderer->DrawWater(distortWater, drawInfo);
 		renderer->DrawDirWater(dirWater, drawInfo);
 		renderer->EndRender();
 		gui->Render();
@@ -114,7 +119,8 @@ namespace finnsie {
 		renderer->Shutdown();
 		delete renderer;
 
-		delete water;
+		delete distortWater;
+		delete dirWater;
 
 		delete camera;
 		delete gameCamera;

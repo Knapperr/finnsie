@@ -22,17 +22,43 @@ namespace finnsie {
 		int selectedModel;
 	};
 
-	struct GameObject
+	/*
+	
+	INSTEAD OF DOING THIS WE CAN JUST CREATE A WATER GameObject
+	// that has all this waterInfo in it!
+	
+	// vector of models gets changed to a vector of GameObjects
+	// then we can edit that directly
+	
+	class WaterModel : public Model
 	{
-		// This design makes more sense the model should be a 
-		// component of the game object this way you can attach
-		// components onto an object. You can a model then that model
-		// can have like a light attached to it or something
+		struct WaterInfo
+		{
+			float uJump = 0.25f;
+			float vJump = 0.25f;
+			float tiling = 1.0f;
+			float speed = 0.2f;
+			float flowStrength = 0.07f;
+			float flowOffset = -0.207f;
+			float heightScale = 0.1f;
+			float heightScaleModulated = 9.0f;
+			float gridResolution = 10.0f;
+			float tilingModulated = 50.0f;
+			bool dualGrid = false;
+		};
 
-		// The draw information should still be on the model
-		// cause that information is used to draw the actual model???
-		Model* model;
+		WaterModel() : Model()
+		{
+			WaterInfo* waterInfo = new WaterInfo();
+		}
+
+		WaterModel(std::string name, glm::vec3 pos, glm::vec3 orientation, float scale, std::string path) : Model(name, pos, orientation, scale, path)
+		{
+			WaterInfo* waterInfo = new WaterInfo();
+		}
 	};
+	
+	*/
 
 	class Game
 	{
@@ -54,8 +80,8 @@ namespace finnsie {
 
 	private:
 		Gui *gui;
-		Model* water;
-		Model* dirWater;
+		GameObject* distortWater;
+		GameObject* dirWater;
 		draw_info drawInfo;
 
 		void processCamera(float dt);

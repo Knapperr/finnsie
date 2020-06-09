@@ -35,13 +35,12 @@ namespace finnsie {
 	};
 
 	unsigned int LoadTextureFile(const char* path, const std::string& directory, bool gamma);
-	bool CreateEmptyModel();
-	bool LoadEmptyModel(int index, std::string name, std::string path);
-	bool LoadModel(std::string name, std::string path);
+	bool CreateEmptyObject();
+	bool LoadEmptyObject(int index, std::string name, std::string path);
 	bool LoadTexture(int index);
 	bool LoadModels(std::string path);
-	bool UnloadModel(std::string name);
-	bool UnloadModel(int index);
+	bool UnloadObject(std::string name);
+	bool UnloadObject(int index);
 	void LoadDistortedWater(Model* water);
 	void LoadDirectionalWater(Model* water);
 }

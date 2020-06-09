@@ -8,7 +8,7 @@
 
 namespace finnsie {
 
-	std::vector<Model*> g_models;
+	std::vector<GameObject*> g_objects;
 
 	// TODO(CK): TEMP FUNCTION USE RESOURCE MANAGER (Create texture with resource manager and pass it to the function)
 	unsigned int LoadTextureFile(const char* path, const std::string& directory, bool gamma = false)
@@ -63,45 +63,27 @@ namespace finnsie {
 		return textureID;
 	}
 
-	bool CreateEmptyModel()
+	bool CreateEmptyObject()
 	{
-		Model* model = new Model();
-		model->drawInfo->modelName = "empty";
-		g_models.push_back(model);
+		GameObject* obj = new GameObject();
+		g_objects.push_back(obj);
 		return true;
 	}
 
-	
-	bool LoadEmptyModel(int index, std::string name, std::string path)
+	bool LoadEmptyObject(int index, std::string name, std::string path)
 	{
-		// Delete the memory and then erase it from the vector 
-		// avoid dangling pointer
+		g_objects[index]->name = name;
+		g_objects[index]->pos= glm::vec3(-100.0f, -30.0f, 0.0f),
+		g_objects[index]->orientation = glm::vec3(0.0f, 0.0f, 0.0f),
+		g_objects[index]->scale = 10.0f,
+		g_objects[index]->model = new Model(path);
 
-		// TODO(CK): instead of doing this we should just create an empty model then 
-		// run the load mesh function on it that will be part of the model class
-		// still have to figure out how to load up a different mesh
+		if (g_objects[index]->model == NULL)
+			return false;
 
-		// UPDATE(MAY 14): Might be better to just do it this way in case the mesh is changed
-		/* THIS IMPLEMENTATION WON'T WORK
-		delete g_models[index];
-		g_models.erase(std::remove(g_models.begin(), g_models.end(), g_models[index]), g_models.end());
-
-		g_models.push_back(new Model(name,
-									false,
-									glm::vec3(-100.0f, -30.0f, 0.0f),
-									glm::vec3(0.0f, 0.0f, 0.0f),
-									10.0f,
-									path));
-		*/
-		delete g_models[index];
-		
-		g_models[index] = new Model(name,
-									glm::vec3(-100.0f, -30.0f, 0.0f),
-									glm::vec3(0.0f, 0.0f, 0.0f),
-									10.0f,
-									path);
 		return true;
 	}
+
 
 	/*
 	bool LoadModel(std::string name, std::string path)
@@ -352,30 +334,31 @@ namespace finnsie {
 		return false;
 	}
 
-	bool UnloadModel(std::string name)
+	bool UnloadObject(std::string name)
 	{
 		bool found = false;
-		Model* model;
-		for (int i = 0; i < g_models.size(); ++i)
+		GameObject* obj;
+		for (int i = 0; i < g_objects.size(); ++i)
 		{
-			if (g_models[i]->drawInfo->modelName == name)
+			if (g_objects[i]->name == name)
 			{
-				model = g_models[i];
+				obj = g_objects[i];
 				found = true;
 				break;
 			}
 		}
 		if (!found) { return false; }
 
-		g_models.erase(std::remove(g_models.begin(), g_models.end(), model), g_models.end());
-		delete model;
+		g_objects.erase(std::remove(g_objects.begin(), g_objects.end(), obj), g_objects.end());
+		delete obj;
 		return true;
 	}
 
-	bool UnloadModel(int index)
+	bool UnloadObject(int index)
 	{
-		delete g_models[index];
-		g_models.erase(std::remove(g_models.begin(), g_models.end(), g_models[index]), g_models.end());
+		delete g_objects[index];
+		g_objects.erase(std::remove(g_objects.begin(), g_objects.end(), g_objects[index]), g_objects.end());
 		return true;
 	}
+
 }

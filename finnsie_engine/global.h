@@ -6,15 +6,13 @@
 
 
 #include "log.h"
-#include "model.h"
+#include "game_object.h"
 #include "resource_manager.h"
 
 namespace finnsie {
 
 extern ResourceManager* g_resourceManager;
-extern std::vector<Model*> g_models;
-extern WaterModel* g_DistortWater;
-extern WaterModel* g_DirWater;
+extern std::vector<GameObject*> g_objects;
 
 #define PI32 3.14159265359f
 #define local_persist static 

@@ -18,9 +18,9 @@ namespace finnsie {
 		Renderer();
 		~Renderer();
 		void BeginRender(Camera& cam);
-		void DrawModel(Model& model);
-		void DrawWater(Model* water, draw_info& drawInfo);
-		void DrawDirWater(Model* dirWater, draw_info& drawInfo);
+		void DrawModel(GameObject& obj);
+		void DrawWater(GameObject* water, draw_info& drawInfo);
+		void DrawDirWater(GameObject* dirWater, draw_info& drawInfo);
 		void EndRender();
 		void Shutdown();
 
