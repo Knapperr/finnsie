@@ -12,6 +12,6 @@ and learn graphics programming.
 * stb_image
 * Assimp
 --------------------
-![Alt text](finnsie_engine/content/screenshots/water_distort.png?raw=true) 
+![Alt text](code/content/screenshots/water_distort.png?raw=true) 
 
 
