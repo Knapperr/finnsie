@@ -1,0 +1,16 @@
+newmtl jg_mat_eye
+Ka 0 0 0
+Kd 0.4705882 0.4705882 0.4705882
+d 1
+Tr 1
+map_Ka jg_mat_eye.png
+map_Kd jg_mat_eye.png
+map_d jg_mat_eye.png
+newmtl mat_judge
+Ka 0 0 0
+Kd 0.4705882 0.4705882 0.4705882
+d 1
+Tr 1
+map_Ka mat_judge.png
+map_Kd mat_judge.png
+map_d mat_judge.png

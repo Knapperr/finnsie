@@ -1,0 +1,240 @@
+newmtl material0
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_30.png
+
+newmtl material1
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_22.png
+
+newmtl material2
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_23.png
+
+newmtl material3
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_24.png
+
+newmtl material4
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_25.png
+
+newmtl material5
+Kd 1.0 1.0 1.0
+d 0.0
+map_Kd op_mansion_9.png
+
+newmtl material6
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_21.png
+
+newmtl material7
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_5.png
+
+newmtl material8
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_9.png
+
+newmtl material9
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_6.png
+
+newmtl material10
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_8.png
+
+newmtl material11
+Kd 0.9921568627450981 1.0 1.0
+d 1.0
+map_Kd op_mansion_9.png
+
+newmtl material12
+Kd 0.9921568627450981 0.9921568627450981 1.0
+d 1.0
+map_Kd op_mansion_27.png
+
+newmtl material13
+Kd 0.9921568627450981 0.9921568627450981 1.0
+d 1.0
+map_Kd op_mansion_28.png
+
+newmtl material14
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_11.png
+
+newmtl material15
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_12.png
+
+newmtl material16
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_31.png
+
+newmtl material17
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_32.png
+
+newmtl material18
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_34.png
+
+newmtl material19
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_35.png
+
+newmtl material20
+Kd 0.9921568627450981 1.0 1.0
+d 1.0
+map_Kd op_mansion_36.png
+
+newmtl material21
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_37.png
+
+newmtl material22
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_38.png
+
+newmtl material23
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_39.png
+
+newmtl material24
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_40.png
+
+newmtl material25
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_33.png
+
+newmtl material26
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_42.png
+
+newmtl material27
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_13.png
+
+newmtl material28
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_41.png
+
+newmtl material29
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_28.png
+
+newmtl material30
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_0.png
+
+newmtl material31
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_1.png
+
+newmtl material32
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_2.png
+
+newmtl material33
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_3.png
+
+newmtl material34
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_4.png
+
+newmtl material35
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_7.png
+
+newmtl material36
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_10.png
+
+newmtl material37
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_14.png
+
+newmtl material38
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_15.png
+
+newmtl material39
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_16.png
+
+newmtl material40
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_17.png
+
+newmtl material41
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_18.png
+
+newmtl material42
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_10.png
+
+newmtl material43
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_19.png
+
+newmtl material44
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_20.png
+
+newmtl material45
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_26.png
+
+newmtl material46
+Kd 1.0 1.0 1.0
+d 1.0
+map_Kd op_mansion_29.png
+
+newmtl material47
+Kd 0.0 0.0784313725490196 0.0196078431372549
+d 1.0
+map_Kd op_mansion_43.png
+
