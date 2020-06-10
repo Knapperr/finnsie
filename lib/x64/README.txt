@@ -1,1 +1,0 @@
-The assimp dll, exp and lib files are x64
