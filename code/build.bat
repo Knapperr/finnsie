@@ -11,8 +11,8 @@ set IncludePaths=-I "W:/finnsie/include"
 set LibraryPaths=/LIBPATH:"W:/finnsie/lib/x64"
 REM TODO - can we just build both one exe?
 
-IF NOT EXIST ..\buildtest mkdir ..\buildtest
-pushd ..\buildtest
+IF NOT EXIST ..\..\finnbuild mkdir ..\..\finnbuild
+pushd ..\..\finnbuild
 
 REM 32-bit build
 REM cl #commonCompilerFlags% ..\handmade\code\win32_handmade.cpp /link -subsystem:windows,5.1 %commonLinkerFlags%

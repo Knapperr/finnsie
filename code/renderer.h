@@ -9,42 +9,42 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace finnsie {
-
+    
 	//struct water_info;
 	//struct light_info;
-
+    
 	class Renderer {
-	public:
+        public:
 		Renderer();
 		~Renderer();
 		void BeginRender(Camera& cam);
 		void DrawModel(GameObject& obj);
-		void DrawWater(GameObject* water, draw_info& drawInfo);
-		void DrawDirWater(GameObject* dirWater, draw_info& drawInfo);
+		void DrawWater(WaterObject* water);
+		void DrawDirWater(WaterObject* dirWater);
 		void EndRender();
 		void Shutdown();
-
-	private:
+        
+        private:
 		Shader modelShader;
 		Shader normalShader;
 		Shader waterShader;
 		Shader waterDirShader;
-
+        
 		glm::vec3 lampPos;
 		glm::vec3 lightPos;
 		glm::vec3 camPos;
 		
 		glm::mat4 projection;
 		glm::mat4 view;
-
+        
 		unsigned int VBO;
 		unsigned int cubeVAO;
 		unsigned int lampVAO;
-
+        
 		unsigned int activeModelShaderId;
 		int activeModelLoc;
 		int activeViewLoc;
-
+        
 		int objProjLoc;
 		int objViewLoc;
 		int objModelLoc;
@@ -54,14 +54,14 @@ namespace finnsie {
 		int watProjLoc;
 		int watViewLoc;
 		int watModelLoc;
-	
+        
 		bool drawingNormals;
-
+        
 		void initUniforms();
 		void initShaders();
 		void startShader(unsigned int shaderId, int modelLoc, int projLoc, int viewLoc);
 	};
-
+    
 }
 
 #endif

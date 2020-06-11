@@ -97,7 +97,7 @@ namespace finnsie {
 	*/
     
     
-	void Gui::Update(draw_info& drawInfo)
+	void Gui::Update(WaterObject& disWater, WaterObject& dirWater)
 	{
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
@@ -107,7 +107,7 @@ namespace finnsie {
 		if (showDemoWindow)
 			ImGui::ShowDemoWindow(&showDemoWindow);
 		if (showWaterWindow)
-			waterWindow(&showWaterWindow, drawInfo);
+			waterWindow(&showWaterWindow, disWater, dirWater);
 		if (showModelWindow)
 			modelWindow(&showModelWindow);
         
@@ -124,9 +124,10 @@ namespace finnsie {
 			ImGui::SliderFloat("Camera Speed", this->state.cameraSpeed, 0.0f, 100.0f);
             
             
-			ImGui::SliderFloat("Light X", &drawInfo.lightInfo.lightX, -200.0f, 400.0f);
-			ImGui::SliderFloat("Light Y", &drawInfo.lightInfo.lightY, -200.0f, 400.0f);
-			ImGui::SliderFloat("Light Z", &drawInfo.lightInfo.lightZ, -200.0f, 400.0f);
+            // TODO(CK): LIGHTING MENU
+			//ImGui::SliderFloat("Light X", &drawInfo.lightInfo.lightX, -200.0f, 400.0f);
+			//ImGui::SliderFloat("Light Y", &drawInfo.lightInfo.lightY, -200.0f, 400.0f);
+			//ImGui::SliderFloat("Light Z", &drawInfo.lightInfo.lightZ, -200.0f, 400.0f);
 			ImGui::Separator();
             
 			ImGui::End();
@@ -226,7 +227,7 @@ namespace finnsie {
 		ImGui::End();
 	}
     
-	void Gui::waterWindow(bool* p_open, draw_info& drawInfo)
+	void Gui::waterWindow(bool* p_open, WaterObject& disWater, WaterObject& dirWater)
 	{
 		ImGui::Begin("WATER", p_open);
         
@@ -237,53 +238,72 @@ namespace finnsie {
         
 		if (e == 0)
 		{
-			distortedWaterControls(drawInfo);
+			distortedWaterControls(disWater);
 		}
+        else if (e == 1)
+        {
+            directionalWaterControls(dirWater);
+        }
         
-		//ImGui::DragFloat("ujump", &drawInfo.waterInfo.uJump, 0.001f, 0.0f, 0.25f, "%.02f");
-		//ImGui::DragFloat("vjump", &drawInfo.waterInfo.vJump, 0.001f, 0.0f, 0.25f, "%.02f");
-		//ImGui::Separator();
-		//ImGui::DragFloat("Tiling", &drawInfo.waterInfo.tiling, 0.1f, 0.0f, 10.0f, "%.01f"); // 3.0
-		//ImGui::DragFloat("Speed", &drawInfo.waterInfo.speed, 0.01f, 0.0f, 2.0f, "%.01f"); // 0.5
-		//ImGui::Separator();
-		//ImGui::DragFloat("Flow Strength", &drawInfo.waterInfo.flowStrength, 0.001f, 0.0f, 0.5f, "%.02f"); // 0.1
-		//ImGui::DragFloat("Flow Offset", &drawInfo.waterInfo.flowOffset, 0.001f, -1.5f, 2.0f, "%.02f");
-		//ImGui::Separator();
-		//ImGui::SliderFloat("Height Scale", &drawInfo.waterInfo.heightScale, 0.0f, 5.0f); // 0.1
-		//ImGui::SliderFloat("Height Scale Modulated", &drawInfo.waterInfo.heightScaleModulated, 0.0f, 20.0f); // 9.0
-		//ImGui::Separator();
-		//ImGui::Text("Directional Water ");
-		//ImGui::SliderFloat("gridResolution", &drawInfo.waterInfo.gridResolution, 0.0f, 40.0f); // 10.0
-		//ImGui::SliderFloat("TilingModulated", &drawInfo.waterInfo.tilingModulated, 0.0f, 80.0f); // 50
-		//ImGui::Checkbox("dualGrid", &drawInfo.waterInfo.dualGrid);
-		
 		ImGui::End();
 	}
     
-	void Gui::distortedWaterControls(draw_info& drawInfo)
+	void Gui::distortedWaterControls(WaterObject& disWater)
 	{
         
-		ImGui::DragFloat("ujump", &drawInfo.waterInfo.uJump, 0.001f, 0.0f, 0.25f, "%.02f");
-		ImGui::DragFloat("vjump", &drawInfo.waterInfo.vJump, 0.001f, 0.0f, 0.25f, "%.02f");
+		ImGui::DragFloat("ujump", &disWater.uJump,
+                         0.001f, 0.0f, 0.25f, "%.02f");
+		ImGui::DragFloat("vjump", &disWater.vJump,
+                         0.001f, 0.0f, 0.25f, "%.02f");
 		ImGui::Separator();
         
-		ImGui::DragFloat("Tiling", &drawInfo.waterInfo.tiling, 0.1f, 0.0f, 10.0f, "%.01f"); // 3.0
-		ImGui::DragFloat("Speed", &drawInfo.waterInfo.speed, 0.01f, 0.0f, 2.0f, "%.01f"); // 0.5
+		ImGui::DragFloat("Tiling", &disWater.tiling,
+                         0.1f, 0.0f, 10.0f, "%.01f"); // 3.0
+		ImGui::DragFloat("Speed", &disWater.speed,
+                         0.01f, 0.0f, 2.0f, "%.01f"); // 0.5
 		ImGui::Separator();
         
-		ImGui::DragFloat("Flow Strength", &drawInfo.waterInfo.flowStrength, 0.001f, 0.0f, 0.5f, "%.02f"); // 0.1
-		ImGui::DragFloat("Flow Offset", &drawInfo.waterInfo.flowOffset, 0.001f, -1.5f, 2.0f, "%.02f");
+		ImGui::DragFloat("Flow Strength", &disWater.flowStrength,
+                         0.001f, 0.0f, 0.5f, "%.02f"); // 0.1
+		ImGui::DragFloat("Flow Offset", &disWater.flowOffset,
+                         0.001f, -1.5f, 2.0f, "%.02f");
 		ImGui::Separator();
         
-		ImGui::SliderFloat("Height Scale", &drawInfo.waterInfo.heightScale, 0.0f, 5.0f); // 0.1
-		ImGui::SliderFloat("Height Scale Modulated", &drawInfo.waterInfo.heightScaleModulated, 0.0f, 20.0f); // 9.0
-		ImGui::Separator();
-        
-		ImGui::Text("Directional Water ");
-		ImGui::SliderFloat("gridResolution", &drawInfo.waterInfo.gridResolution, 0.0f, 40.0f); // 10.0
-		ImGui::SliderFloat("TilingModulated", &drawInfo.waterInfo.tilingModulated, 0.0f, 80.0f); // 50
-		ImGui::Checkbox("dualGrid", &drawInfo.waterInfo.dualGrid);
+		ImGui::SliderFloat("Height Scale", &disWater.heightScale,
+                           0.0f, 5.0f); // 0.1
+		ImGui::SliderFloat("Height Scale Modulated", &disWater.heightScaleModulated,
+                           0.0f, 20.0f); // 9.0
 	}
+    
+    void Gui::directionalWaterControls(WaterObject& dirWater)
+    {
+        ImGui::DragFloat("ujump", &dirWater.uJump,
+                         0.001f, 0.0f, 0.25f, "%.02f");
+		ImGui::DragFloat("vjump", &dirWater.vJump,
+                         0.001f, 0.0f, 0.25f, "%.02f");
+		ImGui::Separator();
+        
+		ImGui::DragFloat("Tiling", &dirWater.tiling,
+                         0.1f, 0.0f, 10.0f, "%.01f"); // 3.0
+		ImGui::DragFloat("Speed", &dirWater.speed,
+                         0.01f, 0.0f, 2.0f, "%.01f"); // 0.5
+		ImGui::Separator();
+        
+		ImGui::DragFloat("Flow Strength", &dirWater.flowStrength,
+                         0.001f, 0.0f, 0.5f, "%.02f"); // 0.1
+		ImGui::DragFloat("Flow Offset", &dirWater.flowOffset,
+                         0.001f, -1.5f, 2.0f, "%.02f");
+		ImGui::Separator();
+        
+		ImGui::SliderFloat("Height Scale", &dirWater.heightScale,
+                           0.0f, 5.0f); // 0.1
+		ImGui::SliderFloat("Height Scale Modulated", &dirWater.heightScaleModulated,
+                           0.0f, 20.0f); // 9.0
+        
+		ImGui::SliderFloat("gridResolution", &dirWater.gridResolution, 0.0f, 40.0f); // 10.0
+		ImGui::SliderFloat("TilingModulated", &dirWater.tilingModulated, 0.0f, 80.0f); // 50
+		ImGui::Checkbox("dualGrid", &dirWater.dualGrid);
+    }
     
 	void Gui::Render()
 	{

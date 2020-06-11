@@ -7,13 +7,13 @@
 #include "log.h"
 
 namespace finnsie {
-
+    
 	Shader& Shader::UseShader(Shader* shader)
 	{
 		glUseProgram(shader->id);
 		return *shader;
 	}
-
+    
 	void Shader::BuildShader(Shader* shader, const char* vertexText, const char* fragmentText, const char* geometryText)
 	{
 		std::string vertCode;
@@ -22,27 +22,27 @@ namespace finnsie {
 		std::ifstream vShaderFile;
 		std::ifstream fShaderFile;
 		std::ifstream gShaderFile;
-
+        
 		vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 		fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 		gShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-
+        
 		try
 		{
 			vShaderFile.open(vertexText);
 			fShaderFile.open(fragmentText);
 			std::stringstream vertStream, fragStream;
-
+            
 			vertStream << vShaderFile.rdbuf();
 			fragStream << fShaderFile.rdbuf();
-
+            
 			vShaderFile.close();
 			fShaderFile.close();
-
+            
 			// Convert streams to strings
 			vertCode = vertStream.str();
 			fragCode = fragStream.str();
-
+            
 			// Geometry shader is optional
 			if (geometryText != NULL)
 			{
@@ -57,13 +57,13 @@ namespace finnsie {
 		{
 			std::cout << "Error::SHADER: File not successfully read\n";
 		}
-
+        
 		// TODO(CK): Keep the vShaderCode, fShaderCode and gShaderCode 
 		// as members for "hot-reloading"
-
+        
 		const char* vShaderCode = vertCode.c_str();
 		const char* fShaderCode = fragCode.c_str();
-
+        
 		// Compile the shaders
 		unsigned int vertex, fragment;
 		// Vertex shader
@@ -71,12 +71,12 @@ namespace finnsie {
 		glShaderSource(vertex, 1, &vShaderCode, NULL);
 		glCompileShader(vertex);
 		checkCompileErrors(vertex, "VERTEX");
-
+        
 		fragment = glCreateShader(GL_FRAGMENT_SHADER);
 		glShaderSource(fragment, 1, &fShaderCode, NULL);
 		glCompileShader(fragment);
 		checkCompileErrors(fragment, "FRAGMENT");
-
+        
 		unsigned int geometry;
 		if (geometryText != nullptr)
 		{
@@ -103,10 +103,10 @@ namespace finnsie {
 		{
 			glDeleteShader(geometry);
 		}
-
+        
 		GetUniforms();
 	}
-
+    
 	/*
 		You can do full reflection on shader with glGet
 		names, types, uniforms, attributes, samplers, everything
@@ -124,14 +124,14 @@ namespace finnsie {
 		const int bufSize = 28;
 		char name[bufSize];
 		int nameLength;
-
+        
 		for (int i = 0; i < count; i++)
 		{
 			glGetActiveUniform(this->id, (GLuint)i, bufSize, &nameLength, &size, &type, name);
 			uniforms.push_back(uniform(name, this->id));
 		}
 	}
-
+    
 	// TODO(CK): Need a better solution to this. Probably more 
 	// expensive doing this than just calling GlGetUniformLocation
 	// since we always know which locations we need could just hold 
@@ -145,9 +145,15 @@ namespace finnsie {
 				return uniforms[i].location;
 			}
 		}
+        // Not found
 		return -1;
 	}
-
+    
+    void Shader::Reload()
+    {
+        
+    }
+    
 	// Check shader compilation/linking errors
 	void Shader::checkCompileErrors(unsigned int shader, std::string type)
 	{

@@ -19,14 +19,14 @@
 
 namespace finnsie {
 	// forward decl
-	struct draw_info;
-
+	class WaterObject;
+    
 	struct gui_state
 	{
 		float *cameraSpeed = 0; // TODO(CK): JUST UPDATE DIRECTLY set to the camera object's speed
 		float gameDeltaTime;
 	};
-
+    
 	// TODO(CK): Remove replace with local function
 	struct objFile
 	{
@@ -35,19 +35,19 @@ namespace finnsie {
 		bool loadModel;
 		bool loaded;
 	};
-
+    
 	class Gui
 	{
-	public:
+        public:
 		void Init(GLFWwindow& window, float& cameraSpeed);
-		void Update(draw_info& drawInfo);
+		void Update(WaterObject& disWater, WaterObject& dirWater);
 		bool Active();
 		void Render();
 		void Shutdown();
-
+        
 		float playerVelocity;
 		gui_state state;
-	private:
+        private:
 		bool showDemoWindow = false;
 		bool showWaterWindow = false;
 		bool showModelWindow = false;
@@ -56,12 +56,13 @@ namespace finnsie {
 		// TODO(CK): Remove replace with local function
 		std::vector<objFile> objPaths;
 		
-		void waterWindow(bool* p_open, draw_info& drawInfo);
+		void waterWindow(bool* p_open, WaterObject& disWater, WaterObject& dirWater);
 		void modelWindow(bool* p_open);
 		// TODO(CK): Remove replace with local function
 		void getFolders(std::string folder);
 		
-		void distortedWaterControls(draw_info& drawInfo);
+		void distortedWaterControls(WaterObject& disWater);
+        void directionalWaterControls(WaterObject& dirWater);
 	};
 }
 

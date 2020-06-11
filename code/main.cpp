@@ -64,18 +64,18 @@ int main(int argc, char** argv)
 	LARGE_INTEGER perfCountFrequencyResult;
 	QueryPerformanceFrequency(&perfCountFrequencyResult);
 	g_perfCountFrequency = perfCountFrequencyResult.QuadPart;
-
+    
 	// TODO(CK): unresolved external for timeBeginPeriod?
 	// NOTE(casey): Set the Windows scheduler granularity to 1ms
 	// so that our Sleep() can be more granular.
 	//UINT DesiredSchedulerMS = 1;
 	//bool32 SleepIsGranular = (timeBeginPeriod(DesiredSchedulerMS) == TIMERR_NOERROR);
-
+    
 	//---------------------------------------------------------------------
 	// glfw init and config
 	// --------------------------------------------------------------------
 	glfwSetErrorCallback(error_callback);
-
+    
 	if (!glfwInit())
 	{
 		exit(EXIT_FAILURE);
@@ -84,22 +84,22 @@ int main(int argc, char** argv)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	// NOTE: Only works on major 3 and minor 3
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
+    
 	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Finnsie", NULL, NULL);
 	if (!window)
 	{
 		glfwTerminate();
 		exit(EXIT_FAILURE);
 	}
-
+    
 	glfwMakeContextCurrent(window);
 	glfwSetKeyCallback(window, processInput);
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 	//glfwSetJoystickCallback(gamepad_callback);
-
-
+    
+    
 	// glad: load all OpenGL function pointers
 	// ---------------------------------------
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -107,7 +107,7 @@ int main(int argc, char** argv)
 		std::cout << "Failed to initialize GLAD\n";
 		return EXIT_FAILURE;
 	}
-
+    
 	// NOTE: OpenGL error checks have been omitted for brevity
 	// OpenGL Configurations - after loading glad -
 	glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -117,11 +117,11 @@ int main(int argc, char** argv)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
 	game = new Game(*window);
-
+    
 	// Get wall clock speed
 	LARGE_INTEGER lastCounter = GetWallClock();
 	uint64_t lastCycleCount = __rdtsc();
-
+    
 	while (!glfwWindowShouldClose(window))
 	{
 		// NOTE(CK): Gamepad
@@ -130,7 +130,7 @@ int main(int argc, char** argv)
 			int axesCount;
 			const float* axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
 			//std::cout << axesCount << "\n";
-
+            
 			int buttonCount;
 			const unsigned char* buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonCount);
 			if (GLFW_PRESS == buttons[1])
@@ -141,14 +141,14 @@ int main(int argc, char** argv)
 			const char* name = glfwGetJoystickName(GLFW_JOYSTICK_1);
 			//std::cout << "Joystick is: " << name << "\n";
 		}
-
+        
 		glfwPollEvents();
-
+        
 		// delta time
 		float currentFrame = (float)glfwGetTime();
 		dt.time = currentFrame - dt.lastFrame;
 		dt.lastFrame = currentFrame;
-
+        
 		// Process the input & move the player
 		//glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // blue 
@@ -156,7 +156,7 @@ int main(int argc, char** argv)
 		
 		game->Update(dt.time);
 		game->Render();
-
+        
 		glfwSwapBuffers(window);
 		
 		
@@ -164,16 +164,16 @@ int main(int argc, char** argv)
 		LARGE_INTEGER endCounter = GetWallClock();
 		double msPerFrame = 1000.0 * GetSecondsElapsed(lastCounter, endCounter);
 		lastCounter = endCounter;
-
+        
 		// end cycles
 		uint64_t endCycleCount = __rdtsc();
 		uint64_t cyclesElapsed = endCycleCount - lastCycleCount;
 		lastCycleCount = endCycleCount;
-
+        
 		double FPS = 0.0f;
 		// mega cycles per frame
 		double MCPF = (real64)(cyclesElapsed / (1000.0f * 1000.0f));
-
+        
 		// NOTE(CK): INCONSISTENT FRAMES LIKE HANDMADE
 		//printf("%.02fms/f %.02ff/s %.02fmc/f\n", msPerFrame, FPS, MCPF);
 	}
@@ -182,9 +182,9 @@ int main(int argc, char** argv)
 	delete game;
 	glfwDestroyWindow(window);
 	glfwTerminate();
-
+    
 	exit(EXIT_SUCCESS);
-
+    
 }
 
 void processInput(GLFWwindow* window, int key, int action, int scancode, int mods)
@@ -208,13 +208,13 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 		lastY = (float)ypos;
 		firstMouse = false;
 	}
-
+    
 	float xoffset = (float)xpos - lastX;
 	float yoffset = lastY - (float)ypos; // reversed since y-coordinates go from bottom to top
-
+    
 	lastX = (float)xpos;
 	lastY = (float)ypos;
-
+    
 	// TODO(CK): Put this into the game class as well
 	if (game->leftMousePressed)
 	{
@@ -224,9 +224,13 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
 // ----------------------------------------------------------------------
+// TODO(CK): Move callbacks to game or somewhere else
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	game->camera->ProcessMouseScroll((float)yoffset);
+    if (!game->gui->Active())
+    {
+        game->camera->ProcessMouseScroll((float)yoffset);
+    }
 }
 
 void gamepad_callback(int jid, int event)
@@ -256,6 +260,6 @@ inline LARGE_INTEGER GetWallClock(void)
 inline float GetSecondsElapsed(LARGE_INTEGER start, LARGE_INTEGER end)
 {
 	float result = ((float)(end.QuadPart - start.QuadPart) /
-		(float)g_perfCountFrequency);
+                    (float)g_perfCountFrequency);
 	return result;
 }

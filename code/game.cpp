@@ -4,14 +4,14 @@
 #include <glm/gtc/type_ptr.hpp>
 
 namespace finnsie {
-
+    
 	// Game inits resource manager
 	ResourceManager* g_resourceManager;
-
+    
 	Game::Game(GLFWwindow& wnd)
 	{
 		LOG("Game Init");
-
+        
 		::finnsie::g_resourceManager = new ResourceManager();
 		this->mode = Mode::EDIT;
 		this->window = &wnd;
@@ -20,60 +20,57 @@ namespace finnsie {
 		this->camera = new Camera();
 		// TODO(CK): Use game camera
 		this->gameCamera = new Camera();
-		this->state = game_state();
 		this->leftMousePressed = false;
 		
 		gui->Init(*this->window, camera->MovementSpeed);
 		
 		
-		distortWater = new GameObject("water",
-								glm::vec3(-100.0f, -30.0f, 0.0f),
-								glm::vec3(0.0f, 0.0f, 0.0f),
-								40.0f,
-								"content/objects/quad/basic_quad.obj");
+		distortWater = new WaterObject("water",
+                                       glm::vec3(-100.0f, -30.0f, 0.0f),
+                                       glm::vec3(0.0f, 0.0f, 0.0f),
+                                       40.0f,
+                                       "content/objects/quad/basic_quad.obj");
 		LoadDistortedWater(distortWater->model);
-
-		dirWater = new GameObject("water",
-								  glm::vec3(-100.0f, -30.0f, 80.0f),
-								  glm::vec3(0.0f, glm::radians(180.0f), 0.0f),
-								  40.0f,
-								  "content/objects/quad/basic_quad.obj");
+        
+		dirWater = new WaterObject("water",
+                                   glm::vec3(-100.0f, -30.0f, 80.0f),
+                                   glm::vec3(0.0f, glm::radians(180.0f), 0.0f),
+                                   40.0f,
+                                   "content/objects/quad/basic_quad.obj");
 		LoadDirectionalWater(dirWater->model);
 	}
-
+    
 	void Game::Update(float dt)
 	{
-		gui->Update(drawInfo);
-
-		// Do this first
+        // TODO(CK): Pass water for now... find a way to update
+        // the game data directly... get lighting info directly too
+		gui->Update(*distortWater, *dirWater);
+        
 		if (leftMousePressed)
 		{
 			processCamera(dt);
 		}
-
-		// get info from gui
-		//isGuiHovered = gui->Active();
 	}
-
+    
 	void Game::Render()
 	{
 		// TODO(CK): Use game camera (can switch to gameCamera here)
 		renderer->BeginRender(*camera); 
-			
-			for (unsigned int i = 0; i < g_objects.size(); i++)
-			{
-				if (g_objects[i]->model != NULL)
-				{
-					renderer->DrawModel(*g_objects[i]);
-				}
-				
-			}
-		renderer->DrawWater(distortWater, drawInfo);
-		renderer->DrawDirWater(dirWater, drawInfo);
+        
+        for (unsigned int i = 0; i < g_objects.size(); i++)
+        {
+            if (g_objects[i]->model != NULL)
+            {
+                renderer->DrawModel(*g_objects[i]);
+            }
+            
+        }
+		renderer->DrawWater(distortWater);
+		renderer->DrawDirWater(dirWater);
 		renderer->EndRender();
 		gui->Render();
 	}
-
+    
 	void Game::ProcessInput(int key, int action, int scancode, int mods, float dt)
 	{
 		/*
@@ -96,10 +93,11 @@ namespace finnsie {
 		}
 		*/
 	}
-
+    
 	void Game::ProcessMouseButtons(int button, int action, int mods)
 	{
 		// NOTE(CK): (hack?)
+        // TODO(CK): Need to not allow changing camera speed while gui is active
 		// This interacts with the gui well because if the mouse button is held down
 		// the gui wont register to the mouse
 		if (!gui->Active() && button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
@@ -113,15 +111,15 @@ namespace finnsie {
 			leftMousePressed = false;
 		}
 	}
-
+    
 	void Game::Shutdown()
 	{
 		renderer->Shutdown();
 		delete renderer;
-
+        
 		delete distortWater;
 		delete dirWater;
-
+        
 		delete camera;
 		delete gameCamera;
 		gui->Shutdown();

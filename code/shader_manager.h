@@ -17,21 +17,21 @@ namespace finnsie {
 			this->location = glGetUniformLocation(shaderId, name.c_str());
 		}
 	};
-
+    
 	class Shader
 	{
-	public:
+        public:
 		unsigned int id;
 		std::vector<uniform> uniforms;
-
+        
 		Shader& UseShader(Shader* shader);
 		void GetUniforms();
 		int GetLoc(std::string name);
 		void BuildShader(Shader* shader, const char* vertexText, const char* fragmentText, const char* geometryText = NULL);
-		
-	private:
+		void Reload();
+        private:
 		void checkCompileErrors(unsigned int shader, std::string type);
-
+        
 	};
 }
 
