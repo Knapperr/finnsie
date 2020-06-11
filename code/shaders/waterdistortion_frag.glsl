@@ -104,6 +104,8 @@ void main()
     // diffuse color
     //vec3 color = texture(texture_diffuse1, flowCoords.xy * flowCoords.z).rgb;
     
+	// NOTE(CK): Loop through number of lights here?
+
     // ambient
     vec3 ambient = (0.1 * flowCol.rgb);
     // diffuse

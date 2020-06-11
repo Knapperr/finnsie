@@ -29,6 +29,7 @@ namespace finnsie {
 		int GetLoc(std::string name);
 		void BuildShader(Shader* shader, const char* vertexText, const char* fragmentText, const char* geometryText = NULL);
 		void Reload();
+        
         private:
 		void checkCompileErrors(unsigned int shader, std::string type);
         

@@ -149,9 +149,18 @@ namespace finnsie {
 		return -1;
 	}
     
+    // TODO(CK): Create a function that does this
+    // so that the above code can call it as well
+    // compileShaders()
     void Shader::Reload()
     {
-        
+        /* TODO(CK): This wont work
+         There is no point of keeping the codes because 
+we need to get that information again anyways
+Probably easier way to read all of these files too?
+
+*/
+        return void;
     }
     
 	// Check shader compilation/linking errors
