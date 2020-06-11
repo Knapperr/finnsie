@@ -125,9 +125,9 @@ namespace finnsie {
             
             
             // TODO(CK): LIGHTING MENU
-			//ImGui::SliderFloat("Light X", &drawInfo.lightInfo.lightX, -200.0f, 400.0f);
-			//ImGui::SliderFloat("Light Y", &drawInfo.lightInfo.lightY, -200.0f, 400.0f);
-			//ImGui::SliderFloat("Light Z", &drawInfo.lightInfo.lightZ, -200.0f, 400.0f);
+			ImGui::SliderFloat("Light X", &g_lamp.x, -200.0f, 400.0f);
+			ImGui::SliderFloat("Light Y", &g_lamp.y, -200.0f, 400.0f);
+			ImGui::SliderFloat("Light Z", &g_lamp.z, -200.0f, 400.0f);
 			ImGui::Separator();
             
 			ImGui::End();
@@ -277,12 +277,6 @@ namespace finnsie {
     
     void Gui::directionalWaterControls(WaterObject& dirWater)
     {
-        ImGui::DragFloat("ujump", &dirWater.uJump,
-                         0.001f, 0.0f, 0.25f, "%.02f");
-		ImGui::DragFloat("vjump", &dirWater.vJump,
-                         0.001f, 0.0f, 0.25f, "%.02f");
-		ImGui::Separator();
-        
 		ImGui::DragFloat("Tiling", &dirWater.tiling,
                          0.1f, 0.0f, 10.0f, "%.01f"); // 3.0
 		ImGui::DragFloat("Speed", &dirWater.speed,
@@ -291,8 +285,6 @@ namespace finnsie {
         
 		ImGui::DragFloat("Flow Strength", &dirWater.flowStrength,
                          0.001f, 0.0f, 0.5f, "%.02f"); // 0.1
-		ImGui::DragFloat("Flow Offset", &dirWater.flowOffset,
-                         0.001f, -1.5f, 2.0f, "%.02f");
 		ImGui::Separator();
         
 		ImGui::SliderFloat("Height Scale", &dirWater.heightScale,

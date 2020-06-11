@@ -183,14 +183,10 @@ namespace finnsie {
 			// Water distortion
 			// --------------------
             
-            
-			// TODO(CK): Clean this up
-			this->lightPos = glm::vec3(-100.0f, -40.0f, 1.0f);
-			
 			// loop through draw info grabbed passed to gui from game. then game passes to renderer
 			// can loop through all uniforms with shader.GetUniforms();
 			glUniform1f(glGetUniformLocation(waterShader.id, "time"), glfwGetTime());
-			glUniform3fv(glGetUniformLocation(waterShader.id, "lightPos"), 1, &lightPos[0]);
+			glUniform3fv(glGetUniformLocation(waterShader.id, "lightPos"), 1, &g_lamp[0]);
 			glUniform3fv(glGetUniformLocation(waterShader.id, "viewPos"), 1, &camPos[0]);
 			
 			// TODO(CK): Draw info gets moved to model
@@ -301,9 +297,8 @@ namespace finnsie {
 			glUniform1f(glGetUniformLocation(waterDirShader.id, "time"), glfwGetTime());
             
 			// TODO(CK): Clean this up
-			this->lightPos = glm::vec3(-100.0f, -40.0f, 10.0f);
 			glUniform3fv(glGetUniformLocation(waterDirShader.id, "lightPos"),
-                         1, &lightPos[0]);
+                         1, &g_lamp[0]);
 			glUniform3fv(glGetUniformLocation(waterDirShader.id, "viewPos"), 1, &camPos[0]); // getting updated in BeginRender (probably not good)
             
 			glUniform1f(this->waterDirShader.GetLoc("tiling2"), water->tiling);

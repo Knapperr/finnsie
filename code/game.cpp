@@ -7,12 +7,16 @@ namespace finnsie {
     
 	// Game inits resource manager
 	ResourceManager* g_resourceManager;
+    // TODO(CK): Figure something out for lights in game
+    // keep in their own vector for awhile?
+    glm::vec3 g_lamp;
     
 	Game::Game(GLFWwindow& wnd)
 	{
 		LOG("Game Init");
         
 		::finnsie::g_resourceManager = new ResourceManager();
+        g_lamp = glm::vec3(1.0f);
 		this->mode = Mode::EDIT;
 		this->window = &wnd;
 		this->gui = new Gui();
