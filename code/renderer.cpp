@@ -190,14 +190,14 @@ namespace finnsie {
 			glUniform3fv(glGetUniformLocation(waterShader.id, "viewPos"), 1, &camPos[0]);
 			
 			// TODO(CK): Draw info gets moved to model
-			glUniform1f(this->waterShader.GetLoc("uJump"), water->uJump);
-			glUniform1f(this->waterShader.GetLoc("vJump"), water->vJump);
-			glUniform1f(this->waterShader.GetLoc("tiling"), water->tiling);
-			glUniform1f(this->waterShader.GetLoc("speed"), water->speed);
-			glUniform1f(this->waterShader.GetLoc("flowStrength"), water->flowStrength);
-			glUniform1f(this->waterShader.GetLoc("flowOffset"), water->flowOffset);
-			glUniform1f(this->waterShader.GetLoc("heightScale"), water->heightScale);
-			glUniform1f(this->waterShader.GetLoc("heightScaleModulated"), water->heightScaleModulated);
+			glUniform1f(GetLoc(&this->waterShader, "uJump"), water->uJump);
+			glUniform1f(GetLoc(&this->waterShader, "vJump"), water->vJump);
+			glUniform1f(GetLoc(&this->waterShader, "tiling"), water->tiling);
+			glUniform1f(GetLoc(&this->waterShader, "speed"), water->speed);
+			glUniform1f(GetLoc(&this->waterShader, "flowStrength"), water->flowStrength);
+			glUniform1f(GetLoc(&this->waterShader, "flowOffset"), water->flowOffset);
+			glUniform1f(GetLoc(&this->waterShader, "heightScale"), water->heightScale);
+			glUniform1f(GetLoc(&this->waterShader, "heightScaleModulated"), water->heightScaleModulated);
 			
 			// Set position, rotation and scale
 			glm::mat4 matModel = glm::mat4(1.0f);
@@ -258,8 +258,8 @@ namespace finnsie {
 	void Renderer::DrawDirWater(WaterObject* water)
 	{
 		glUseProgram(waterDirShader.id);
-		glUniformMatrix4fv(this->waterDirShader.GetLoc("projection"), 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(this->waterDirShader.GetLoc("view"), 1, GL_FALSE, glm::value_ptr(view));
+		glUniformMatrix4fv(GetLoc(&this->waterDirShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(GetLoc(&this->waterDirShader, "view"), 1, GL_FALSE, glm::value_ptr(view));
         
 		for (unsigned int i = 0; i < water->model->meshes.size(); i++)
 		{
@@ -301,17 +301,14 @@ namespace finnsie {
                          1, &g_lamp[0]);
 			glUniform3fv(glGetUniformLocation(waterDirShader.id, "viewPos"), 1, &camPos[0]); // getting updated in BeginRender (probably not good)
             
-			glUniform1f(this->waterDirShader.GetLoc("tiling2"), water->tiling);
-			glUniform1f(this->waterDirShader.GetLoc("tilingModulated"),
-                        water->tilingModulated);
-			glUniform1f(this->waterDirShader.GetLoc("speed2"), water->speed);
-			glUniform1f(this->waterDirShader.GetLoc("flowStrength2"), water->flowStrength);
-			glUniform1f(this->waterDirShader.GetLoc("heightScale2"), water->heightScale);
-			glUniform1f(this->waterDirShader.GetLoc("heightScaleModulated2"),
-                        water->heightScaleModulated);
-			glUniform1f(this->waterDirShader.GetLoc("gridResolution"),
-                        water->gridResolution);
-			glUniform1f(this->waterDirShader.GetLoc("dualGrid"), water->dualGrid);
+			glUniform1f(GetLoc(&this->waterDirShader, "tiling2"), water->tiling);
+			glUniform1f(GetLoc(&this->waterDirShader,"tilingModulated"), water->tilingModulated);
+			glUniform1f(GetLoc(&this->waterDirShader,"speed2"), water->speed);
+			glUniform1f(GetLoc(&this->waterDirShader,"flowStrength2"), water->flowStrength);
+			glUniform1f(GetLoc(&this->waterDirShader,"heightScale2"), water->heightScale);
+			glUniform1f(GetLoc(&this->waterDirShader,"heightScaleModulated2"), water->heightScaleModulated);
+			glUniform1f(GetLoc(&this->waterDirShader,"gridResolution"), water->gridResolution);
+			glUniform1f(GetLoc(&this->waterDirShader,"dualGrid"), water->dualGrid);
             
 			// Set position, rotation and scale
 			glm::mat4 matModel = glm::mat4(1.0f);
@@ -339,7 +336,7 @@ namespace finnsie {
 											glm::vec3(water->scale, water->scale, water->scale));
             
 			matModel = matModel * matScale;
-			glUniformMatrix4fv(this->waterDirShader.GetLoc("model"), 1, GL_FALSE, glm::value_ptr(matModel));
+			glUniformMatrix4fv(GetLoc(&this->waterDirShader, "model"), 1, GL_FALSE, glm::value_ptr(matModel));
             
 			/*
 			// INVERSE WAS FROM GRAPHICS CLASS
@@ -405,7 +402,6 @@ namespace finnsie {
     
 	void Renderer::initUniforms()
 	{
-		// uniforms
 		this->objProjLoc = glGetUniformLocation(modelShader.id, "projection");
 		this->objViewLoc = glGetUniformLocation(modelShader.id, "view");
 		this->objModelLoc = glGetUniformLocation(modelShader.id, "model");
@@ -413,8 +409,6 @@ namespace finnsie {
 		this->normalProjLoc = glGetUniformLocation(normalShader.id, "projection");
 		this->normalViewLoc = glGetUniformLocation(normalShader.id, "view");
 		this->normalModelLoc = glGetUniformLocation(normalShader.id, "model");
-        
-		// FLAW IN MANAGER... IF TWO SHADERS HAVE THE SAME NAME CAN NOT RETRIEVE
         
 		this->watProjLoc = glGetUniformLocation(waterShader.id, "projection");
 		this->watViewLoc = glGetUniformLocation(waterShader.id, "view");

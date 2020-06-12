@@ -11,19 +11,19 @@ namespace finnsie {
 	
 	class ResourceManager
 	{
-	public:
+        public:
 		Texture2D GenerateTexture(int lookupId, const char* file, bool alpha);
 		Shader GenerateShader(int lookupId, const char* vertName, const char* fragName, const char* geoName);
-
+        
 		Texture2D& GetTexture(int lookupId);
 		Shader& GetShader(int lookupId);
-
+        
 		void ShutDown();
-
-	private:
+        
+        private:
 		std::map <int, Texture2D> textures;
 		std::map <int, Shader> shaders;
-
+        
 		Texture2D loadTextureFromFile(const char* file, bool alpha);
 	};
 }

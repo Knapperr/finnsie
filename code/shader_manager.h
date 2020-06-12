@@ -7,6 +7,7 @@
 #include <string>
 
 namespace finnsie {
+    
 	struct uniform
 	{
 		std::string name;
@@ -18,22 +19,25 @@ namespace finnsie {
 		}
 	};
     
-	class Shader
-	{
-        public:
-		unsigned int id;
-		std::vector<uniform> uniforms;
-        
-		Shader& UseShader(Shader* shader);
-		void GetUniforms();
-		int GetLoc(std::string name);
-		void BuildShader(Shader* shader, const char* vertexText, const char* fragmentText, const char* geometryText = NULL);
-		void Reload();
-        
-        private:
-		void checkCompileErrors(unsigned int shader, std::string type);
-        
-	};
+    struct ShaderTwo 
+    {
+        int id;
+    };
+    
+    struct Shader
+    {
+        unsigned int id;
+        std::vector<uniform> uniforms;
+        const char* vertexText;
+        const char* fragmentText;
+        const char* geometryText;
+    };
+    
+    void GetUniforms(Shader* shader);
+    void BuildShader(Shader* shader, const char* vertexFileName, 
+                     const char* fragmentFileName, const char* geometryFileName = NULL);
+    int GetLoc(Shader* shader, std::string name);
+    void Reload(Shader* shader);
 }
 
 #endif

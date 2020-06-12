@@ -1,12 +1,13 @@
 #ifndef RENDERER_HG_
 #define RENDERER_HG_
 
-#include "shader_manager.h"
 #include "camera.h"
 #include "gui.h"
 
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
+#include "shader_manager.h"
 
 namespace finnsie {
     
