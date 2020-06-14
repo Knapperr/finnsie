@@ -36,6 +36,7 @@ namespace finnsie {
 		Gui *gui;
         
         private:
+        GameObject* testSphere;
 		WaterObject* distortWater;
 		WaterObject* dirWater;
 		draw_info drawInfo;

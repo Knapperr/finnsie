@@ -42,12 +42,27 @@ namespace finnsie {
                                    40.0f,
                                    "content/objects/quad/basic_quad.obj");
 		LoadDirectionalWater(dirWater->model);
+        
+        testSphere = new GameObject("sphere",
+                                    glm::vec3(-100.0f, 0.0f, 80.0),
+                                    glm::vec3(0.0f, 0.0f, 0.0f),
+                                    10.0f,
+                                    "content/objects/sphere/sphere.obj");
+        std::string diffusePath = "content/textures/wall.jpg";
+        std::string diffuseDir = diffusePath.substr(0, diffusePath.find_last_of('/'));
+        Texture text = {};
+        text.id = LoadTextureFile("wall.jpg", diffuseDir, false);
+        text.type = "texture_diffuse";
+        text.path = diffusePath;
+        testSphere->model->meshes[0].textures.push_back(text);
+        
 	}
     
 	void Game::Update(float dt)
 	{
         // TODO(CK): Pass water for now... find a way to update
         // the game data directly... get lighting info directly too
+        // TODO(CK): Gui needs some sort of gamestate
 		gui->Update(*distortWater, *dirWater);
         
 		if (leftMousePressed)
@@ -71,6 +86,7 @@ namespace finnsie {
         }
 		renderer->DrawWater(distortWater);
 		renderer->DrawDirWater(dirWater);
+        renderer->DrawSphere(*testSphere);
 		renderer->EndRender();
 		gui->Render();
 	}
@@ -123,6 +139,7 @@ namespace finnsie {
         
 		delete distortWater;
 		delete dirWater;
+        delete testSphere;
         
 		delete camera;
 		delete gameCamera;

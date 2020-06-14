@@ -183,6 +183,11 @@ namespace finnsie {
     // compileShaders()
     void Reload(Shader* shader)
     {
+        // TODO(CK): Check to see if file has been changed
+        // have to keep file attributes when first reading it
+        // in build shader can return a boolean from this routine
+        
+        
 		std::string vertCode;
 		std::string fragCode;
 		std::string geoCode;
