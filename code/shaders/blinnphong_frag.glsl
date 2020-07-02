@@ -10,10 +10,24 @@ in VS_OUT {
 uniform sampler2D texture_diffuse1;
 uniform vec3 lightPos;
 uniform vec3 viewPos;
+uniform float time;
+
+vec2 moveTexture(vec2 uv, vec2 newVector, float time)
+{
+    return uv - newVector * time;
+}
 
 void main()
-{           
+{
+    //vec2 uv = fs_in.TexCoords;
+    //vec2 newVector = texture2D(texture_diffuse1, fs_in.TexCoords).rg * 2 - 1;
+    //vec2 newUV = moveTexture(uv, newVector, time);
+
+    vec2 uv = fs_in.TexCoords + time;
+
     vec3 color = texture(texture_diffuse1, fs_in.TexCoords).rgb;
+    
+    //vec3 color = vec3(0.3, 0.6, 0.8);
     // ambient
     vec3 ambient = 0.05 * color;
     // diffuse

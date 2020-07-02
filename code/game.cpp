@@ -29,6 +29,7 @@ namespace finnsie {
 		gui->Init(*this->window, camera->MovementSpeed);
 		
 		
+        // Water objects
 		distortWater = new WaterObject("water",
                                        glm::vec3(-100.0f, -30.0f, 0.0f),
                                        glm::vec3(0.0f, 0.0f, 0.0f),
@@ -43,6 +44,7 @@ namespace finnsie {
                                    "content/objects/quad/basic_quad.obj");
 		LoadDirectionalWater(dirWater->model);
         
+        // Test Sphere for shader learning 
         testSphere = new GameObject("sphere",
                                     glm::vec3(-100.0f, 0.0f, 80.0),
                                     glm::vec3(0.0f, 0.0f, 0.0f),
@@ -55,6 +57,20 @@ namespace finnsie {
         text.type = "texture_diffuse";
         text.path = diffusePath;
         testSphere->model->meshes[0].textures.push_back(text);
+        
+        
+        // Shaders 
+		this->modelShader = ::finnsie::g_resourceManager->GenerateShader(001, "shaders/model_vert.glsl", "shaders/model_frag.glsl", NULL);
+		this->normalShader = ::finnsie::g_resourceManager->GenerateShader(002, "shaders/onlynormals_model_vert.glsl", "shaders/onlynormals_model_frag.glsl", "shaders/onlynormals_model_geo.glsl");
+		this->waterShader = ::finnsie::g_resourceManager->GenerateShader(003, "shaders/waterdistortion_vert.glsl", "shaders/waterdistortion_frag.glsl", NULL);
+		this->waterDirShader = ::finnsie::g_resourceManager->GenerateShader(004, "shaders/waterdirection_vert.glsl", "shaders/waterdirection_frag.glsl", NULL);
+        
+        this->binnShader = 
+            ::finnsie::g_resourceManager->GenerateShader(005,
+                                                         "shaders/blinnphong_vert.glsl",
+                                                         "shaders/blinnphong_frag.glsl",
+                                                         NULL);
+        
         
 	}
     
@@ -80,19 +96,24 @@ namespace finnsie {
         {
             if (g_objects[i]->model != NULL)
             {
-                renderer->DrawModel(*g_objects[i]);
+                renderer->DrawModel(*g_objects[i], modelShader, normalShader);
             }
             
         }
-		renderer->DrawWater(distortWater);
-		renderer->DrawDirWater(dirWater);
-        renderer->DrawSphere(*testSphere);
+		renderer->DrawWater(distortWater, waterShader);
+		renderer->DrawDirWater(dirWater, waterDirShader);
+        renderer->DrawSphere(*testSphere, binnShader);
 		renderer->EndRender();
 		gui->Render();
 	}
     
 	void Game::ProcessInput(int key, int action, int scancode, int mods, float dt)
 	{
+        if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
+        {
+            Reload(&binnShader);
+        }
+        
 		/*
 		if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
 		{

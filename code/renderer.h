@@ -19,10 +19,10 @@ namespace finnsie {
 		Renderer();
 		~Renderer();
 		void BeginRender(Camera& cam);
-		void DrawModel(GameObject& obj);
-		void DrawWater(WaterObject* water);
-		void DrawDirWater(WaterObject* dirWater);
-        void Renderer::DrawSphere(GameObject& obj);
+		void DrawModel(GameObject& obj, Shader modelShader, Shader normalShader);
+		void DrawWater(WaterObject* water, Shader waterShader);
+		void DrawDirWater(WaterObject* dirWater, Shader waterShader);
+        void DrawSphere(GameObject& obj, Shader binnShader);
 		void EndRender();
 		void Shutdown();
         
@@ -31,7 +31,6 @@ namespace finnsie {
 		Shader normalShader;
 		Shader waterShader;
 		Shader waterDirShader;
-        Shader binnShader;
         
 		glm::vec3 lampPos;
 		glm::vec3 lightPos;

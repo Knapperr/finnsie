@@ -7,6 +7,7 @@
 
 namespace finnsie {
     
+    
 	Renderer::Renderer()
 	{
         
@@ -43,9 +44,21 @@ namespace finnsie {
 		this->camPos = cam.Position;
 	}
     
-	void Renderer::DrawModel(GameObject& obj)
+	void Renderer::DrawModel(GameObject& obj, Shader modelShader, Shader normalShader)
 	{
 		// Only use the modelShader when not drawing normals
+        // TODO(CK): Change this remove start shader function remove these locations
+        // the locations are inside of the shaders we don't need to store them here or 
+        // in the game
+        // probably get rid of the normal shader.. ???? do we really need it? 
+        // or can i just combine that technique inside of the modelshader and 
+        // just chnage the way i draw off of a bool uniform?? ya do that
+        
+        // Instead of passing it the locations just pass it the active
+        // the active thing can exist in here at the beginning it gets passed
+        // by reference so the func looks like startShader(shaderId, *activeShader, *modelLoc);
+        // its just pointers made at the beginning of this that get their state from
+        // the function.... much simpler! :)
 		if (!drawingNormals)
 			startShader(modelShader.id, objModelLoc, objProjLoc, objViewLoc);
 		else
@@ -141,17 +154,17 @@ namespace finnsie {
 		{
 			// Normals are only drawn on the next draw call
 			drawingNormals = true;
-			DrawModel(obj);
+			DrawModel(obj, modelShader, normalShader);
 			drawingNormals = false;
 		}
 	}
     
-    void Renderer::DrawSphere(GameObject& obj)
+    void Renderer::DrawSphere(GameObject& obj, Shader binnShader)
     {
 		glUseProgram(binnShader.id);
-		glUniformMatrix4fv(GetLoc(&this->binnShader, "projection"),
+		glUniformMatrix4fv(GetLoc(&binnShader, "projection"),
                            1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(GetLoc(&this->binnShader, "view"),
+		glUniformMatrix4fv(GetLoc(&binnShader, "view"),
                            1, GL_FALSE, glm::value_ptr(view));
         
 		for (unsigned int i = 0; i < obj.model->meshes.size(); i++)
@@ -178,16 +191,18 @@ namespace finnsie {
 					number = std::to_string(heightNr++);
                 
 				// now set the sampler to the correct texture unit
-				int loc = glGetUniformLocation(this->binnShader.id,
+				int loc = glGetUniformLocation(binnShader.id,
                                                (name + number).c_str());
-				glUniform1i(glGetUniformLocation(this->binnShader.id,
+				glUniform1i(glGetUniformLocation(binnShader.id,
                                                  (name + number).c_str()), j);
 				// and finally bind the texture
 				glBindTexture(GL_TEXTURE_2D, obj.model->meshes[i].textures[j].id);
 			}
             
-            glUniform3fv(glGetUniformLocation(this->binnShader.id, "lightPos"), 1, &g_lamp[0]);
-            glUniform3fv(glGetUniformLocation(this->binnShader.id, "viewPos"), 1, &camPos[0]);
+            glUniform1f(glGetUniformLocation(binnShader.id, "time"), glfwGetTime());
+            
+            glUniform3fv(glGetUniformLocation(binnShader.id, "lightPos"), 1, &g_lamp[0]);
+            glUniform3fv(glGetUniformLocation(binnShader.id, "viewPos"), 1, &camPos[0]);
 			
 			// Set position, rotation and scale
 			glm::mat4 matModel = glm::mat4(1.0f);
@@ -215,7 +230,7 @@ namespace finnsie {
                                             glm::vec3(obj.scale, obj.scale, obj.scale));
             
 			matModel = matModel * matScale;
-			glUniformMatrix4fv(GetLoc(&this->binnShader, "model"),
+			glUniformMatrix4fv(GetLoc(&binnShader, "model"),
                                1, GL_FALSE, glm::value_ptr(matModel));
             
 			/*
@@ -245,7 +260,7 @@ namespace finnsie {
 		}
     }
     
-	void Renderer::DrawWater(WaterObject* water)
+	void Renderer::DrawWater(WaterObject* water, Shader waterShader)
 	{
 		startShader(waterShader.id, watModelLoc, watProjLoc, watViewLoc);
         
@@ -354,7 +369,7 @@ namespace finnsie {
 		return;
 	}
     
-	void Renderer::DrawDirWater(WaterObject* water)
+	void Renderer::DrawDirWater(WaterObject* water, Shader waterShader)
 	{
 		glUseProgram(waterDirShader.id);
 		glUniformMatrix4fv(GetLoc(&this->waterDirShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
@@ -498,12 +513,6 @@ namespace finnsie {
 		this->normalShader = ::finnsie::g_resourceManager->GenerateShader(002, "shaders/onlynormals_model_vert.glsl", "shaders/onlynormals_model_frag.glsl", "shaders/onlynormals_model_geo.glsl");
 		this->waterShader = ::finnsie::g_resourceManager->GenerateShader(003, "shaders/waterdistortion_vert.glsl", "shaders/waterdistortion_frag.glsl", NULL);
 		this->waterDirShader = ::finnsie::g_resourceManager->GenerateShader(004, "shaders/waterdirection_vert.glsl", "shaders/waterdirection_frag.glsl", NULL);
-        
-        this->binnShader = 
-            ::finnsie::g_resourceManager->GenerateShader(005,
-                                                         "shaders/blinnphong_vert.glsl",
-                                                         "shaders/blinnphong_frag.glsl",
-                                                         NULL);
 	}
     
 	void Renderer::initUniforms()

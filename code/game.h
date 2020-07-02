@@ -39,6 +39,13 @@ namespace finnsie {
         GameObject* testSphere;
 		WaterObject* distortWater;
 		WaterObject* dirWater;
+        
+        Shader modelShader;
+        Shader normalShader;
+        Shader waterShader;
+        Shader waterDirShader;
+        Shader binnShader;
+        
 		draw_info drawInfo;
         
 		void processCamera(float dt);

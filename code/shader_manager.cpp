@@ -49,6 +49,13 @@ namespace finnsie {
 	*/
 	void GetUniforms(Shader* shader)
 	{
+        // TODO(CK): Definitely switch to an array of uniforms this 
+        // is not efficient or worth it 
+        if (!shader->uniforms.empty())
+        {
+            shader->uniforms.clear();
+        }
+        
 		int count;
 		glGetProgramiv(shader->id, GL_ACTIVE_UNIFORMS, &count);
 		
