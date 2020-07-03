@@ -46,7 +46,6 @@ namespace finnsie {
     
 	void Renderer::DrawModel(GameObject& obj, Shader modelShader, Shader normalShader)
 	{
-		// Only use the modelShader when not drawing normals
         // TODO(CK): Change this remove start shader function remove these locations
         // the locations are inside of the shaders we don't need to store them here or 
         // in the game
@@ -54,12 +53,40 @@ namespace finnsie {
         // or can i just combine that technique inside of the modelshader and 
         // just chnage the way i draw off of a bool uniform?? ya do that
         
-        // Instead of passing it the locations just pass it the active
-        // the active thing can exist in here at the beginning it gets passed
-        // by reference so the func looks like startShader(shaderId, *activeShader, *modelLoc);
-        // its just pointers made at the beginning of this that get their state from
-        // the function.... much simpler! :)
-		if (!drawingNormals)
+		
+        // TODO(CK): We don't do this setting it here we do a function at the beginning
+        // that does a pass and grabs the shader we are going to use
+        // we could do:
+        
+        /*
+Shader *drawShader = BasePass(); <- returns a Shader*
+
+Shader* BasePass(*obj)
+{
+ if (obj.drawNormals)
+{
+ return shaders[1];
+}
+normal shader in here maybe? i still like game passing shaders
+     that was a shader can be made on the game side
+at the same time the renderer can just have its own shaders like before
+if its functional though how does it "keep" shaders is there just an array that lives
+in here and stays updated
+}
+
+
+then if we have a pointer to the shader we want to use
+
+
+also we can loop through the shader and activate all of its attributes maybe
+not the time and lighting (right now) we can also just say if (time exists then set it)
+
+the Shader uniforms needs a char *name .. it does have a string 
+
+
+*/
+        
+        if (!drawingNormals)
 			startShader(modelShader.id, objModelLoc, objProjLoc, objViewLoc);
 		else
 			startShader(normalShader.id, normalModelLoc, normalProjLoc, normalViewLoc);
@@ -88,7 +115,6 @@ namespace finnsie {
 					number = std::to_string(heightNr++);
                 
 				// now set the sampler to the correct texture unit
-				int loc = glGetUniformLocation(activeModelShaderId, (name + number).c_str());
 				glUniform1i(glGetUniformLocation(activeModelShaderId, (name + number).c_str()), j);
 				// and finally bind the texture		
 				glBindTexture(GL_TEXTURE_2D, obj.model->meshes[i].textures[j].id);
@@ -191,8 +217,6 @@ namespace finnsie {
 					number = std::to_string(heightNr++);
                 
 				// now set the sampler to the correct texture unit
-				int loc = glGetUniformLocation(binnShader.id,
-                                               (name + number).c_str());
 				glUniform1i(glGetUniformLocation(binnShader.id,
                                                  (name + number).c_str()), j);
 				// and finally bind the texture

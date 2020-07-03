@@ -10,6 +10,7 @@ namespace finnsie {
     
 	struct uniform
 	{
+        // TODO(CK): Change to char*
 		std::string name;
 		int location;
 		uniform(std::string name, int shaderId)
@@ -27,6 +28,7 @@ namespace finnsie {
     struct Shader
     {
         unsigned int id;
+        // TODO(CK): use raw array
         std::vector<uniform> uniforms;
         const char* vertexText;
         const char* fragmentText;

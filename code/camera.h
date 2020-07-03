@@ -22,19 +22,19 @@ namespace finnsie {
 		UP,
 		DOWN
 	};
-
+    
 	// Default camera values
 	const float YAW = -90.0f;
 	const float PITCH = 0.0f;
 	const float SPEED = 30.5f;
 	const float SENSITIVITY = 0.1f;
 	const float ZOOM = 45.0f;
-
-
+    
+    
 	// An abstract camera class that processes input and calculates the corresponding Euler Angles, Vectors and Matrices for use in OpenGL
 	class Camera
 	{
-	public:
+        public:
 		// Camera Attributes
 		glm::vec3 Position;
 		glm::vec3 Front;
@@ -48,9 +48,9 @@ namespace finnsie {
 		float MovementSpeed;
 		float MouseSensitivity;
 		float Zoom;
-
+        
 		// Constructor with vectors
-		Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH)
+		Camera(glm::vec3 position = glm::vec3(-80.0f, -20.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH)
 			: Front(glm::vec3(0.0f, 0.0f, -1.0f))
 			, MovementSpeed(SPEED)
 			, MouseSensitivity(SENSITIVITY)
@@ -75,7 +75,7 @@ namespace finnsie {
 			Pitch = pitch;
 			updateCameraVectors();
 		}
-
+        
 		// Returns the view matrix calculated using Euler Angles and the LookAt Matrix
 		glm::mat4 GetViewMatrix();
 		// Processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
@@ -84,8 +84,8 @@ namespace finnsie {
 		void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true);
 		// Processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
 		void ProcessMouseScroll(float yoffset);
-
-	private:
+        
+        private:
 		// Calculates the front vector from the Camera's (updated) Euler Angles
 		void updateCameraVectors();
 	};

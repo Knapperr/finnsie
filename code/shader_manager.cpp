@@ -56,6 +56,7 @@ namespace finnsie {
             shader->uniforms.clear();
         }
         
+        // TODO(CK): we can use an array because we get the count right here
 		int count;
 		glGetProgramiv(shader->id, GL_ACTIVE_UNIFORMS, &count);
 		
@@ -184,6 +185,21 @@ namespace finnsie {
         // Not found
 		return -1;
 	}
+    
+    // NOTE(CK): Pass the object in as well because we need
+    // to use its data to set the uniforms.
+    // Need to ignore textures though.
+    /*void ActivateUniforms(Shader* shader, GameObject *obj)
+    {
+        for (int i = 0; i != shader->uniforms.size(); ++i)
+        {
+            // have to switch off of each uniform type
+            // going to have to hold the type as well then
+            // that way we can just say glUniform1f()
+            // glUniform3fv(shader->id, unform[i].name)
+            
+        }
+    }*/
     
     // TODO(CK): Create a function that does this
     // so that the above code can call it as well
