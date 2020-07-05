@@ -26,8 +26,6 @@ namespace finnsie {
 		this->gameCamera = new Camera();
 		this->leftMousePressed = false;
 		
-		gui->Init(*this->window, camera->MovementSpeed);
-		
 		
         // Water objects
 		distortWater = new WaterObject("water",
@@ -59,6 +57,20 @@ namespace finnsie {
         testSphere->model->meshes[0].textures.push_back(text);
         
         
+        book = new GameObject("book",
+                              glm::vec3(-100.0f, 0.0f, 40.0),
+                              glm::vec3(0.0f, glm::radians(180.0f), 0.0f),
+                              8.0f,
+                              "content/objects/thickpage/thick_page.obj");
+        std::string diffusePath1 = "content/textures/jeff/page1.jpg";
+        std::string diffuseDir1 = diffusePath1.substr(0, diffusePath1.find_last_of('/'));
+        Texture text1 = {};
+        text1.id = LoadTextureFile("cover.jpg", diffuseDir1, false);
+        text1.type = "texture_diffuse";
+        text1.path = diffusePath1;
+        book->model->meshes[0].textures.push_back(text1);
+        
+        
         // Shaders 
 		this->modelShader = ::finnsie::g_resourceManager->GenerateShader(001, "shaders/model_vert.glsl", "shaders/model_frag.glsl", NULL);
 		this->normalShader = ::finnsie::g_resourceManager->GenerateShader(002, "shaders/onlynormals_model_vert.glsl", "shaders/onlynormals_model_frag.glsl", "shaders/onlynormals_model_geo.glsl");
@@ -72,6 +84,8 @@ namespace finnsie {
                                                          NULL);
         
         
+        // After loading book
+        gui->Init(*this->window, this->book, camera->MovementSpeed);
 	}
     
 	void Game::Update(float dt)
@@ -103,6 +117,7 @@ namespace finnsie {
 		renderer->DrawWater(distortWater, waterShader);
 		renderer->DrawDirWater(dirWater, waterDirShader);
         renderer->DrawSphere(*testSphere, binnShader);
+        renderer->DrawSphere(*book, binnShader);
 		renderer->EndRender();
 		gui->Render();
 	}

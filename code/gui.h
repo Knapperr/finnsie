@@ -20,6 +20,7 @@
 namespace finnsie {
 	// forward decl
 	class WaterObject;
+    class GameObject;
     
 	struct gui_state
 	{
@@ -39,7 +40,7 @@ namespace finnsie {
 	class Gui
 	{
         public:
-		void Init(GLFWwindow& window, float& cameraSpeed);
+		void Init(GLFWwindow& window, GameObject* book, float& cameraSpeed);
 		void Update(WaterObject& disWater, WaterObject& dirWater);
 		bool Active();
 		void Render();
@@ -47,10 +48,12 @@ namespace finnsie {
         
 		float playerVelocity;
 		gui_state state;
+        
         private:
 		bool showDemoWindow = false;
 		bool showWaterWindow = false;
 		bool showModelWindow = false;
+        bool showBookWindow = false;
 		bool showAnotherWindow = false;
 		
 		// TODO(CK): Remove replace with local function
@@ -58,11 +61,14 @@ namespace finnsie {
 		
 		void waterWindow(bool* p_open, WaterObject& disWater, WaterObject& dirWater);
 		void modelWindow(bool* p_open);
+        void bookWindow(bool* p_open);
 		// TODO(CK): Remove replace with local function
 		void getFolders(std::string folder);
 		
 		void distortedWaterControls(WaterObject& disWater);
         void directionalWaterControls(WaterObject& dirWater);
+        
+        GameObject *guiBook;
 	};
 }
 

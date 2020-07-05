@@ -37,7 +37,8 @@ namespace finnsie {
         
         private:
         GameObject* testSphere;
-		WaterObject* distortWater;
+		GameObject* book;
+        WaterObject* distortWater;
 		WaterObject* dirWater;
         
         Shader modelShader;

@@ -26,9 +26,10 @@ void main()
     vec2 uv = fs_in.TexCoords + time;
 
     vec3 color = texture(texture_diffuse1, fs_in.TexCoords).rgb;
-    
-    //vec3 color = vec3(0.3, 0.6, 0.8);
+
+    vec4 red = vec4(1.0, 0.2, 0.2, 1.0);
     // ambient
+    //vec3 ambient = (0.05 * color) * red.rgb;
     vec3 ambient = 0.05 * color;
     // diffuse
     vec3 lightDir = normalize(lightPos - fs_in.FragPos);

@@ -6,7 +6,7 @@ namespace fs = std::filesystem;
 
 namespace finnsie {
     
-	void Gui::Init(GLFWwindow& window, float& cameraSpeed)
+	void Gui::Init(GLFWwindow& window, GameObject* book, float& cameraSpeed)
 	{
 		const char* glsl_version = "#version 330";
         
@@ -40,6 +40,7 @@ namespace finnsie {
         
 		// NOTE(CK): set the camera pointer
 		this->state.cameraSpeed = &cameraSpeed;
+        this->guiBook = book;
 	}
     
 	bool Gui::Active()
@@ -110,6 +111,8 @@ namespace finnsie {
 			waterWindow(&showWaterWindow, disWater, dirWater);
 		if (showModelWindow)
 			modelWindow(&showModelWindow);
+        if (showBookWindow)
+            bookWindow(&showBookWindow);
         
 		// Show a simple window that we create ourselves. We use a begin/end pair to create a named window
 		{
@@ -120,6 +123,7 @@ namespace finnsie {
 			ImGui::Checkbox("Water Window", &showWaterWindow);
 			ImGui::SameLine();
 			ImGui::Checkbox("Model Window", &showModelWindow);
+            ImGui::Checkbox("Book Window", &showBookWindow);
 			
 			ImGui::SliderFloat("Camera Speed", this->state.cameraSpeed, 0.0f, 100.0f);
             
@@ -295,6 +299,14 @@ namespace finnsie {
 		ImGui::SliderFloat("gridResolution", &dirWater.gridResolution, 0.0f, 40.0f); // 10.0
 		ImGui::SliderFloat("TilingModulated", &dirWater.tilingModulated, 0.0f, 80.0f); // 50
 		ImGui::Checkbox("dualGrid", &dirWater.dualGrid);
+    }
+    
+    void Gui::bookWindow(bool* p_open)
+    {
+        ImGui::Begin("Book", p_open);
+        ImGui::SliderFloat("scale", &guiBook->scale, 0.0f, 30.0f);
+        ImGui::End();
+        
     }
     
 	void Gui::Render()

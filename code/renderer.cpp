@@ -44,6 +44,11 @@ namespace finnsie {
 		this->camPos = cam.Position;
 	}
     
+    void FirstPass() 
+    {
+        
+    }
+    
 	void Renderer::DrawModel(GameObject& obj, Shader modelShader, Shader normalShader)
 	{
         // TODO(CK): Change this remove start shader function remove these locations
@@ -85,6 +90,8 @@ the Shader uniforms needs a char *name .. it does have a string
 
 
 */
+        
+        //FirstPass(modelShader);
         
         if (!drawingNormals)
 			startShader(modelShader.id, objModelLoc, objProjLoc, objViewLoc);
