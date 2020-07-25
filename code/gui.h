@@ -69,6 +69,8 @@ namespace finnsie {
         void directionalWaterControls(WaterObject& dirWater);
         
         GameObject *guiBook;
+        
+        Texture bookTextures[4];
 	};
 }
 

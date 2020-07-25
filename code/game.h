@@ -27,6 +27,8 @@ namespace finnsie {
 		void ProcessMouseButtons(int button, int action, int mods);
 		void Shutdown();
         
+        bool debugRightMousePressed;
+        bool debugSphereStopped;
 		bool leftMousePressed;
 		Mode mode;
 		GLFWwindow* window;

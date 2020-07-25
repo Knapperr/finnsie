@@ -1,10 +1,8 @@
 #ifndef GAME_OBJECT_HG_
 #define GAME_OBJECT_HG_
 
-#include <glm/gtc/matrix_transform.hpp> 
-#include <string>
-
 #include "model.h"
+#include "rigid_body.h"
 
 namespace finnsie {
     
@@ -20,6 +18,12 @@ namespace finnsie {
 		bool viewNormals;
 		bool wireFrame;
         
+        RigidBody rb;
+        
+        float mass;
+        // TODO(CK): Not initialized...
+        glm::vec2 velocity;
+        
 		GameObject()
 		{
 			this->pos = glm::vec3(1.0);
@@ -28,10 +32,14 @@ namespace finnsie {
 			this->scale = 1.0;
 			this->viewNormals = false;
 			this->wireFrame = false;
+            this->mass = 1.0f;
+            this->velocity = glm::vec2(1.0);
+            this->rb = {};
+            SetupRigidBody(&rb, -9.81f);
             
-			// NOTE(CK): Model will have 0 meshes loaded
-			// keep pointer pointing to nothing
-			//model = new Model();
+            // NOTE(CK): Model will have 0 meshes loaded
+            // keep pointer pointing to nothing
+            //model = new Model();
 		}
         
 		GameObject(std::string name, glm::vec3 pos, glm::vec3 orientation, float scale, std::string path)
@@ -42,6 +50,11 @@ namespace finnsie {
 			this->scale = scale;
 			this->viewNormals = false;
 			this->wireFrame = false;
+            this->mass = 1.0f;
+            this->velocity = glm::vec2(1.0);
+            
+            this->rb = {};
+            SetupRigidBody(&rb, -9.81f);
             
 			// Load the model
 			model = new Model(path);

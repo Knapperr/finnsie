@@ -41,6 +41,37 @@ namespace finnsie {
 		// NOTE(CK): set the camera pointer
 		this->state.cameraSpeed = &cameraSpeed;
         this->guiBook = book;
+        
+        // TODO(CK): Refactor to better names?
+        // also this page1path and dir stuff should just be figured out
+        // inside the load texture file function....?
+        std::string page1Path = "content/textures/jeff/cover.jpg";
+        std::string page1Dir = page1Path.substr(0, page1Path.find_last_of('/'));
+        bookTextures[0] = {};
+        bookTextures[0].id = LoadTextureFile("cover.jpg", page1Dir, false);
+        bookTextures[0].type = "texture_diffuse";
+        bookTextures[0].path = page1Path;
+        
+        std::string page2Path = "content/textures/jeff/page1.jpg";
+        std::string page2Dir = page2Path.substr(0, page2Path.find_last_of('/'));
+        bookTextures[1] = {};
+        bookTextures[1].id = LoadTextureFile("page1.jpg", page2Dir, false);
+        bookTextures[1].type = "texture_diffuse";
+        bookTextures[1].path = page2Path;
+        
+        std::string page3Path = "content/textures/jeff/page2.jpg";
+        std::string page3Dir = page3Path.substr(0, page3Path.find_last_of('/'));
+        bookTextures[2] = {};
+        bookTextures[2].id = LoadTextureFile("page2.jpg", page3Dir, false);
+        bookTextures[2].type = "texture_diffuse";
+        bookTextures[2].path = page3Path;
+        
+        std::string page4Path = "content/textures/jeff/page3.jpg";
+        std::string page4Dir = page4Path.substr(0, page4Path.find_last_of('/'));
+        bookTextures[3] = {};
+        bookTextures[3].id = LoadTextureFile("page3.jpg", page4Dir, false);
+        bookTextures[3].type = "texture_diffuse";
+        bookTextures[3].path = page4Path;
 	}
     
 	bool Gui::Active()
@@ -133,6 +164,29 @@ namespace finnsie {
 			ImGui::SliderFloat("Light Y", &g_lamp.y, -200.0f, 400.0f);
 			ImGui::SliderFloat("Light Z", &g_lamp.z, -200.0f, 400.0f);
 			ImGui::Separator();
+            
+            // TODO(CK): The only reason this is doable is because the vector 
+            // already has a texture at [0] location ?? check this
+            if (ImGui::SmallButton("Cover"))
+            {
+                this->guiBook->model->meshes[0].textures[0] = {};
+                this->guiBook->model->meshes[0].textures[0] = bookTextures[0];
+            }
+            if (ImGui::SmallButton("Page 1"))
+            {
+                this->guiBook->model->meshes[0].textures[0] = {};
+                this->guiBook->model->meshes[0].textures[0] = bookTextures[1];
+            }
+            if (ImGui::SmallButton("Page 2"))
+            {
+                this->guiBook->model->meshes[0].textures[0] = {};
+                this->guiBook->model->meshes[0].textures[0] = bookTextures[2];
+            }
+            if (ImGui::SmallButton("Page 3"))
+            {
+                this->guiBook->model->meshes[0].textures[0] = {};
+                this->guiBook->model->meshes[0].textures[0] = bookTextures[3];
+            }
             
 			ImGui::End();
 		}

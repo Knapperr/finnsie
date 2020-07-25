@@ -3,10 +3,23 @@
 #include <glm/gtc/matrix_transform.hpp> 
 #include <glm/gtc/type_ptr.hpp>
 
+
 namespace finnsie {
     
 	// Game inits resource manager
 	ResourceManager* g_resourceManager;
+    
+    /*
+NOTE(CK):
+Okay lets figure out what to do.... We need to get this more "C like"
+classes everywhere is driving me nuts. This is imo is harder to read
+you have the constructor, update render and input happening in a class
+this could just be functions 
+ 
+Init > Input > Update > Render
+
+*/
+    
     // TODO(CK): Figure something out for lights in game
     // keep in their own vector for awhile?
     glm::vec3 g_lamp;
@@ -25,7 +38,8 @@ namespace finnsie {
 		// TODO(CK): Use game camera
 		this->gameCamera = new Camera();
 		this->leftMousePressed = false;
-		
+        this->debugRightMousePressed = false;
+		this->debugSphereStopped = false;
 		
         // Water objects
 		distortWater = new WaterObject("water",
@@ -44,7 +58,7 @@ namespace finnsie {
         
         // Test Sphere for shader learning 
         testSphere = new GameObject("sphere",
-                                    glm::vec3(-100.0f, 0.0f, 80.0),
+                                    glm::vec3(-100.0f, 100.0f, 80.0),
                                     glm::vec3(0.0f, 0.0f, 0.0f),
                                     10.0f,
                                     "content/objects/sphere/sphere.obj");
@@ -56,19 +70,27 @@ namespace finnsie {
         text.path = diffusePath;
         testSphere->model->meshes[0].textures.push_back(text);
         
-        
+        // TODO(CK):
+        // We only want one book. I don't think I need a book object
+        // I just need a struct called a book that contains the data 
+        // that the book will contain maybe how its lit? 
+        // this is a GameObject so maybe there are book functions 
+        // that can do work on a GameObject. GameObject & BookData 
+        // get sent to the renderer and bookshader
         book = new GameObject("book",
-                              glm::vec3(-100.0f, 0.0f, 40.0),
+                              glm::vec3(-100.0f, -25.0f, 40.0),
                               glm::vec3(0.0f, glm::radians(180.0f), 0.0f),
                               8.0f,
                               "content/objects/thickpage/thick_page.obj");
         std::string diffusePath1 = "content/textures/jeff/page1.jpg";
         std::string diffuseDir1 = diffusePath1.substr(0, diffusePath1.find_last_of('/'));
         Texture text1 = {};
-        text1.id = LoadTextureFile("cover.jpg", diffuseDir1, false);
+        text1.id = LoadTextureFile("page2.jpg", diffuseDir1, false);
         text1.type = "texture_diffuse";
         text1.path = diffusePath1;
         book->model->meshes[0].textures.push_back(text1);
+        
+        
         
         
         // Shaders 
@@ -86,8 +108,10 @@ namespace finnsie {
         
         // After loading book
         gui->Init(*this->window, this->book, camera->MovementSpeed);
+        
 	}
     
+    // TODO(CK): pass the input from main to here
 	void Game::Update(float dt)
 	{
         // TODO(CK): Pass water for now... find a way to update
@@ -99,6 +123,36 @@ namespace finnsie {
 		{
 			processCamera(dt);
 		}
+        
+        // apply gravity to sphere
+        if (debugRightMousePressed && !debugSphereStopped)
+        {
+            /*glm::vec2 force = glm::vec2(0, testSphere->mass * -9.81f);
+            glm::vec2 acceleration = glm::vec2(force.x / testSphere->mass, force.y / testSphere->mass);
+            testSphere->velocity.x += acceleration.x * dt;
+            testSphere->velocity.y += acceleration.y * dt;
+            testSphere->pos.x += testSphere->velocity.x * dt;
+            testSphere->pos.y += testSphere->velocity.y * dt;*/
+            
+            AddAcc(&testSphere->rb, dt);
+            testSphere->pos.x += testSphere->rb.velocity.x * dt;
+            testSphere->pos.y += testSphere->rb.velocity.y * dt;
+            
+            
+        }
+        
+        // stop the sphere so it doesn't fall forever...
+        if (testSphere->pos.y < -30.0f)
+        {
+            debugSphereStopped = true;
+        }
+        if (debugSphereStopped)
+        {
+            // stop gravity now allow ball to roll on this imaginary plane?
+            //testSphere->rb.velocity += 
+            //testSphere->pos.y = -testSphere->pos.y;
+            //testSphere->rb.velocity.y = -testSphere->rb.velocity.y;
+        }
 	}
     
 	void Game::Render()
@@ -112,12 +166,14 @@ namespace finnsie {
             {
                 renderer->DrawModel(*g_objects[i], modelShader, normalShader);
             }
-            
         }
 		renderer->DrawWater(distortWater, waterShader);
 		renderer->DrawDirWater(dirWater, waterDirShader);
         renderer->DrawSphere(*testSphere, binnShader);
+        
+        // TODO(CK): Remove the book object..
         renderer->DrawSphere(*book, binnShader);
+        
 		renderer->EndRender();
 		gui->Render();
 	}
@@ -127,6 +183,23 @@ namespace finnsie {
         if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
         {
             Reload(&binnShader);
+        }
+        
+        if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) 
+        { 
+            testSphere->pos.x -= 28 * dt;
+        }
+        if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) 
+        { 
+            testSphere->pos.x += 28 * dt;
+        }
+        if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) 
+        { 
+            testSphere->pos.z += 28 * dt;
+        }
+        if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) 
+        { 
+            testSphere->pos.z -= 28 * dt;
         }
         
 		/*
@@ -166,6 +239,12 @@ namespace finnsie {
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 			leftMousePressed = false;
 		}
+        
+        // TODO(CK): ! DEBUG TEST
+        if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
+        {
+            debugRightMousePressed = true;
+        }
 	}
     
 	void Game::Shutdown()
