@@ -17,10 +17,6 @@ namespace finnsie {
         
 		this->drawingNormals = false;
         
-		// init shaders before uniforms
-		initShaders();
-		initUniforms();
-        
 		// TODO(CK): CLEAN UP
 		// FOR LIGHTING
 		// -------------------
@@ -293,8 +289,11 @@ the Shader uniforms needs a char *name .. it does have a string
     
 	void Renderer::DrawWater(WaterObject* water, Shader waterShader)
 	{
-		startShader(waterShader.id, watModelLoc, watProjLoc, watViewLoc);
-        
+		//startShader(waterShader.id, watModelLoc, watProjLoc, watViewLoc);
+		glUseProgram(waterShader.id);
+		glUniformMatrix4fv(GetLoc(&waterShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(GetLoc(&waterShader, "view"), 1, GL_FALSE, glm::value_ptr(view));
+
 		for (unsigned int i = 0; i < water->model->meshes.size(); i++)
 		{
 			unsigned int diffuseNr = 1;
@@ -335,14 +334,14 @@ the Shader uniforms needs a char *name .. it does have a string
 			glUniform3fv(glGetUniformLocation(waterShader.id, "viewPos"), 1, &camPos[0]);
 			
 			// TODO(CK): Draw info gets moved to model
-			glUniform1f(GetLoc(&this->waterShader, "uJump"), water->uJump);
-			glUniform1f(GetLoc(&this->waterShader, "vJump"), water->vJump);
-			glUniform1f(GetLoc(&this->waterShader, "tiling"), water->tiling);
-			glUniform1f(GetLoc(&this->waterShader, "speed"), water->speed);
-			glUniform1f(GetLoc(&this->waterShader, "flowStrength"), water->flowStrength);
-			glUniform1f(GetLoc(&this->waterShader, "flowOffset"), water->flowOffset);
-			glUniform1f(GetLoc(&this->waterShader, "heightScale"), water->heightScale);
-			glUniform1f(GetLoc(&this->waterShader, "heightScaleModulated"), water->heightScaleModulated);
+			glUniform1f(GetLoc(&waterShader, "uJump"), water->uJump);
+			glUniform1f(GetLoc(&waterShader, "vJump"), water->vJump);
+			glUniform1f(GetLoc(&waterShader, "tiling"), water->tiling);
+			glUniform1f(GetLoc(&waterShader, "speed"), water->speed);
+			glUniform1f(GetLoc(&waterShader, "flowStrength"), water->flowStrength);
+			glUniform1f(GetLoc(&waterShader, "flowOffset"), water->flowOffset);
+			glUniform1f(GetLoc(&waterShader, "heightScale"), water->heightScale);
+			glUniform1f(GetLoc(&waterShader, "heightScaleModulated"), water->heightScaleModulated);
 			
 			// Set position, rotation and scale
 			glm::mat4 matModel = glm::mat4(1.0f);
@@ -370,7 +369,8 @@ the Shader uniforms needs a char *name .. it does have a string
 											glm::vec3(water->scale, water->scale, water->scale));
             
 			matModel = matModel * matScale;
-			glUniformMatrix4fv(watModelLoc, 1, GL_FALSE, glm::value_ptr(matModel));
+			glUniformMatrix4fv(GetLoc(&waterShader, "model"),
+							   1, GL_FALSE, glm::value_ptr(matModel));
             
 			/*
 			// INVERSE WAS FROM GRAPHICS CLASS
@@ -402,9 +402,9 @@ the Shader uniforms needs a char *name .. it does have a string
     
 	void Renderer::DrawDirWater(WaterObject* water, Shader waterShader)
 	{
-		glUseProgram(waterDirShader.id);
-		glUniformMatrix4fv(GetLoc(&this->waterDirShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(GetLoc(&this->waterDirShader, "view"), 1, GL_FALSE, glm::value_ptr(view));
+		glUseProgram(waterShader.id);
+		glUniformMatrix4fv(GetLoc(&waterShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(GetLoc(&waterShader, "view"), 1, GL_FALSE, glm::value_ptr(view));
         
 		for (unsigned int i = 0; i < water->model->meshes.size(); i++)
 		{
@@ -430,7 +430,7 @@ the Shader uniforms needs a char *name .. it does have a string
 					number = std::to_string(heightNr++);
                 
 				// now set the sampler to the correct texture unit
-				glUniform1i(glGetUniformLocation(waterDirShader.id, (name + number).c_str()), j);
+				glUniform1i(glGetUniformLocation(waterShader.id, (name + number).c_str()), j);
 				// and finally bind the texture		
 				glBindTexture(GL_TEXTURE_2D, water->model->meshes[i].textures[j].id);
 			}
@@ -439,21 +439,21 @@ the Shader uniforms needs a char *name .. it does have a string
 			// Water direction
 			// --------------------
             
-			glUniform1f(glGetUniformLocation(waterDirShader.id, "time"), glfwGetTime());
+			glUniform1f(glGetUniformLocation(waterShader.id, "time"), glfwGetTime());
             
 			// TODO(CK): Clean this up
-			glUniform3fv(glGetUniformLocation(waterDirShader.id, "lightPos"),
+			glUniform3fv(glGetUniformLocation(waterShader.id, "lightPos"),
                          1, &g_lamp[0]);
-			glUniform3fv(glGetUniformLocation(waterDirShader.id, "viewPos"), 1, &camPos[0]); // getting updated in BeginRender (probably not good)
+			glUniform3fv(glGetUniformLocation(waterShader.id, "viewPos"), 1, &camPos[0]); // getting updated in BeginRender (probably not good)
             
-			glUniform1f(GetLoc(&this->waterDirShader, "tiling2"), water->tiling);
-			glUniform1f(GetLoc(&this->waterDirShader,"tilingModulated"), water->tilingModulated);
-			glUniform1f(GetLoc(&this->waterDirShader,"speed2"), water->speed);
-			glUniform1f(GetLoc(&this->waterDirShader,"flowStrength2"), water->flowStrength);
-			glUniform1f(GetLoc(&this->waterDirShader,"heightScale2"), water->heightScale);
-			glUniform1f(GetLoc(&this->waterDirShader,"heightScaleModulated2"), water->heightScaleModulated);
-			glUniform1f(GetLoc(&this->waterDirShader,"gridResolution"), water->gridResolution);
-			glUniform1f(GetLoc(&this->waterDirShader,"dualGrid"), water->dualGrid);
+			glUniform1f(GetLoc(&waterShader, "tiling2"), water->tiling);
+			glUniform1f(GetLoc(&waterShader,"tilingModulated"), water->tilingModulated);
+			glUniform1f(GetLoc(&waterShader,"speed2"), water->speed);
+			glUniform1f(GetLoc(&waterShader,"flowStrength2"), water->flowStrength);
+			glUniform1f(GetLoc(&waterShader,"heightScale2"), water->heightScale);
+			glUniform1f(GetLoc(&waterShader,"heightScaleModulated2"), water->heightScaleModulated);
+			glUniform1f(GetLoc(&waterShader,"gridResolution"), water->gridResolution);
+			glUniform1f(GetLoc(&waterShader,"dualGrid"), water->dualGrid);
             
 			// Set position, rotation and scale
 			glm::mat4 matModel = glm::mat4(1.0f);
@@ -481,7 +481,7 @@ the Shader uniforms needs a char *name .. it does have a string
 											glm::vec3(water->scale, water->scale, water->scale));
             
 			matModel = matModel * matScale;
-			glUniformMatrix4fv(GetLoc(&this->waterDirShader, "model"),
+			glUniformMatrix4fv(GetLoc(&waterShader, "model"),
                                1, GL_FALSE, glm::value_ptr(matModel));
             
 			/*
@@ -533,32 +533,27 @@ the Shader uniforms needs a char *name .. it does have a string
 		delete ::finnsie::g_resourceManager;
 	}
     
-	void Renderer::initShaders()
-	{
-		// Need a shader for models
-		// TODO(CK): The game probably should pass the shaders to the renderer???
-		// the renderer shouldn't have the shaders in it inside because the shaders
-		// could be different...
-		// or does the renderer hold a vector of shaders that will be chosen by the render functions
-		this->modelShader = ::finnsie::g_resourceManager->GenerateShader(001, "shaders/model_vert.glsl", "shaders/model_frag.glsl", NULL);
-		this->normalShader = ::finnsie::g_resourceManager->GenerateShader(002, "shaders/onlynormals_model_vert.glsl", "shaders/onlynormals_model_frag.glsl", "shaders/onlynormals_model_geo.glsl");
-		this->waterShader = ::finnsie::g_resourceManager->GenerateShader(003, "shaders/waterdistortion_vert.glsl", "shaders/waterdistortion_frag.glsl", NULL);
-		this->waterDirShader = ::finnsie::g_resourceManager->GenerateShader(004, "shaders/waterdirection_vert.glsl", "shaders/waterdirection_frag.glsl", NULL);
-	}
-    
-	void Renderer::initUniforms()
-	{
-		this->objProjLoc = glGetUniformLocation(modelShader.id, "projection");
-		this->objViewLoc = glGetUniformLocation(modelShader.id, "view");
-		this->objModelLoc = glGetUniformLocation(modelShader.id, "model");
-        
-		this->normalProjLoc = glGetUniformLocation(normalShader.id, "projection");
-		this->normalViewLoc = glGetUniformLocation(normalShader.id, "view");
-		this->normalModelLoc = glGetUniformLocation(normalShader.id, "model");
-        
-		this->watProjLoc = glGetUniformLocation(waterShader.id, "projection");
-		this->watViewLoc = glGetUniformLocation(waterShader.id, "view");
-		this->watModelLoc = glGetUniformLocation(waterShader.id, "model");
-	}
+	//void Renderer::initShaders()
+	//{
+	//	this->modelShader = ::finnsie::g_resourceManager->GenerateShader(001, "shaders/model_vert.glsl", "shaders/model_frag.glsl", NULL);
+	//	this->normalShader = ::finnsie::g_resourceManager->GenerateShader(002, "shaders/onlynormals_model_vert.glsl", "shaders/onlynormals_model_frag.glsl", "shaders/onlynormals_model_geo.glsl");
+	//	this->waterShader = ::finnsie::g_resourceManager->GenerateShader(003, "shaders/waterdistortion_vert.glsl", "shaders/waterdistortion_frag.glsl", NULL);
+	//	this->waterDirShader = ::finnsie::g_resourceManager->GenerateShader(004, "shaders/waterdirection_vert.glsl", "shaders/waterdirection_frag.glsl", NULL);
+	//}
+ //   
+	//void Renderer::initUniforms()
+	//{
+	//	this->objProjLoc = glGetUniformLocation(modelShader.id, "projection");
+	//	this->objViewLoc = glGetUniformLocation(modelShader.id, "view");
+	//	this->objModelLoc = glGetUniformLocation(modelShader.id, "model");
+ //       
+	//	this->normalProjLoc = glGetUniformLocation(normalShader.id, "projection");
+	//	this->normalViewLoc = glGetUniformLocation(normalShader.id, "view");
+	//	this->normalModelLoc = glGetUniformLocation(normalShader.id, "model");
+ //       
+	//	this->watProjLoc = glGetUniformLocation(waterShader.id, "projection");
+	//	this->watViewLoc = glGetUniformLocation(waterShader.id, "view");
+	//	this->watModelLoc = glGetUniformLocation(waterShader.id, "model");
+	//}
     
 }

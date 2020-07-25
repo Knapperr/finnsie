@@ -26,12 +26,7 @@ namespace finnsie {
 		void EndRender();
 		void Shutdown();
         
-        private:
-		Shader modelShader;
-		Shader normalShader;
-		Shader waterShader;
-		Shader waterDirShader;
-        
+        private:        
 		glm::vec3 lampPos;
 		glm::vec3 lightPos;
 		glm::vec3 camPos;
@@ -53,14 +48,10 @@ namespace finnsie {
 		int normalProjLoc;
 		int normalViewLoc;
 		int normalModelLoc;
-		int watProjLoc;
-		int watViewLoc;
-		int watModelLoc;
+
         
 		bool drawingNormals;
         
-		void initUniforms();
-		void initShaders();
 		void startShader(unsigned int shaderId, int modelLoc, int projLoc, int viewLoc);
 	};
     

@@ -12,11 +12,6 @@ namespace finnsie {
         glm::vec2 acc;
         
         float mass;
-        
-        // TODO(CK):
-        // not sure if force
-        // or acceleration should be in here...
-        // they are separate things 
     };
     
     void SetupRigidBody(RigidBody* rb, float gravity);

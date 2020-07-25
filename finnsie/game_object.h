@@ -21,7 +21,7 @@ namespace finnsie {
         RigidBody rb;
         
         float mass;
-        // TODO(CK): Not initialized...
+        // TODO(CK): Not initialized.
         glm::vec2 velocity;
         
 		GameObject()

@@ -116,7 +116,6 @@ Init > Input > Update > Render
 	{
         // TODO(CK): Pass water for now... find a way to update
         // the game data directly... get lighting info directly too
-        // TODO(CK): Gui needs some sort of gamestate
 		gui->Update(*distortWater, *dirWater);
         
 		if (leftMousePressed)
