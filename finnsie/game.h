@@ -33,7 +33,6 @@ namespace finnsie {
 		Mode mode;
 		GLFWwindow* window;
 		Camera *camera;
-		Camera* gameCamera;
 		Renderer *renderer;
 		Gui *gui;
         

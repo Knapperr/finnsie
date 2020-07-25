@@ -30,13 +30,15 @@ Init > Input > Update > Render
         
 		::finnsie::g_resourceManager = new ResourceManager();
         g_lamp = glm::vec3(1.0f);
+        g_lamp.x = -148.0f;
+        g_lamp.y = -13.38;
+
 		this->mode = Mode::EDIT;
 		this->window = &wnd;
 		this->gui = new Gui();
 		this->renderer = new Renderer();
 		this->camera = new Camera();
-		// TODO(CK): Use game camera
-		this->gameCamera = new Camera();
+
 		this->leftMousePressed = false;
         this->debugRightMousePressed = false;
 		this->debugSphereStopped = false;
@@ -47,6 +49,12 @@ Init > Input > Update > Render
                                        glm::vec3(0.0f, 0.0f, 0.0f),
                                        40.0f,
                                        "content/objects/quad/basic_quad.obj");
+        distortWater->tiling = 5.0f;
+        distortWater->speed = 0.3f;
+        distortWater->flowStrength = 0.05f;
+        distortWater->flowOffset = -0.23f;
+        distortWater->heightScale = 0.1f;
+        distortWater->heightScaleModulated = 8.0f;
 		LoadDistortedWater(distortWater->model);
         
 		dirWater = new WaterObject("water",
@@ -54,6 +62,14 @@ Init > Input > Update > Render
                                    glm::vec3(0.0f, glm::radians(180.0f), 0.0f),
                                    40.0f,
                                    "content/objects/quad/basic_quad.obj");
+        dirWater->tiling = 10.0f;
+        dirWater->speed = 0.2f;
+        dirWater->flowStrength = 0.07f;
+        dirWater->heightScale = 0.92f;
+        dirWater->heightScaleModulated = 9.0f;
+        dirWater->gridResolution = 30.0f;
+        dirWater->tilingModulated = 50.0f;
+        dirWater->dualGrid = true;
 		LoadDirectionalWater(dirWater->model);
         
         // Test Sphere for shader learning 
@@ -171,7 +187,7 @@ Init > Input > Update > Render
         renderer->DrawSphere(*testSphere, binnShader);
         
         // TODO(CK): Remove the book object..
-        renderer->DrawSphere(*book, binnShader);
+        //renderer->DrawSphere(*book, binnShader);
         
 		renderer->EndRender();
 		gui->Render();
@@ -256,7 +272,6 @@ Init > Input > Update > Render
         delete testSphere;
         
 		delete camera;
-		delete gameCamera;
 		gui->Shutdown();
 		delete gui;
 	}
