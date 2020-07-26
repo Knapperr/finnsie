@@ -60,40 +60,50 @@ namespace finnsie {
         // we could do:
         
         /*
-Shader *drawShader = BasePass(); <- returns a Shader*
+		Shader *drawShader = BasePass(); <- returns a Shader*
 
-Shader* BasePass(*obj)
-{
- if (obj.drawNormals)
-{
- return shaders[1];
-}
-normal shader in here maybe? i still like game passing shaders
-     that was a shader can be made on the game side
-at the same time the renderer can just have its own shaders like before
-if its functional though how does it "keep" shaders is there just an array that lives
-in here and stays updated
-}
-
-
-then if we have a pointer to the shader we want to use
+		Shader* BasePass(*obj)
+		{
+		 if (obj.drawNormals)
+		{
+		 return shaders[1];
+		}
+		normal shader in here maybe? i still like game passing shaders
+			 that was a shader can be made on the game side
+		at the same time the renderer can just have its own shaders like before
+		if its functional though how does it "keep" shaders is there just an array that lives
+		in here and stays updated
+		}
 
 
-also we can loop through the shader and activate all of its attributes maybe
-not the time and lighting (right now) we can also just say if (time exists then set it)
-
-the Shader uniforms needs a char *name .. it does have a string 
+		then if we have a pointer to the shader we want to use
 
 
+		also we can loop through the shader and activate all of its attributes maybe
+		not the time and lighting (right now) we can also just say if (time exists then set it)
+
+		the Shader uniforms needs a char *name .. it does have a string 
 */
-        
-        //FirstPass(modelShader);
-        
-        if (!drawingNormals)
-			startShader(modelShader.id, objModelLoc, objProjLoc, objViewLoc);
+
+		// make function or move to "First pass"
+		if (!drawingNormals)
+		{
+			glUseProgram(modelShader.id);
+			glUniformMatrix4fv(GetLoc(&modelShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+			glUniformMatrix4fv(GetLoc(&modelShader, "view"), 1, GL_FALSE, glm::value_ptr(view));
+			this->activeModelShaderId = modelShader.id;
+			this->activeModelLoc = GetLoc(&modelShader, "model");
+		}
 		else
-			startShader(normalShader.id, normalModelLoc, normalProjLoc, normalViewLoc);
-        
+		{
+			glUseProgram(normalShader.id);
+			glUniformMatrix4fv(GetLoc(&normalShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+			glUniformMatrix4fv(GetLoc(&normalShader, "view"), 1, GL_FALSE, glm::value_ptr(view));
+			this->activeModelShaderId = normalShader.id;
+			this->activeModelLoc = GetLoc(&normalShader, "model");
+
+		}
+
 		for (unsigned int i = 0; i < obj.model->meshes.size(); i++)
 		{
 			unsigned int diffuseNr = 1;
@@ -323,15 +333,12 @@ the Shader uniforms needs a char *name .. it does have a string
 				glBindTexture(GL_TEXTURE_2D, water->model->meshes[i].textures[j].id);
 			}
             
-			// TODO(CK): CLEAN UP
-			// Water distortion
-			// --------------------
             
 			// loop through draw info grabbed passed to gui from game. then game passes to renderer
 			// can loop through all uniforms with shader.GetUniforms();
-			glUniform1f(glGetUniformLocation(waterShader.id, "time"), glfwGetTime());
-			glUniform3fv(glGetUniformLocation(waterShader.id, "lightPos"), 1, &g_lamp[0]);
-			glUniform3fv(glGetUniformLocation(waterShader.id, "viewPos"), 1, &camPos[0]);
+			glUniform1f(GetLoc(&waterShader, "time"), glfwGetTime());
+			glUniform3fv(GetLoc(&waterShader, "lightPos"), 1, &g_lamp[0]);
+			glUniform3fv(GetLoc(&waterShader, "viewPos"), 1, &camPos[0]);
 			
 			// TODO(CK): Draw info gets moved to model
 			glUniform1f(GetLoc(&waterShader, "uJump"), water->uJump);
@@ -434,17 +441,10 @@ the Shader uniforms needs a char *name .. it does have a string
 				// and finally bind the texture		
 				glBindTexture(GL_TEXTURE_2D, water->model->meshes[i].textures[j].id);
 			}
-            
-			// TODO(CK): CLEAN UP
-			// Water direction
-			// --------------------
-            
-			glUniform1f(glGetUniformLocation(waterShader.id, "time"), glfwGetTime());
-            
-			// TODO(CK): Clean this up
-			glUniform3fv(glGetUniformLocation(waterShader.id, "lightPos"),
-                         1, &g_lamp[0]);
-			glUniform3fv(glGetUniformLocation(waterShader.id, "viewPos"), 1, &camPos[0]); // getting updated in BeginRender (probably not good)
+                   
+			glUniform1f(GetLoc(&waterShader, "time"), glfwGetTime());
+			glUniform3fv(GetLoc(&waterShader, "lightPos"), 1, &g_lamp[0]);
+			glUniform3fv(GetLoc(&waterShader, "viewPos"), 1, &camPos[0]);
             
 			glUniform1f(GetLoc(&waterShader, "tiling2"), water->tiling);
 			glUniform1f(GetLoc(&waterShader,"tilingModulated"), water->tilingModulated);

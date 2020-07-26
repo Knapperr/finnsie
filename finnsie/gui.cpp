@@ -165,8 +165,7 @@ namespace finnsie {
 			ImGui::SliderFloat("Light Z", &g_lamp.z, -200.0f, 400.0f);
 			ImGui::Separator();
             
-            // TODO(CK): The only reason this is doable is because the vector 
-            // already has a texture at [0] location ?? check this
+			// TODO(CK): Remove book gui
             if (ImGui::SmallButton("Cover"))
             {
                 this->guiBook->model->meshes[0].textures[0] = {};
@@ -207,9 +206,7 @@ namespace finnsie {
 				selected = i;
 			}
 		}
-		// TODO(CK): Create a better approach rather than creating pointers maybe
-		// have an array of ints that mimics the size of g_objects (more light weight)
-		// or is creating an empty object fine!?!?
+		// TODO(CK): Creating an empty object
 		ImGui::Separator();
 		if (ImGui::Button("New Model"))
 		{

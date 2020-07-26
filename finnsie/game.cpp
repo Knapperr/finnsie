@@ -8,19 +8,8 @@ namespace finnsie {
     
 	// Game inits resource manager
 	ResourceManager* g_resourceManager;
-    
-    /*
-NOTE(CK):
-Okay lets figure out what to do.... We need to get this more "C like"
-classes everywhere is driving me nuts. This is imo is harder to read
-you have the constructor, update render and input happening in a class
-this could just be functions 
- 
-Init > Input > Update > Render
-
-*/
-    
-    // TODO(CK): Figure something out for lights in game
+        
+    // TODO(CK): Figure out lights in game
     // keep in their own vector for awhile?
     glm::vec3 g_lamp;
     
@@ -86,13 +75,7 @@ Init > Input > Update > Render
         text.path = diffusePath;
         testSphere->model->meshes[0].textures.push_back(text);
         
-        // TODO(CK):
-        // We only want one book. I don't think I need a book object
-        // I just need a struct called a book that contains the data 
-        // that the book will contain maybe how its lit? 
-        // this is a GameObject so maybe there are book functions 
-        // that can do work on a GameObject. GameObject & BookData 
-        // get sent to the renderer and bookshader
+        // TODO(CK): Remove book... put into legacy folder or something?
         book = new GameObject("book",
                               glm::vec3(-100.0f, -25.0f, 40.0),
                               glm::vec3(0.0f, glm::radians(180.0f), 0.0f),
@@ -139,6 +122,8 @@ Init > Input > Update > Render
 			processCamera(dt);
 		}
         
+
+        // TODO(CK): Move this out
         // apply gravity to sphere
         if (debugRightMousePressed && !debugSphereStopped)
         {

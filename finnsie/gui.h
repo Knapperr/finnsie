@@ -56,7 +56,8 @@ namespace finnsie {
         bool showBookWindow = false;
 		bool showAnotherWindow = false;
 		
-		// TODO(CK): Remove replace with local function
+		// TODO(CK): Keep getting all of the folders on start up
+		// make local if you want it to refetch the folders when opening it
 		std::vector<objFile> objPaths;
 		
 		void waterWindow(bool* p_open, WaterObject& disWater, WaterObject& dirWater);

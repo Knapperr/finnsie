@@ -20,10 +20,6 @@ namespace finnsie {
         
         RigidBody rb;
         
-        float mass;
-        // TODO(CK): Not initialized.
-        glm::vec2 velocity;
-        
 		GameObject()
 		{
 			this->pos = glm::vec3(1.0);
@@ -32,8 +28,6 @@ namespace finnsie {
 			this->scale = 1.0;
 			this->viewNormals = false;
 			this->wireFrame = false;
-            this->mass = 1.0f;
-            this->velocity = glm::vec2(1.0);
             this->rb = {};
             SetupRigidBody(&rb, -9.81f);
             
@@ -50,8 +44,6 @@ namespace finnsie {
 			this->scale = scale;
 			this->viewNormals = false;
 			this->wireFrame = false;
-            this->mass = 1.0f;
-            this->velocity = glm::vec2(1.0);
             
             this->rb = {};
             SetupRigidBody(&rb, -9.81f);

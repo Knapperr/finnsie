@@ -11,9 +11,6 @@
 
 namespace finnsie {
     
-	//struct water_info;
-	//struct light_info;
-    
 	class Renderer {
         public:
 		Renderer();
@@ -40,15 +37,6 @@ namespace finnsie {
         
 		unsigned int activeModelShaderId;
 		int activeModelLoc;
-		int activeViewLoc;
-        
-		int objProjLoc;
-		int objViewLoc;
-		int objModelLoc;
-		int normalProjLoc;
-		int normalViewLoc;
-		int normalModelLoc;
-
         
 		bool drawingNormals;
         

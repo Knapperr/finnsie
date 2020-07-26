@@ -68,8 +68,8 @@ int main(int argc, char** argv)
 	// TODO(CK): unresolved external for timeBeginPeriod?
 	// NOTE(casey): Set the Windows scheduler granularity to 1ms
 	// so that our Sleep() can be more granular.
-	//UINT DesiredSchedulerMS = 1;
-	//bool32 SleepIsGranular = (timeBeginPeriod(DesiredSchedulerMS) == TIMERR_NOERROR);
+	UINT DesiredSchedulerMS = 1;
+	bool32 SleepIsGranular = (timeBeginPeriod(DesiredSchedulerMS) == TIMERR_NOERROR);
     
 	//---------------------------------------------------------------------
 	// glfw init and config
@@ -151,7 +151,7 @@ int main(int argc, char** argv)
         
 		// Process the input & move the player
 		//glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // blue 
+		glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // blue 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		game->Update(dt.time);
