@@ -1,7 +1,5 @@
 #include "log.h"
 
-#include <iostream>
-
 namespace finnsie {
 
 	void Log::Init()
@@ -18,14 +16,14 @@ namespace finnsie {
 		{
 		case Severity::TRACE:
 #if PRINT_LOG
-			std::cout << "TRACE: " << msg << '\n';
+			printf("TRACE: %s\n", msg);
 #endif
 			break;
 		case Severity::WARN:
-			std::cout << "WARNING: " << msg << '\n';
+			printf("WARNING: %s\n", msg);
 			break;
 		case Severity::ERR:
-			std::cout << "ERROR: " << msg << '\n';
+			printf("ERROR: %s\n", msg);
 			EXIT_FAILURE;
 			break;
 		}
