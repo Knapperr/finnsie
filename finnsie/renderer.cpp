@@ -7,7 +7,6 @@
 
 namespace finnsie {
     
-    
 	Renderer::Renderer()
 	{
         

@@ -20,7 +20,7 @@ namespace finnsie {
     
 	// TODO(CK): MOVE TO GLOBAL.cpp ???
 	// or use the texture_manager.h
-	struct Texture 
+	struct Texture
 	{
 		unsigned int id;
 		std::string type;

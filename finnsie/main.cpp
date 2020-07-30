@@ -7,8 +7,6 @@
 #include <glm/gtc/matrix_transform.hpp> 
 #include <glm/gtc/type_ptr.hpp>
 
-#include <iostream>
-
 #include "game.h"
 #include "gui.h"
 
@@ -16,6 +14,7 @@
 #include <mmsystem.h> // timeBeginPerdod TODO(CK): Look into this should be included with windows.h?
 #include <stdio.h>
 #include <stdint.h>
+#include <iostream>
 
 using namespace finnsie;
 
@@ -24,15 +23,8 @@ inline LARGE_INTEGER GetWallClock(void);
 inline float GetSecondsElapsed(LARGE_INTEGER start, LARGE_INTEGER end);
 void processInput(GLFWwindow* window, int key, int action, int scancode, int mods);
 
-//const unsigned int SCREEN_WIDTH = 1080;
-//const unsigned int SCREEN_HEIGHT = 720;
-
 const unsigned int SCREEN_WIDTH = 1440;
 const unsigned int SCREEN_HEIGHT = 900;
-
-
-// NOTE(CK): Can't init here its outside of the finnsie namespace
-// ResourceManager* g_resourceManager; 
 
 Game* game = NULL;
 
@@ -44,12 +36,12 @@ float g_playerXPos = 0;
 float g_velocity = 300.0f;
 int64_t g_perfCountFrequency;
 
-struct DeltaTime
+struct Timer
 {
-	float time;
+	float dt;
 	float lastFrame;
 };
-global_variable DeltaTime dt;
+global_variable Timer timer;
 
 static void error_callback(int error, const char* description);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -91,7 +83,6 @@ int main(int argc, char** argv)
 		glfwTerminate();
 		exit(EXIT_FAILURE);
 	}
-    
 	glfwMakeContextCurrent(window);
 	glfwSetKeyCallback(window, processInput);
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
@@ -146,19 +137,18 @@ int main(int argc, char** argv)
         
 		// delta time
 		float currentFrame = (float)glfwGetTime();
-		dt.time = currentFrame - dt.lastFrame;
-		dt.lastFrame = currentFrame;
+		timer.dt = currentFrame - timer.lastFrame;
+		timer.lastFrame = currentFrame;
         
 		// Process the input & move the player
 		//glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // blue 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		game->Update(dt.time);
+		game->Update(timer.dt);
 		game->Render();
         
 		glfwSwapBuffers(window);
-		
 		
 		// TODO(CK): Figure out where to put this
 		LARGE_INTEGER endCounter = GetWallClock();
@@ -190,7 +180,7 @@ int main(int argc, char** argv)
 void processInput(GLFWwindow* window, int key, int action, int scancode, int mods)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) { glfwSetWindowShouldClose(window, true); }
-	game->ProcessInput(key, action, scancode, mods, dt.time);
+	game->ProcessInput(key, action, scancode, mods, timer.dt);
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)

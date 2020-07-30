@@ -10,7 +10,7 @@
 #include "shader_manager.h"
 
 namespace finnsie {
-    
+
 	class Renderer {
         public:
 		Renderer();

@@ -4,7 +4,7 @@ namespace finnsie {
 
 	void Log::Init()
 	{
-		// TODO(CK): Init a ostream 
+		// TODO(CK): Init file reading?
 		return;
 	}
 

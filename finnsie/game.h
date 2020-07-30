@@ -12,6 +12,31 @@
 
 namespace finnsie {
     
+    class Terrain
+    {
+    public:
+        float x;
+        float z;
+
+        unsigned int vao;
+        unsigned int indicesLength;
+
+        Terrain();
+        Terrain(int gridX, int gridZ);
+        void Generate();
+        void Render(Shader* modelShader, Camera* cam);
+
+        /*
+        remember to clean up
+        delete arrays and buffers from terrain
+        glDeleteVertexArrays(1, &this->cubeVAO);
+        glDeleteVertexArrays(1, &this->lampVAO);
+        glDeleteBuffers(1, &this->VBO);
+        
+        */
+    };
+
+
 	enum class Mode {
 		EDIT,
 		RUN
@@ -38,7 +63,7 @@ namespace finnsie {
         
         private:
         GameObject* testSphere;
-		GameObject* book;
+		//GameObject* book;
         WaterObject* distortWater;
 		WaterObject* dirWater;
         
@@ -47,8 +72,11 @@ namespace finnsie {
         Shader waterShader;
         Shader waterDirShader;
         Shader binnShader;
+
+		Terrain terrain;
                 
 		void processCamera(float dt);
+
 	};
 }
 

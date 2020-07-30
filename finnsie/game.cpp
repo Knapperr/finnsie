@@ -3,16 +3,189 @@
 #include <glm/gtc/matrix_transform.hpp> 
 #include <glm/gtc/type_ptr.hpp>
 
-
 namespace finnsie {
-    
-	// Game inits resource manager
-	ResourceManager* g_resourceManager;
-        
+
+    // Game inits resource manager
+    ResourceManager* g_resourceManager;
+
     // TODO(CK): Figure out lights in game
     // keep in their own vector for awhile?
     glm::vec3 g_lamp;
-    
+
+
+    // Terrain
+    // ================================================================
+#define SIZE 800
+#define VERTEX_COUNT 128
+    Terrain::Terrain()
+    {
+        this->x = 0;
+        this->z = 0;
+
+        this->vao = 0;
+        this->indicesLength = 0;
+    }
+
+    Terrain::Terrain(int gridX, int gridZ)
+    {
+        this->x = gridX * SIZE;
+        this->z = gridZ * SIZE;
+
+        this->vao = 0;
+        this->indicesLength = 0;
+    }
+
+    // TODO(CK):
+    // Look at Brackeys: https://www.youtube.com/watch?v=64NblGkAabk&t=4s
+    // this is probably a more sane way to generate and it will
+    // actually teach you
+    void Terrain::Generate()
+    {
+        const int count = VERTEX_COUNT * VERTEX_COUNT;
+        float* vertices = new float[count * 3];
+        float* normals = new float[count * 3];
+        float* textureCoords = new float[count * 2];
+
+        int* indices = new int[6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1)];
+        
+        // Get array sizes for rendering
+        int verticesLength = count * 3;
+        this->indicesLength = 6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1);
+        int index = 0;
+        for (int i = 0; i < VERTEX_COUNT; ++i)
+        {
+            for (int j = 0; j < VERTEX_COUNT; ++j)
+            {
+                vertices[index * 3] = (float)j / ((float)VERTEX_COUNT - 1) * SIZE;
+                vertices[index * 3 + 1] = 0;
+                vertices[index * 3 + 2] = (float)i / ((float)VERTEX_COUNT - 1) * SIZE;
+
+                normals[index * 3] = 0;
+                normals[index * 3 + 1] = 1;
+                normals[index * 3 + 2] = 0;
+
+                textureCoords[index * 2] = (float)j / ((float)VERTEX_COUNT - 1);
+                textureCoords[index * 2 + 1] = (float)i / ((float)VERTEX_COUNT - 1);
+                ++index;
+            }
+        }
+        index = 0;
+        for (int gz = 0; gz < VERTEX_COUNT - 1; ++gz)
+        {
+            for (int gx = 0; gx < VERTEX_COUNT - 1; ++gx)
+            {
+                int topLeft = (gz * VERTEX_COUNT) + gx;
+                int topRight = topLeft + 1;
+                int bottomLeft = ((gz + 1) * VERTEX_COUNT) + gx;
+                int bottomRight = bottomLeft + 1;
+
+                indices[index++] = topLeft;
+                indices[index++] = bottomLeft;
+                indices[index++] = topRight;
+                indices[index++] = topRight;
+                indices[index++] = bottomLeft;
+                indices[index++] = bottomRight;
+            }
+        }
+        unsigned int vbo;
+        unsigned int ebo;
+
+        glGenVertexArrays(1, &this->vao);
+        glGenBuffers(1, &vbo);
+        glGenBuffers(1, &ebo);
+
+        glBindVertexArray(this->vao);
+
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, verticesLength * sizeof(float), vertices, GL_STATIC_DRAW);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesLength * sizeof(int), indices, GL_STATIC_DRAW);
+
+        glEnableVertexAttribArray(0);
+        // TODO(CK) & STUDY(CK): I forgot 3 * sizeof(float) in the last parameter 
+        // I need to make sure that I study glBufferData and glVertexAttribPointer I think because 
+        // it was missing the stride it wasn't formating the data correctly which is why it looked
+        // like a mountain
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+
+        // THIS IS ALL WRONG ... get this working properly
+        // need to figure out the strides...
+        // ---------------------------------------------------
+        // Vertex normals
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float), (void*)(3 * sizeof(float)));
+
+        // Vertex texture coords
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float), (void*)(6 * sizeof(float)));
+
+        // unbind & clean up
+        glBindVertexArray(0);
+
+        delete[] vertices;
+        delete[] normals;
+        delete[] textureCoords;
+        delete[] indices;
+    }
+
+    void Terrain::Render(Shader *modelShader, Camera *cam)
+    {
+        glUseProgram(modelShader->id);
+        glm::mat4 projection = glm::perspective(glm::radians(cam->Zoom), (float)1080 / (float)720, 1.0f, 1000.0f);
+        glUniformMatrix4fv(GetLoc(modelShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+        glUniformMatrix4fv(GetLoc(modelShader, "view"), 1, GL_FALSE, glm::value_ptr(cam->GetViewMatrix()));
+
+        glUniform3fv(glGetUniformLocation(modelShader->id, "lightPos"), 1, &g_lamp[0]);
+        glUniform3fv(glGetUniformLocation(modelShader->id, "viewPos"), 1, &cam->Position[0]);
+
+
+        glm::mat4 matModel = glm::mat4(1.0f);
+
+        glm::mat4 matTranslate = glm::translate(glm::mat4(1.0f),
+                                                glm::vec3(this->x - 60.0f, -30.0f, this->z));
+        matModel = matModel * matTranslate;
+
+        glm::mat4 rotateZ = glm::rotate(glm::mat4(1.0f),
+                                        0.0f,
+                                        glm::vec3(0.0f, 0.0f, 1.0f));
+        matModel = matModel * rotateZ;
+
+        glm::mat4 rotateY = glm::rotate(glm::mat4(1.0f),
+                                        0.0f,
+                                        glm::vec3(0.0f, 1.0f, 0.0f));
+        matModel = matModel * rotateY;
+
+        glm::mat4 rotateX = glm::rotate(glm::mat4(1.0f),
+                                        0.0f,
+                                        glm::vec3(1.0f, 0.0f, 0.0f));
+        matModel = matModel * rotateX;
+
+        glm::mat4 matScale = glm::scale(glm::mat4(1.0f),
+                                        glm::vec3(0.1, 0.1, 0.1));
+
+        matModel = matModel * matScale;
+        glUniformMatrix4fv(GetLoc(modelShader, "model"), 1, GL_FALSE, glm::value_ptr(matModel));
+
+        /*
+        // INVERSE WAS FROM GRAPHICS CLASS
+            GLint matModel_loc = glGetUniformLocation(shaderProgID, "matModel");
+            GLint matModelInvTran_loc = glGetUniformLocation(shaderProgID, "matModelInvTrans");
+        */
+
+        glBindVertexArray(this->vao);
+        glDrawElements(GL_TRIANGLES, this->indicesLength, GL_UNSIGNED_INT, 0);
+        glBindVertexArray(0);
+
+        // Always good practice to set everything back to defaults once configured
+        // NOTE(CK): bind texture must be AFTER glActiveTexture or it will not unbind properly
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    // ================================================================
+
 	Game::Game(GLFWwindow& wnd)
 	{
 		LOG("Game Init");
@@ -20,7 +193,7 @@ namespace finnsie {
 		::finnsie::g_resourceManager = new ResourceManager();
         g_lamp = glm::vec3(1.0f);
         g_lamp.x = -148.0f;
-        g_lamp.y = -13.38;
+        g_lamp.y = -13.38f;
 
 		this->mode = Mode::EDIT;
 		this->window = &wnd;
@@ -76,18 +249,18 @@ namespace finnsie {
         testSphere->model->meshes[0].textures.push_back(text);
         
         // TODO(CK): Remove book... put into legacy folder or something?
-        book = new GameObject("book",
-                              glm::vec3(-100.0f, -25.0f, 40.0),
-                              glm::vec3(0.0f, glm::radians(180.0f), 0.0f),
-                              8.0f,
-                              "content/objects/thickpage/thick_page.obj");
-        std::string diffusePath1 = "content/textures/jeff/page1.jpg";
-        std::string diffuseDir1 = diffusePath1.substr(0, diffusePath1.find_last_of('/'));
-        Texture text1 = {};
-        text1.id = LoadTextureFile("page2.jpg", diffuseDir1, false);
-        text1.type = "texture_diffuse";
-        text1.path = diffusePath1;
-        book->model->meshes[0].textures.push_back(text1);
+        //book = new GameObject("book",
+        //                      glm::vec3(-100.0f, -25.0f, 40.0),
+        //                      glm::vec3(0.0f, glm::radians(180.0f), 0.0f),
+        //                      8.0f,
+        //                      "content/objects/thickpage/thick_page.obj");
+        //std::string diffusePath1 = "content/textures/jeff/page1.jpg";
+        //std::string diffuseDir1 = diffusePath1.substr(0, diffusePath1.find_last_of('/'));
+        //Texture text1 = {};
+        //text1.id = LoadTextureFile("page2.jpg", diffuseDir1, false);
+        //text1.type = "texture_diffuse";
+        //text1.path = diffusePath1;
+        //book->model->meshes[0].textures.push_back(text1);
         
         
         
@@ -105,9 +278,12 @@ namespace finnsie {
                                                          NULL);
         
         
-        // After loading book
-        gui->Init(*this->window, this->book, camera->MovementSpeed);
         
+        this->gui->Init(*this->window, camera->MovementSpeed);
+
+        this->terrain = Terrain(0, 0);
+        this->terrain.Generate();
+
 	}
     
     // TODO(CK): pass the input from main to here
@@ -159,7 +335,7 @@ namespace finnsie {
 	{
 		// TODO(CK): Use game camera (can switch to gameCamera here)
 		renderer->BeginRender(*camera); 
-        
+
         for (unsigned int i = 0; i < g_objects.size(); i++)
         {
             if (g_objects[i]->model != NULL)
@@ -173,7 +349,9 @@ namespace finnsie {
         
         // TODO(CK): Remove the book object..
         //renderer->DrawSphere(*book, binnShader);
-        
+        this->terrain.Render(&this->binnShader, this->camera);
+
+
 		renderer->EndRender();
 		gui->Render();
 	}
