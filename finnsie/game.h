@@ -18,6 +18,7 @@ namespace finnsie {
         float x;
         float z;
 
+        int textureId;
         unsigned int vao;
         unsigned int indicesLength;
 

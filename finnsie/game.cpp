@@ -3,6 +3,8 @@
 #include <glm/gtc/matrix_transform.hpp> 
 #include <glm/gtc/type_ptr.hpp>
 
+#include <time.h>
+
 namespace finnsie {
 
     // Game inits resource manager
@@ -24,6 +26,7 @@ namespace finnsie {
 
         this->vao = 0;
         this->indicesLength = 0;
+        this->textureId = 0;
     }
 
     Terrain::Terrain(int gridX, int gridZ)
@@ -33,32 +36,100 @@ namespace finnsie {
 
         this->vao = 0;
         this->indicesLength = 0;
+        this->textureId = 0;
+
+
+        // Load a texture 
+        std::string textPath = "content/textures/terr/grass.jpg";
+        std::string textDir = textPath.substr(0, textPath.find_last_of('/'));
+        textureId = LoadTextureFile("grass.jpg", textDir, false);
     }
 
     // TODO(CK):
     // Look at Brackeys: https://www.youtube.com/watch?v=64NblGkAabk&t=4s
     // this is probably a more sane way to generate and it will
     // actually teach you
+    struct Vert
+    {
+        glm::vec3 position;
+        glm::vec3 normal;
+        glm::vec2 texCoords;
+        glm::vec3 tangent;
+        glm::vec3 bitangent;
+    };
+
+    // https://en.wikipedia.org/wiki/Perlin_noise#:~:text=Perlin%20noise%20is%20a%20procedural,details%20are%20the%20same%20size.
+    float lerp(float a0, float a1, float w)
+    {
+        return (1.0f - w) * a0 + w * a1;
+    }
+
+    // Computes the dot product of the distance and gradient vectors.
+    //float dotGridGradient(int ix, int iy, float x, float y) 
+    //{
+
+    //    // Precomputed (or otherwise) gradient vectors at each grid node
+    //    //extern float Gradient[IYMAX][IXMAX][2];
+
+    //    // Compute the distance vector
+    //    float dx = x - (float)ix;
+    //    float dy = y - (float)iy;
+
+    //    // Compute the dot-product
+    //    return (dx * Gradient[iy][ix][0] + dy * Gradient[iy][ix][1]);
+    //}
+
+    //float perlin(float x, float z)
+    //{
+    //    // Determine grid cell coordinates
+    //    int x0 = (int)x;
+    //    int x1 = x0 + 1;
+    //    int y0 = (int)y;
+    //    int y1 = y0 + 1;
+
+    //    // Determine interpolation weights
+    //    // Could also use higher order polynomial/s-curve here
+    //    float sx = x - (float)x0;
+    //    float sy = y - (float)y0;
+
+    //    // Interpolate between grid point gradients
+    //    float n0, n1, ix0, ix1, value;
+
+    //    n0 = dotGridGradient(x0, y0, x, y);
+    //    n1 = dotGridGradient(x1, y0, x, y);
+    //    ix0 = lerp(n0, n1, sx);
+
+    //    n0 = dotGridGradient(x0, y1, x, y);
+    //    n1 = dotGridGradient(x1, y1, x, y);
+    //    ix1 = lerp(n0, n1, sx);
+
+    //    value = lerp(ix0, ix1, sy);
+    //    return value;
+    //}
+
     void Terrain::Generate()
     {
         const int count = VERTEX_COUNT * VERTEX_COUNT;
         float* vertices = new float[count * 3];
         float* normals = new float[count * 3];
         float* textureCoords = new float[count * 2];
-
+        
         int* indices = new int[6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1)];
         
         // Get array sizes for rendering
         int verticesLength = count * 3;
+        int textureLength = count * 2;
         this->indicesLength = 6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1);
         int index = 0;
         for (int i = 0; i < VERTEX_COUNT; ++i)
         {
             for (int j = 0; j < VERTEX_COUNT; ++j)
             {
-                vertices[index * 3] = (float)j / ((float)VERTEX_COUNT - 1) * SIZE;
-                vertices[index * 3 + 1] = 0;
-                vertices[index * 3 + 2] = (float)i / ((float)VERTEX_COUNT - 1) * SIZE;
+                vertices[index * 3] = (float)j / ((float)VERTEX_COUNT - 1) * SIZE; // x 
+                //vertices[index * 3 + 1] = 0);
+                int rnum = rand() % 50 + 10;
+                vertices[index * 3 + 1] = cosf(rnum) * 2.0f;
+                vertices[index * 3 + 2] = (float)i / ((float)VERTEX_COUNT - 1) * SIZE; // z
 
                 normals[index * 3] = 0;
                 normals[index * 3 + 1] = 1;
@@ -88,11 +159,21 @@ namespace finnsie {
             }
         }
         unsigned int vbo;
+        unsigned int nbo; // normal buffer
+        unsigned int tbo; // texture buffer
         unsigned int ebo;
 
         glGenVertexArrays(1, &this->vao);
         glGenBuffers(1, &vbo);
         glGenBuffers(1, &ebo);
+        glGenBuffers(1, &nbo);
+        glGenBuffers(1, &tbo);
+
+        // TODO(CK):
+        // Having all of these buffers is probably bad
+        // I am sure you could easily just use 1 array and fill it up with all of this data
+        // or just use a vector with the Vert structure for the data that is the proper way...
+        // REFACTOR
 
         glBindVertexArray(this->vao);
 
@@ -102,11 +183,12 @@ namespace finnsie {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesLength * sizeof(int), indices, GL_STATIC_DRAW);
 
-        glEnableVertexAttribArray(0);
+
         // TODO(CK) & STUDY(CK): I forgot 3 * sizeof(float) in the last parameter 
         // I need to make sure that I study glBufferData and glVertexAttribPointer I think because 
         // it was missing the stride it wasn't formating the data correctly which is why it looked
         // like a mountain
+        glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
 
@@ -114,12 +196,23 @@ namespace finnsie {
         // need to figure out the strides...
         // ---------------------------------------------------
         // Vertex normals
+        glBindBuffer(GL_ARRAY_BUFFER, nbo);
+        glBufferData(GL_ARRAY_BUFFER, verticesLength * sizeof(float), normals, GL_STATIC_DRAW);
+
         glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float), (void*)(3 * sizeof(float)));
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)(3 * sizeof(float)));
+        // -------------------------
 
         // Vertex texture coords
+        glBindBuffer(GL_ARRAY_BUFFER, tbo);
+        glBufferData(GL_ARRAY_BUFFER, textureLength * sizeof(float), textureCoords, GL_STATIC_DRAW);
+
         glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float), (void*)(6 * sizeof(float)));
+        // STUDY(CK): For some reason at the very end of this (void*)(6 * sizeof(float))); 
+        // was causing the texcoords to distort.. this is probably why you are meant to have
+        // ONE BUFFER bound instead 
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+        // --------------------------
 
         // unbind & clean up
         glBindVertexArray(0);
@@ -137,14 +230,18 @@ namespace finnsie {
         glUniformMatrix4fv(GetLoc(modelShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
         glUniformMatrix4fv(GetLoc(modelShader, "view"), 1, GL_FALSE, glm::value_ptr(cam->GetViewMatrix()));
 
-        glUniform3fv(glGetUniformLocation(modelShader->id, "lightPos"), 1, &g_lamp[0]);
-        glUniform3fv(glGetUniformLocation(modelShader->id, "viewPos"), 1, &cam->Position[0]);
+        glUniform3fv(GetLoc(modelShader, "lightPos"), 1, &g_lamp[0]);
+        glUniform3fv(GetLoc(modelShader, "viewPos"), 1, &cam->Position[0]);
 
+        // now set the sampler to the correct texture unit
+        glUniform1i(glGetUniformLocation(modelShader->id, "texture_diffuse1"), 0);
+        // and finally bind the texture		
+        glBindTexture(GL_TEXTURE_2D, this->textureId);
 
         glm::mat4 matModel = glm::mat4(1.0f);
 
         glm::mat4 matTranslate = glm::translate(glm::mat4(1.0f),
-                                                glm::vec3(this->x - 60.0f, -30.0f, this->z));
+                                                glm::vec3(this->x - 100.0f, -35.0f, this->z - 30.0));
         matModel = matModel * matTranslate;
 
         glm::mat4 rotateZ = glm::rotate(glm::mat4(1.0f),
@@ -168,11 +265,8 @@ namespace finnsie {
         matModel = matModel * matScale;
         glUniformMatrix4fv(GetLoc(modelShader, "model"), 1, GL_FALSE, glm::value_ptr(matModel));
 
-        /*
-        // INVERSE WAS FROM GRAPHICS CLASS
-            GLint matModel_loc = glGetUniformLocation(shaderProgID, "matModel");
-            GLint matModelInvTran_loc = glGetUniformLocation(shaderProgID, "matModelInvTrans");
-        */
+         
+        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
         glBindVertexArray(this->vao);
         glDrawElements(GL_TRIANGLES, this->indicesLength, GL_UNSIGNED_INT, 0);
@@ -281,6 +375,8 @@ namespace finnsie {
         
         this->gui->Init(*this->window, camera->MovementSpeed);
 
+        // TODO(CK): Remove this seeding rand
+        srand(time(NULL));
         this->terrain = Terrain(0, 0);
         this->terrain.Generate();
 
@@ -343,13 +439,16 @@ namespace finnsie {
                 renderer->DrawModel(*g_objects[i], modelShader, normalShader);
             }
         }
-		renderer->DrawWater(distortWater, waterShader);
+        // draw above so you can see underneath
+        this->terrain.Render(&this->binnShader, this->camera);
+		
+        
+        renderer->DrawWater(distortWater, waterShader);
 		renderer->DrawDirWater(dirWater, waterDirShader);
         renderer->DrawSphere(*testSphere, binnShader);
         
         // TODO(CK): Remove the book object..
         //renderer->DrawSphere(*book, binnShader);
-        this->terrain.Render(&this->binnShader, this->camera);
 
 
 		renderer->EndRender();

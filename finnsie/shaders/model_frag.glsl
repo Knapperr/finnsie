@@ -14,7 +14,7 @@ void main()
 	if (texColor.a < 0.1)
 	{
 		discard;
-	}
+	} 
 
 	/*
 	An easy way to visualize your normals is to draw them using lines, 

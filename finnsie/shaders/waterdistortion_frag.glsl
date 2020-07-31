@@ -121,6 +121,6 @@ void main()
     vec3 specular = vec3(0.2) * spec;
 
     // NOTE(CK): 0.5 transparency
-    float transparency = 0.5;
+    float transparency = 0.8;
 	FragColor = vec4(ambient + diffuse + specular, transparency);
 }

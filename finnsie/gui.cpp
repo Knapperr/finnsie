@@ -127,9 +127,9 @@ namespace finnsie {
             
             
             // TODO(CK): LIGHTING MENU
-			ImGui::SliderFloat("Light X", &g_lamp.x, -200.0f, 400.0f);
-			ImGui::SliderFloat("Light Y", &g_lamp.y, -200.0f, 400.0f);
-			ImGui::SliderFloat("Light Z", &g_lamp.z, -200.0f, 400.0f);
+			ImGui::SliderFloat("Light X", &g_lamp.x, -1200.0f, 900.0f);
+			ImGui::SliderFloat("Light Y", &g_lamp.y, -1200.0f, 900.0f);
+			ImGui::SliderFloat("Light Z", &g_lamp.z, -1200.0f, 900.0f);
 			ImGui::Separator();
                         
 			ImGui::End();
