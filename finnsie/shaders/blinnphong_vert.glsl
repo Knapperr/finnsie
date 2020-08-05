@@ -18,6 +18,6 @@ void main()
 {
     vs_out.FragPos = aPos;
     vs_out.Normal = aNormal;
-    vs_out.TexCoords = aTexCoords;
+    vs_out.TexCoords = aTexCoords * 10.0f;
     gl_Position = projection * view * model * vec4(aPos, 1.0);
 }

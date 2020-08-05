@@ -49,94 +49,55 @@ namespace finnsie {
     // Look at Brackeys: https://www.youtube.com/watch?v=64NblGkAabk&t=4s
     // this is probably a more sane way to generate and it will
     // actually teach you
-    struct Vert
+    // USE THE VERT from the model move to global change name to *FVertex* finnsie vertex
+    struct FVertex
     {
         glm::vec3 position;
         glm::vec3 normal;
         glm::vec2 texCoords;
-        glm::vec3 tangent;
-        glm::vec3 bitangent;
     };
-
-    // https://en.wikipedia.org/wiki/Perlin_noise#:~:text=Perlin%20noise%20is%20a%20procedural,details%20are%20the%20same%20size.
-    float lerp(float a0, float a1, float w)
-    {
-        return (1.0f - w) * a0 + w * a1;
-    }
-
-    // Computes the dot product of the distance and gradient vectors.
-    //float dotGridGradient(int ix, int iy, float x, float y) 
-    //{
-
-    //    // Precomputed (or otherwise) gradient vectors at each grid node
-    //    //extern float Gradient[IYMAX][IXMAX][2];
-
-    //    // Compute the distance vector
-    //    float dx = x - (float)ix;
-    //    float dy = y - (float)iy;
-
-    //    // Compute the dot-product
-    //    return (dx * Gradient[iy][ix][0] + dy * Gradient[iy][ix][1]);
-    //}
-
-    //float perlin(float x, float z)
-    //{
-    //    // Determine grid cell coordinates
-    //    int x0 = (int)x;
-    //    int x1 = x0 + 1;
-    //    int y0 = (int)y;
-    //    int y1 = y0 + 1;
-
-    //    // Determine interpolation weights
-    //    // Could also use higher order polynomial/s-curve here
-    //    float sx = x - (float)x0;
-    //    float sy = y - (float)y0;
-
-    //    // Interpolate between grid point gradients
-    //    float n0, n1, ix0, ix1, value;
-
-    //    n0 = dotGridGradient(x0, y0, x, y);
-    //    n1 = dotGridGradient(x1, y0, x, y);
-    //    ix0 = lerp(n0, n1, sx);
-
-    //    n0 = dotGridGradient(x0, y1, x, y);
-    //    n1 = dotGridGradient(x1, y1, x, y);
-    //    ix1 = lerp(n0, n1, sx);
-
-    //    value = lerp(ix0, ix1, sy);
-    //    return value;
-    //}
 
     void Terrain::Generate()
     {
+        // TODO(CK): IMPORTANT
+        /*
+            Completely refactor this to use the Vert struct
+            Should be doing this the same way as the mesh/model using
+            the struct for the stride
+            I think I can use arrays still because the mesh & model uses
+            vectors I can just use one array for vertices/normals/textureCoords
+            The only issue is the size of it but it should be 
+            count(256) * (3+3+2) = 2048 
+            I don't think that size is that bad... the vectors for 
+            the models such as the crysis model are 15222 so yes that is nothing.... 
+            that is more than triple the size of our tiny terrain... this is good news
+            
+        */
         const int count = VERTEX_COUNT * VERTEX_COUNT;
-        float* vertices = new float[count * 3];
-        float* normals = new float[count * 3];
-        float* textureCoords = new float[count * 2];
-        
+        FVertex* vertices = new FVertex[count];
         int* indices = new int[6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1)];
-        
-        // Get array sizes for rendering
-        int verticesLength = count * 3;
-        int textureLength = count * 2;
+
+        int verticesLength = count;
         this->indicesLength = 6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1);
+
         int index = 0;
         for (int i = 0; i < VERTEX_COUNT; ++i)
         {
             for (int j = 0; j < VERTEX_COUNT; ++j)
             {
-                vertices[index * 3] = (float)j / ((float)VERTEX_COUNT - 1) * SIZE; // x 
-                //vertices[index * 3 + 1] = 0);
-                int rnum = rand() % 50 + 10;
-                vertices[index * 3 + 1] = cosf(rnum) * 2.0f;
-                vertices[index * 3 + 2] = (float)i / ((float)VERTEX_COUNT - 1) * SIZE; // z
+                // Vertices
+                vertices[index].position.x = (float)j / ((float)VERTEX_COUNT - 1) * SIZE;
+                vertices[index].position.y = 0;
+                vertices[index].position.z = (float)i / ((float)VERTEX_COUNT - 1) * SIZE;
 
-                normals[index * 3] = 0;
-                normals[index * 3 + 1] = 1;
-                normals[index * 3 + 2] = 0;
+                // Normals
+                vertices[index].normal.x = 0;
+                vertices[index].normal.y = 1;
+                vertices[index].normal.z = 0;
 
-                textureCoords[index * 2] = (float)j / ((float)VERTEX_COUNT - 1);
-                textureCoords[index * 2 + 1] = (float)i / ((float)VERTEX_COUNT - 1);
+                // Texture Coords
+                vertices[index].texCoords.x = (float)j / ((float)VERTEX_COUNT - 1);
+                vertices[index].texCoords.y = (float)i / ((float)VERTEX_COUNT - 1);
                 ++index;
             }
         }
@@ -159,15 +120,15 @@ namespace finnsie {
             }
         }
         unsigned int vbo;
-        unsigned int nbo; // normal buffer
-        unsigned int tbo; // texture buffer
+        //unsigned int nbo; // normal buffer
+        //unsigned int tbo; // texture buffer
         unsigned int ebo;
 
         glGenVertexArrays(1, &this->vao);
         glGenBuffers(1, &vbo);
         glGenBuffers(1, &ebo);
-        glGenBuffers(1, &nbo);
-        glGenBuffers(1, &tbo);
+        //glGenBuffers(1, &nbo);
+        //glGenBuffers(1, &tbo);
 
         // TODO(CK):
         // Having all of these buffers is probably bad
@@ -178,48 +139,60 @@ namespace finnsie {
         glBindVertexArray(this->vao);
 
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, verticesLength * sizeof(float), vertices, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, verticesLength * sizeof(FVertex), vertices, GL_STATIC_DRAW);
 
+        // STUDY(CK): Why do we need to use indices??? what is the purpose of them...
+        // lots of fundamentals missing 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesLength * sizeof(int), indices, GL_STATIC_DRAW);
 
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(FVertex), (void*)0);
+
+        // Vertex normals
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(FVertex), (void*)offsetof(FVertex, normal));
+
+        // Vertex texture coords
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(FVertex), (void*)offsetof(FVertex, texCoords));
 
         // TODO(CK) & STUDY(CK): I forgot 3 * sizeof(float) in the last parameter 
         // I need to make sure that I study glBufferData and glVertexAttribPointer I think because 
         // it was missing the stride it wasn't formating the data correctly which is why it looked
         // like a mountain
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+        //glEnableVertexAttribArray(0);
+        //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
 
         // THIS IS ALL WRONG ... get this working properly
         // need to figure out the strides...
         // ---------------------------------------------------
         // Vertex normals
-        glBindBuffer(GL_ARRAY_BUFFER, nbo);
-        glBufferData(GL_ARRAY_BUFFER, verticesLength * sizeof(float), normals, GL_STATIC_DRAW);
+        //glBindBuffer(GL_ARRAY_BUFFER, nbo);
+        //glBufferData(GL_ARRAY_BUFFER, verticesLength * sizeof(float), normals, GL_STATIC_DRAW);
 
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)(3 * sizeof(float)));
+        //glEnableVertexAttribArray(1);
+        //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)(3 * sizeof(float)));
         // -------------------------
 
         // Vertex texture coords
-        glBindBuffer(GL_ARRAY_BUFFER, tbo);
-        glBufferData(GL_ARRAY_BUFFER, textureLength * sizeof(float), textureCoords, GL_STATIC_DRAW);
+        //glBindBuffer(GL_ARRAY_BUFFER, tbo);
+        //glBufferData(GL_ARRAY_BUFFER, textureLength * sizeof(float), textureCoords, GL_STATIC_DRAW);
 
-        glEnableVertexAttribArray(2);
+        //glEnableVertexAttribArray(2);
         // STUDY(CK): For some reason at the very end of this (void*)(6 * sizeof(float))); 
         // was causing the texcoords to distort.. this is probably why you are meant to have
         // ONE BUFFER bound instead 
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+       // glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
         // --------------------------
 
         // unbind & clean up
         glBindVertexArray(0);
 
         delete[] vertices;
-        delete[] normals;
-        delete[] textureCoords;
+        //delete[] normals;
+       // delete[] textureCoords;
         delete[] indices;
     }
 
@@ -265,7 +238,7 @@ namespace finnsie {
         matModel = matModel * matScale;
         glUniformMatrix4fv(GetLoc(modelShader, "model"), 1, GL_FALSE, glm::value_ptr(matModel));
 
-         
+        // Wireframe
         //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
         glBindVertexArray(this->vao);
@@ -329,34 +302,26 @@ namespace finnsie {
 		LoadDirectionalWater(dirWater->model);
         
         // Test Sphere for shader learning 
-        testSphere = new GameObject("sphere",
+        testSphere = new WaterObject("sphere",
                                     glm::vec3(-100.0f, 100.0f, 80.0),
                                     glm::vec3(0.0f, 0.0f, 0.0f),
                                     10.0f,
                                     "content/objects/sphere/sphere.obj");
-        std::string diffusePath = "content/textures/wall.jpg";
-        std::string diffuseDir = diffusePath.substr(0, diffusePath.find_last_of('/'));
-        Texture text = {};
-        text.id = LoadTextureFile("wall.jpg", diffuseDir, false);
-        text.type = "texture_diffuse";
-        text.path = diffusePath;
-        testSphere->model->meshes[0].textures.push_back(text);
-        
-        // TODO(CK): Remove book... put into legacy folder or something?
-        //book = new GameObject("book",
-        //                      glm::vec3(-100.0f, -25.0f, 40.0),
-        //                      glm::vec3(0.0f, glm::radians(180.0f), 0.0f),
-        //                      8.0f,
-        //                      "content/objects/thickpage/thick_page.obj");
-        //std::string diffusePath1 = "content/textures/jeff/page1.jpg";
-        //std::string diffuseDir1 = diffusePath1.substr(0, diffusePath1.find_last_of('/'));
-        //Texture text1 = {};
-        //text1.id = LoadTextureFile("page2.jpg", diffuseDir1, false);
-        //text1.type = "texture_diffuse";
-        //text1.path = diffusePath1;
-        //book->model->meshes[0].textures.push_back(text1);
-        
-        
+        testSphere->tiling = 5.0f;
+        testSphere->speed = 0.3f;
+        testSphere->flowStrength = 0.05f;
+        testSphere->flowOffset = -0.23f;
+        testSphere->heightScale = 0.1f;
+        testSphere->heightScaleModulated = 8.0f;
+        LoadDistortedWater(testSphere->model);
+
+        //std::string diffusePath = "content/textures/wall.jpg";
+        //std::string diffuseDir = diffusePath.substr(0, diffusePath.find_last_of('/'));
+        //Texture text = {};
+        //text.id = LoadTextureFile("wall.jpg", diffuseDir, false);
+        //text.type = "texture_diffuse";
+        //text.path = diffusePath;
+        //testSphere->model->meshes[0].textures.push_back(text);
         
         
         // Shaders 
@@ -371,8 +336,7 @@ namespace finnsie {
                                                          "shaders/blinnphong_frag.glsl",
                                                          NULL);
         
-        
-        
+
         this->gui->Init(*this->window, camera->MovementSpeed);
 
         // TODO(CK): Remove this seeding rand
@@ -442,15 +406,10 @@ namespace finnsie {
         // draw above so you can see underneath
         this->terrain.Render(&this->binnShader, this->camera);
 		
-        
         renderer->DrawWater(distortWater, waterShader);
 		renderer->DrawDirWater(dirWater, waterDirShader);
-        renderer->DrawSphere(*testSphere, binnShader);
+        renderer->DrawWater(testSphere, waterShader);
         
-        // TODO(CK): Remove the book object..
-        //renderer->DrawSphere(*book, binnShader);
-
-
 		renderer->EndRender();
 		gui->Render();
 	}

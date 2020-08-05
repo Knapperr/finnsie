@@ -63,7 +63,7 @@ namespace finnsie {
 		Gui *gui;
         
         private:
-        GameObject* testSphere;
+        WaterObject* testSphere;
 		//GameObject* book;
         WaterObject* distortWater;
 		WaterObject* dirWater;

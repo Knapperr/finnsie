@@ -30,7 +30,7 @@ void main()
     vec4 red = vec4(1.0, 0.2, 0.2, 1.0);
     // ambient
     //vec3 ambient = (0.05 * color) * red.rgb;
-    vec3 ambient = 0.09 * color;
+    vec3 ambient = 0.6 * color;
     // diffuse
     vec3 lightDir = normalize(lightPos - fs_in.FragPos);
     vec3 normal = normalize(fs_in.Normal);
