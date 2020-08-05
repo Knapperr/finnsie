@@ -170,6 +170,7 @@
     <ClCompile Include="resource_manager.cpp" />
     <ClCompile Include="rigid_body.cpp" />
     <ClCompile Include="shader_manager.cpp" />
+    <ClCompile Include="terrain.cpp" />
     <ClCompile Include="texture_manager.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
@@ -195,6 +196,7 @@
     <ClInclude Include="resource_manager.h" />
     <ClInclude Include="rigid_body.h" />
     <ClInclude Include="shader_manager.h" />
+    <ClInclude Include="terrain.h" />
     <ClInclude Include="texture_manager.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>

@@ -1,6 +1,7 @@
 #ifndef RENDERER_HG_
 #define RENDERER_HG_
 
+#include "terrain.h"
 #include "camera.h"
 #include "gui.h"
 
@@ -20,6 +21,7 @@ namespace finnsie {
 		void DrawWater(WaterObject* water, Shader waterShader);
 		void DrawDirWater(WaterObject* dirWater, Shader waterShader);
         void DrawSphere(GameObject& obj, Shader binnShader);
+		void DrawTerrain(Terrain* terr, Shader* shader);
 		void EndRender();
 		void Shutdown();
         

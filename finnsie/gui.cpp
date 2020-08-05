@@ -121,10 +121,8 @@ namespace finnsie {
 			ImGui::Checkbox("Water Window", &showWaterWindow);
 			ImGui::SameLine();
 			ImGui::Checkbox("Model Window", &showModelWindow);
-            ImGui::Checkbox("Book Window", &showBookWindow);
 			
 			ImGui::SliderFloat("Camera Speed", this->state.cameraSpeed, 0.0f, 100.0f);
-            
             
             // TODO(CK): LIGHTING MENU
 			ImGui::SliderFloat("Light X", &g_lamp.x, -1200.0f, 900.0f);

@@ -53,7 +53,6 @@ namespace finnsie {
 		bool showDemoWindow = false;
 		bool showWaterWindow = false;
 		bool showModelWindow = false;
-        bool showBookWindow = false;
 		bool showAnotherWindow = false;
 		
 		// TODO(CK): Keep getting all of the folders on start up
