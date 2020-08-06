@@ -111,6 +111,8 @@ namespace finnsie {
 			waterWindow(&showWaterWindow, disWater, dirWater);
 		if (showModelWindow)
 			modelWindow(&showModelWindow);
+		if (showTerrainWindow)
+			terrainWindow(&showTerrainWindow);
         
 		// Show a simple window that we create ourselves. We use a begin/end pair to create a named window
 		{
@@ -121,6 +123,7 @@ namespace finnsie {
 			ImGui::Checkbox("Water Window", &showWaterWindow);
 			ImGui::SameLine();
 			ImGui::Checkbox("Model Window", &showModelWindow);
+			ImGui::Checkbox("Terrain Window", &showTerrainWindow);
 			
 			ImGui::SliderFloat("Camera Speed", this->state.cameraSpeed, 0.0f, 100.0f);
             
@@ -225,6 +228,15 @@ namespace finnsie {
 		ImGui::End();
 	}
     
+	void Gui::terrainWindow(bool* p_open)
+	{
+		ImGui::Begin("TERRAIN", p_open);
+
+		ImGui::Checkbox("wire frame", &g_terrain->wireFrame);
+
+		ImGui::End();
+	}
+
 	void Gui::waterWindow(bool* p_open, WaterObject& disWater, WaterObject& dirWater)
 	{
 		ImGui::Begin("WATER", p_open);

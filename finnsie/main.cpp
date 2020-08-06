@@ -76,6 +76,7 @@ int main(int argc, char** argv)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	// NOTE: Only works on major 3 and minor 3
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	//glfwWindowHint(GLFW_RESIZABLE, GL_FALSE); // TODO(CK): This Turns off Vsync ???
     
 	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Finnsie", NULL, NULL);
 	if (!window)
@@ -84,6 +85,13 @@ int main(int argc, char** argv)
 		exit(EXIT_FAILURE);
 	}
 	glfwMakeContextCurrent(window);
+	
+	
+	// TODO(CK): Set this to 0 but it was using a ton of GPU and CPU 
+	// This may be giving me WAY more consistent frames
+	glfwSwapInterval(1); 
+
+
 	glfwSetKeyCallback(window, processInput);
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 	glfwSetCursorPosCallback(window, mouse_callback);
@@ -164,7 +172,7 @@ int main(int argc, char** argv)
 		// mega cycles per frame
 		double MCPF = (real64)(cyclesElapsed / (1000.0f * 1000.0f));
         
-		// NOTE(CK): INCONSISTENT FRAMES LIKE HANDMADE
+		// NOTE(CK): INCONSISTENT FRAMES LIKE HANDMADE]
 		//printf("%.02fms/f %.02ff/s %.02fmc/f\n", msPerFrame, FPS, MCPF);
 	}
 	// NOTE(CK): CLEAN UP

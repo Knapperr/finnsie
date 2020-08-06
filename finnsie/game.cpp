@@ -7,12 +7,19 @@
 
 namespace finnsie {
 
+    // GLOBALS
+    // ==================================
+
     // Game inits resource manager
     ResourceManager* g_resourceManager;
 
     // TODO(CK): Figure out lights in game
     // keep in their own vector for awhile?
+
+    // How do I find a way to make these not global 
+    // so that the gui can directly access
     glm::vec3 g_lamp;
+    Terrain* g_terrain;
 
 
     // ================================================================
@@ -38,7 +45,7 @@ namespace finnsie {
 		
         // Water objects
 		distortWater = new WaterObject("water",
-                                       glm::vec3(-100.0f, -30.0f, 0.0f),
+                                       glm::vec3(70.0f, 2.0f, 100.0f),
                                        glm::vec3(0.0f, 0.0f, 0.0f),
                                        40.0f,
                                        "content/objects/quad/basic_quad.obj");
@@ -51,7 +58,7 @@ namespace finnsie {
 		LoadDistortedWater(distortWater->model);
         
 		dirWater = new WaterObject("water",
-                                   glm::vec3(-100.0f, -30.0f, 80.0f),
+                                   glm::vec3(100.0f, 5.0f, 280.0f),
                                    glm::vec3(0.0f, glm::radians(180.0f), 0.0f),
                                    40.0f,
                                    "content/objects/quad/basic_quad.obj");
@@ -100,8 +107,9 @@ namespace finnsie {
                                                          "shaders/blinnphong_frag.glsl",
                                                          NULL);
         
-        this->terrain = Terrain(0, 0);
-        this->terrain.Generate();
+        g_terrain = new Terrain(0, 0);
+        g_terrain->Generate();
+        g_terrain->GenerateGrass();
 
         this->gui->Init(*this->window, camera->MovementSpeed);
 
@@ -166,7 +174,7 @@ namespace finnsie {
             }
         }
         // draw above water so you can see underneath
-        renderer->DrawTerrain(&terrain, &this->binnShader);
+        renderer->DrawTerrain(g_terrain, &this->binnShader);
         //this->terrain.Render(&this->binnShader, this->camera);
 		
         renderer->DrawWater(distortWater, waterShader);

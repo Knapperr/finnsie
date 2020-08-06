@@ -18,7 +18,7 @@ namespace finnsie {
     
 	class Game
 	{
-        public:
+    public:
 		Game(GLFWwindow& wnd);
 		void Render();
 		void Update(float dt);
@@ -35,9 +35,8 @@ namespace finnsie {
 		Renderer *renderer;
 		Gui *gui;
         
-        private:
+    private:
         WaterObject* testSphere;
-		//GameObject* book;
         WaterObject* distortWater;
 		WaterObject* dirWater;
         
@@ -47,10 +46,7 @@ namespace finnsie {
         Shader waterDirShader;
         Shader binnShader;
 
-		Terrain terrain;
-                
 		void processCamera(float dt);
-
 	};
 }
 

@@ -20,11 +20,6 @@ namespace finnsie {
 		}
 	};
     
-    struct ShaderTwo 
-    {
-        int id;
-    };
-    
     struct Shader
     {
         unsigned int id;

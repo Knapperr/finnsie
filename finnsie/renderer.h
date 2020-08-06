@@ -1,7 +1,6 @@
 #ifndef RENDERER_HG_
 #define RENDERER_HG_
 
-#include "terrain.h"
 #include "camera.h"
 #include "gui.h"
 

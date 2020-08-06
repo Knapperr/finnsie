@@ -14,7 +14,6 @@ namespace finnsie {
 		return *shader;
 	}
     
-    
 	// Check shader compilation/linking errors
 	void checkCompileErrors(unsigned int shader, std::string type)
 	{
