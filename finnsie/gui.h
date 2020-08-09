@@ -25,7 +25,7 @@ namespace finnsie {
 	struct gui_state
 	{
 		float *cameraSpeed = 0; // TODO(CK): JUST UPDATE DIRECTLY set to the camera object's speed
-		float gameDeltaTime;
+		float gameDeltaTime = 0;
 	};
     
 	// TODO(CK): Remove replace with local function
@@ -46,7 +46,6 @@ namespace finnsie {
 		void Render();
 		void Shutdown();
         
-		float playerVelocity;
 		gui_state state;
         
         private:

@@ -9,7 +9,14 @@ namespace finnsie {
     
 	Renderer::Renderer()
 	{
-        
+		this->VBO = -1;
+		this->cubeVAO = -1;
+		this->lampVAO = -1;
+		this->activeModelLoc = -1;
+		this->activeModelShaderId = -1;
+		this->camPos = glm::vec3(1.0f);
+		
+
 		this->lampPos = glm::vec3(1.2f, 1.0f, 2.0f);
 		this->projection = glm::mat4(1.0f);
 		this->view = glm::mat4(1.0f);
@@ -235,7 +242,7 @@ namespace finnsie {
 				glBindTexture(GL_TEXTURE_2D, obj.model->meshes[i].textures[j].id);
 			}
             
-            glUniform1f(glGetUniformLocation(binnShader.id, "time"), glfwGetTime());
+            glUniform1f(glGetUniformLocation(binnShader.id, "time"), (float)glfwGetTime());
             
             glUniform3fv(glGetUniformLocation(binnShader.id, "lightPos"), 1, &g_lamp[0]);
             glUniform3fv(glGetUniformLocation(binnShader.id, "viewPos"), 1, &camPos[0]);
@@ -335,7 +342,7 @@ namespace finnsie {
             
 			// loop through draw info grabbed passed to gui from game. then game passes to renderer
 			// can loop through all uniforms with shader.GetUniforms();
-			glUniform1f(GetLoc(&waterShader, "time"), glfwGetTime());
+			glUniform1f(GetLoc(&waterShader, "time"), (float)glfwGetTime());
 			glUniform3fv(GetLoc(&waterShader, "lightPos"), 1, &g_lamp[0]);
 			glUniform3fv(GetLoc(&waterShader, "viewPos"), 1, &camPos[0]);
 			
@@ -441,7 +448,7 @@ namespace finnsie {
 				glBindTexture(GL_TEXTURE_2D, water->model->meshes[i].textures[j].id);
 			}
                    
-			glUniform1f(GetLoc(&waterShader, "time"), glfwGetTime());
+			glUniform1f(GetLoc(&waterShader, "time"), (float)glfwGetTime());
 			glUniform3fv(GetLoc(&waterShader, "lightPos"), 1, &g_lamp[0]);
 			glUniform3fv(GetLoc(&waterShader, "viewPos"), 1, &camPos[0]);
             
@@ -555,15 +562,18 @@ namespace finnsie {
 		glUniformMatrix4fv(GetLoc(shader, "model"), 1, GL_FALSE, glm::value_ptr(matModel));
 
 		// Wireframe
-		if (terr->wireFrame)
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		else
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		//if (terr->wireFrame)
+		//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		//else
+		//	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 		glBindVertexArray(terr->VAO);
-		glDrawElements(GL_TRIANGLES, terr->indicesLength, GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
 
+		terr->wireFrame ? 
+			glDrawElements(GL_LINES, terr->indicesLength, GL_UNSIGNED_INT, 0) 
+		  : glDrawElements(GL_TRIANGLES, terr->indicesLength, GL_UNSIGNED_INT, 0);
+
+		glBindVertexArray(0);
 		// Always good practice to set everything back to defaults once configured
 		// NOTE(CK): bind texture must be AFTER glActiveTexture or it will not unbind properly
 		glActiveTexture(GL_TEXTURE0);

@@ -11,11 +11,17 @@
 
 namespace finnsie {
     
-	enum class Mode {
-		EDIT,
-		RUN
-	};
-    
+    // I don't think the cubemap needs to be a class
+    // you could make multiple cubemaps and cycle through them!
+    // better to pass this one around
+    struct Cubemap
+    {
+        // delete these buffers
+        unsigned int VAO;
+        unsigned int VBO;
+        unsigned int textureID;
+    };
+
 	class Game
 	{
     public:
@@ -29,7 +35,7 @@ namespace finnsie {
         bool debugRightMousePressed;
         bool debugSphereStopped;
 		bool leftMousePressed;
-		Mode mode;
+
 		GLFWwindow* window;
 		Camera *camera;
 		Renderer *renderer;
@@ -39,12 +45,15 @@ namespace finnsie {
         WaterObject* testSphere;
         WaterObject* distortWater;
 		WaterObject* dirWater;
-        
+		
+		Cubemap cubemap;
+
         Shader modelShader;
         Shader normalShader;
         Shader waterShader;
         Shader waterDirShader;
         Shader binnShader;
+		Shader cubemapShader;
 
 		void processCamera(float dt);
 	};

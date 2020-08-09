@@ -193,7 +193,7 @@ namespace finnsie {
 	{
 		bool found = false;
 		GameObject* obj;
-		for (int i = 0; i < g_objects.size(); ++i)
+		for (unsigned int i = 0; i < g_objects.size(); ++i)
 		{
 			if (g_objects[i]->name == name)
 			{

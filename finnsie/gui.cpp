@@ -118,12 +118,13 @@ namespace finnsie {
 		{
 			// Only update the gui if its active
 			ImGui::Begin("DEBUG MENU");
-			ImGui::Checkbox("Demo Window", &showDemoWindow);
+			ImGui::Checkbox("Demo", &showDemoWindow);
 			ImGui::SameLine();
-			ImGui::Checkbox("Water Window", &showWaterWindow);
+			ImGui::Checkbox("Water", &showWaterWindow);
 			ImGui::SameLine();
-			ImGui::Checkbox("Model Window", &showModelWindow);
-			ImGui::Checkbox("Terrain Window", &showTerrainWindow);
+			ImGui::Checkbox("Model", &showModelWindow);
+			ImGui::SameLine();
+			ImGui::Checkbox("Terrain", &showTerrainWindow);
 			
 			ImGui::SliderFloat("Camera Speed", this->state.cameraSpeed, 0.0f, 100.0f);
             
@@ -141,9 +142,9 @@ namespace finnsie {
 	{
 		ImGui::Begin("Model Control", p_open);
 		// Left pane
-		static int selected = 0;
+		static unsigned int selected = 0;
 		ImGui::BeginChild("left pane", ImVec2(150, 0), true);
-		for (int i = 0; i < g_objects.size(); i++)
+		for (unsigned int i = 0; i < g_objects.size(); i++)
 		{
 			char label[128];
 			sprintf_s(label, "%s %d", g_objects[i]->name.c_str(), i);
@@ -173,7 +174,7 @@ namespace finnsie {
 				ImGui::OpenPopup("Load Mesh");
 			if (ImGui::BeginPopupModal("Load Mesh", NULL))
 			{
-				for (int i = 0; i < objPaths.size(); i++)
+				for (unsigned int i = 0; i < objPaths.size(); i++)
 				{
 					if (ImGui::SmallButton(objPaths[i].name.c_str()))
 					{

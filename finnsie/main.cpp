@@ -86,18 +86,15 @@ int main(int argc, char** argv)
 	}
 	glfwMakeContextCurrent(window);
 	
-	
 	// TODO(CK): Set this to 0 but it was using a ton of GPU and CPU 
 	// This may be giving me WAY more consistent frames
 	glfwSwapInterval(1); 
-
 
 	glfwSetKeyCallback(window, processInput);
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 	//glfwSetJoystickCallback(gamepad_callback);
-    
     
 	// glad: load all OpenGL function pointers
 	// ---------------------------------------
@@ -222,7 +219,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
 // ----------------------------------------------------------------------
-// TODO(CK): Move callbacks to game or somewhere else
+// TODO(CK): Move callbacks to seperate file?
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
     if (!game->gui->Active())

@@ -21,6 +21,10 @@ namespace finnsie {
 
     // TODO(CK): Terrain needs a grid for pathfinding... and other things as well like placing items 
     // collision detection? stuff like that
+
+    // TODO(CK): Does the terrain really need to be a class 
+    // can it just be a struct??? kinda like it being a class
+    // just because its an important thing
     class Terrain
     {
     public:
