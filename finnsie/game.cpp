@@ -355,6 +355,7 @@ namespace finnsie {
         if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
         {
             Reload(&binnShader);
+            Reload(&waterShader);
         }
         
         if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) 

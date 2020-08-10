@@ -70,10 +70,10 @@ namespace finnsie {
 		return true;
 	}
 
-	bool LoadEmptyObject(int index, std::string name, std::string path)
+	bool LoadEmptyObject(int index, std::string name, std::string path, float x, float y, float z)
 	{
 		g_objects[index]->name = name;
-		g_objects[index]->pos= glm::vec3(-100.0f, -30.0f, 0.0f),
+		g_objects[index]->pos= glm::vec3(x, y, z),
 		g_objects[index]->orientation = glm::vec3(0.0f, 0.0f, 0.0f),
 		g_objects[index]->scale = 10.0f,
 		g_objects[index]->model = new Model(path);
@@ -83,7 +83,6 @@ namespace finnsie {
 
 		return true;
 	}
-
 
 	// TODO(CK): Temp function for loading all of the texture to the quad
 	bool LoadTexture(int index)  

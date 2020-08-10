@@ -16,8 +16,20 @@ uniform mat4 view;
 
 void main()
 {
+    vs_out.FragPos = vec3(model * vec4(aPos, 1.0));
+    vs_out.Normal = aNormal;
+    vs_out.TexCoords = aTexCoords * 10.0;
+    
+    gl_Position = projection * view * vec4(vs_out.FragPos, 1.0);
+}
+
+/*
+void main()
+{
     vs_out.FragPos = aPos;
     vs_out.Normal = aNormal;
-    vs_out.TexCoords = aTexCoords * 10.0f;
-    gl_Position = projection * view * model * vec4(aPos, 1.0);
+    vs_out.TexCoords = aTexCoords;
+    gl_Position = projection * view * vec4(aPos, 1.0);
 }
+
+*/

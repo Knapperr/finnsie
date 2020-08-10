@@ -537,7 +537,7 @@ namespace finnsie {
 		glm::mat4 matModel = glm::mat4(1.0f);
 
 		glm::mat4 matTranslate = glm::translate(glm::mat4(1.0f),
-												glm::vec3(terr->x - 100.0f, 0.0f, terr->z - 30.0));
+												glm::vec3(terr->x, 0.0f, terr->z));
 		matModel = matModel * matTranslate;
 
 		glm::mat4 rotateZ = glm::rotate(glm::mat4(1.0f),
@@ -559,6 +559,8 @@ namespace finnsie {
 										glm::vec3(1.0, 1.0, 1.0));
 
 		matModel = matModel * matScale;
+		
+		
 		glUniformMatrix4fv(GetLoc(shader, "model"), 1, GL_FALSE, glm::value_ptr(matModel));
 
 		// Wireframe

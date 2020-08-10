@@ -15,7 +15,6 @@ struct Material {
     float shininess;
 }; 
  
-uniform vec3 viewPos;
 uniform Material material;
 
 uniform sampler2D texture_diffuse1;
@@ -97,7 +96,16 @@ void main()
 
     vec3 dhA = UnpackDerivativeHeight(texture2D(texture_normal2, uvwA.xy)) * (uvwA.z * finalHeightScale);
     vec3 dhB = UnpackDerivativeHeight(texture2D(texture_normal2, uvwB.xy)) * (uvwB.z * finalHeightScale);
+    
     vec3 normal = normalize(vec3(-(dhA.xy + dhB.xy), 1));
+    
+    // TODO(CK): Not sure if we need this?
+    // seems to be making a difference...
+    // I don't think this is totally correct though because the 
+    // specular won't look like its coming from the proper direction
+
+    // need this on or we lose SO much detail from other angles
+    normal = normalize(normal * 2.0 - 1.0); // normal is in tangent space
 
 
     // NOTE(CK): This doesn't need to be used the diffuse color we just use the flowCol we found above
@@ -114,13 +122,13 @@ void main()
     vec3 diffuse = diff * flowCol.rgb;
     // specular 
     vec3 viewDir = normalize(fs_in.TangentViewPos - fs_in.TangentFragPos);
-    vec3 reflectDir = reflect(-lightDir, normal);
+    //vec3 reflectDir = reflect(-lightDir, normal);
     vec3 halfwayDir = normalize(lightDir + viewDir);
     float spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
 
     vec3 specular = vec3(0.2) * spec;
 
     // NOTE(CK): 0.5 transparency
-    float transparency = 0.8;
+    float transparency = 1.0;
 	FragColor = vec4(ambient + diffuse + specular, transparency);
 }

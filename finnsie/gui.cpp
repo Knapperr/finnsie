@@ -129,9 +129,13 @@ namespace finnsie {
 			ImGui::SliderFloat("Camera Speed", this->state.cameraSpeed, 0.0f, 100.0f);
             
             // TODO(CK): LIGHTING MENU
-			ImGui::SliderFloat("Light X", &g_lamp.x, -1200.0f, 900.0f);
-			ImGui::SliderFloat("Light Y", &g_lamp.y, -1200.0f, 900.0f);
-			ImGui::SliderFloat("Light Z", &g_lamp.z, -1200.0f, 900.0f);
+			ImGui::SliderFloat("Light X", &g_lamp.x, -1500.0f, 1500.0f);
+			ImGui::SliderFloat("Light Y", &g_lamp.y, -1500.0f, 1500.0f);
+			ImGui::SliderFloat("Light Z", &g_lamp.z, -1500.0f, 1500.0f);
+			ImGui::DragFloat("drag x", &g_lamp.x, 0.001f, -1500.0f, 2500.0f, "%.02f");
+			ImGui::DragFloat("drag y", &g_lamp.y, 0.001f, -1500.0f, 2500.0f, "%.02f");
+			ImGui::DragFloat("drag z", &g_lamp.z, 0.001f, -1500.0f, 2500.0f, "%.02f");
+
 			ImGui::Separator();
                         
 			ImGui::End();
@@ -234,6 +238,9 @@ namespace finnsie {
 		ImGui::Begin("TERRAIN", p_open);
 
 		ImGui::Checkbox("wire frame", &g_terrain->wireFrame);
+
+		ImGui::SliderFloat("X", &g_terrain->x, -1500.0f, 1500.0f);
+		ImGui::SliderFloat("Z", &g_terrain->z, -1500.0f, 1500.0f);
 
 		ImGui::End();
 	}

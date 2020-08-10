@@ -115,7 +115,11 @@ void main()
     vec4 _color = vec4(0.3, 0.6, 0.8, 1.0);
     //vec4 flowCol = vec4(dh, 1.0); // NOTE(CK): visualize the derivatives 
 	vec4 flowCol = dh.z * dh.z * _color;    
+    
     vec3 normal = normalize(vec3(-dh.xy, 1));
+
+    // TODO(CK): Not sure if we need this?
+    normal = normalize(normal * 2.0 - 1.0);
 
     // ambient
     vec3 ambient = (0.8 * flowCol.rgb);
