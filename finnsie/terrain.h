@@ -35,9 +35,11 @@ namespace finnsie {
         float x;
         float z;
         bool wireFrame;
+
         // TODO(CK): Bad practice?
-        // if default constructor gets called this
-        // breaks
+        // if default constructor gets called this breaks because its being
+        // initialized twice
+        // I don't think I need this.. i guess if the vertices change?
         FVertex* vertices;
                 
 

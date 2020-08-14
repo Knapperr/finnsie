@@ -138,8 +138,15 @@ namespace finnsie {
 
     // TODO(CK): Move somewhere global
     #define ArrayCount(Array) (sizeof(Array) / sizeof((Array)[0]))
+
+#include <time.h>
+
+
     void Terrain::GenerateGrass()
     {
+        srand(time(NULL));
+
+
         // TODO(CK): This is the worst way to do this...
         // we need a grid system on top of the terrain 
         // the grid locations need to be decently sized
@@ -149,45 +156,20 @@ namespace finnsie {
         for (int i = 0; i < (VERTEX_COUNT*VERTEX_COUNT); ++i)
         {
             // TEST
-            if (i >= 0 && i < 10)
+            if (i >= 0 && i < 30)
             {
-                // this is gross but w/e
+                // Use a raw array of grass to render and instance it onto the gpu
+                // also randomize positions
                 CreateEmptyObject();
-                LoadEmptyObject(modelIndex, "TradeMan.obj", "content/objects/treasureteller/TradeMan.obj");
-                g_objects[modelIndex]->pos.x = this->vertices[i].position.x;
-                g_objects[modelIndex]->pos.y = this->vertices[i].position.y;
-                g_objects[modelIndex]->pos.z = this->vertices[i].position.z;
-                ++modelIndex;
-            }
-            if (i >= 600 && i < 620)
-            {
-                // this is gross but w/e
-                CreateEmptyObject();
-                LoadEmptyObject(modelIndex, "TradeMan.obj", "content/objects/treasureteller/TradeMan.obj");
-                g_objects[modelIndex]->pos.x = this->vertices[i].position.x;
-                g_objects[modelIndex]->pos.y = this->vertices[i].position.y;
-                g_objects[modelIndex]->pos.z = this->vertices[i].position.z;
-                ++modelIndex;
+                LoadEmptyObject(modelIndex, "grass", "content/objects/Grass/sht_grass.obj");
 
-            }
-            if (i >= 3000 && i < 3010)
-            {
-                // this is gross but w/e
-                CreateEmptyObject();
-                LoadEmptyObject(modelIndex, "TradeMan.obj", "content/objects/treasureteller/TradeMan.obj");
-                g_objects[modelIndex]->pos.x = this->vertices[i].position.x;
-                g_objects[modelIndex]->pos.y = this->vertices[i].position.y;
-                g_objects[modelIndex]->pos.z = this->vertices[i].position.z;
-                ++modelIndex;
-            }
-            if (i >= 10000 && i < 10010)
-            {
-                // this is gross but w/e
-                CreateEmptyObject();
-                LoadEmptyObject(modelIndex, "TradeMan.obj", "content/objects/treasureteller/TradeMan.obj");
-                g_objects[modelIndex]->pos.x = this->vertices[i].position.x;
-                g_objects[modelIndex]->pos.y = this->vertices[i].position.y;
-                g_objects[modelIndex]->pos.z = this->vertices[i].position.z;
+                int x = rand() % 320 + this->vertices[i].position.x;
+                int z = rand() % 380 + this->vertices[i].position.z;
+
+                g_objects[modelIndex]->pos.x = (float)x;
+                g_objects[modelIndex]->pos.y = 0;
+                g_objects[modelIndex]->pos.z = (float)z;
+                g_objects[modelIndex]->scale = 0.5f;
                 ++modelIndex;
             }
         }

@@ -183,7 +183,7 @@ namespace finnsie {
 		
         // Water objects
 		distortWater = new WaterObject("water",
-                                       glm::vec3(70.0f, 2.0f, 100.0f),
+                                       glm::vec3(200.0f, 0.5f, 190.0f),
                                        glm::vec3(0.0f, 0.0f, 0.0f),
                                        40.0f,
                                        "content/objects/quad/basic_quad.obj");
@@ -267,7 +267,7 @@ namespace finnsie {
         
         g_terrain = new Terrain(0, 0);
         g_terrain->Generate();
-        //g_terrain->GenerateGrass();
+        g_terrain->GenerateGrass();
 
 
         this->cubemap = {};
