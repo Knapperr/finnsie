@@ -37,6 +37,7 @@ namespace finnsie {
         // TODO(CK): delete index buffer too?
     }
 
+#include <time.h>
     void Terrain::Generate()
     {
         int* indices = new int[6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1)];
@@ -45,6 +46,7 @@ namespace finnsie {
         this->indicesLength = 6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1);
 
         int index = 0;
+        srand(time(NULL));
         for (int i = 0; i < VERTEX_COUNT; ++i)
         {
             for (int j = 0; j < VERTEX_COUNT; ++j)
@@ -138,10 +140,6 @@ namespace finnsie {
 
     // TODO(CK): Move somewhere global
     #define ArrayCount(Array) (sizeof(Array) / sizeof((Array)[0]))
-
-#include <time.h>
-
-
     void Terrain::GenerateGrass()
     {
         srand(time(NULL));
@@ -161,16 +159,31 @@ namespace finnsie {
                 // Use a raw array of grass to render and instance it onto the gpu
                 // also randomize positions
                 CreateEmptyObject();
+                CreateEmptyObject();
+                CreateEmptyObject();
                 LoadEmptyObject(modelIndex, "grass", "content/objects/Grass/sht_grass.obj");
+                LoadEmptyObject(modelIndex+1, "grass", "content/objects/Grass/sht_grass.obj");
+                LoadEmptyObject(modelIndex+2, "grass", "content/objects/Grass/sht_grass.obj");
 
-                int x = rand() % 320 + this->vertices[i].position.x;
-                int z = rand() % 380 + this->vertices[i].position.z;
+                int x = rand() % 10 + this->vertices[i].position.x;
+                int z = rand() % 5 + this->vertices[i].position.z;
 
                 g_objects[modelIndex]->pos.x = (float)x;
                 g_objects[modelIndex]->pos.y = 0;
                 g_objects[modelIndex]->pos.z = (float)z;
-                g_objects[modelIndex]->scale = 0.5f;
-                ++modelIndex;
+                g_objects[modelIndex]->scale = 0.3f;
+                g_objects[modelIndex+1]->pos.x = (float)x;
+                g_objects[modelIndex+1]->pos.y = 0;
+                g_objects[modelIndex+1]->pos.z = (float)z;
+                g_objects[modelIndex+1]->scale = 0.3f;
+                g_objects[modelIndex+2]->pos.x = (float)x;
+                g_objects[modelIndex+2]->pos.y = 0;
+                g_objects[modelIndex+2]->pos.z = (float)z;
+                g_objects[modelIndex+2]->scale = 0.3f;
+                g_objects[modelIndex+1]->orientation = glm::vec3(0.0f, 1.0f, 0.0f);
+                g_objects[modelIndex+2]->orientation = glm::vec3(0.0f, 0.5f, 0.0f);
+
+                modelIndex += 3;
             }
         }
     }

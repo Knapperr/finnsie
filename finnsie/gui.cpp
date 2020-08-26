@@ -208,6 +208,7 @@ namespace finnsie {
 					ImGui::DragFloat("z", &g_objects[selected]->pos.z, 0.001f, -1000.0f, 1000.0f, "%.02f");
 					
 					ImGui::Checkbox("show normals", &g_objects[selected]->viewNormals);
+					ImGui::Checkbox("wire frame", &g_objects[selected]->wireFrame);
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Details"))

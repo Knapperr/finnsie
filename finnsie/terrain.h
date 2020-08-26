@@ -19,12 +19,19 @@ namespace finnsie {
         glm::vec2 texCoords;
     };
 
-    // TODO(CK): Terrain needs a grid for pathfinding... and other things as well like placing items 
+    // TODO(CK): 
+    // Tile Chunks
+    // Terrain needs a grid for pathfinding... and other things as well like placing items 
     // collision detection? stuff like that
 
-    // TODO(CK): Does the terrain really need to be a class 
-    // can it just be a struct??? kinda like it being a class
-    // just because its an important thing
+    
+    struct Grass
+    {
+        // array for positions[] instancing
+    };
+
+
+    // TODO(CK): Just like handmade we need a coord system for the terain
     class Terrain
     {
     public:
@@ -41,11 +48,20 @@ namespace finnsie {
         // initialized twice
         // I don't think I need this.. i guess if the vertices change?
         FVertex* vertices;
-                
+
+        // TODO(CK): GRASS ARRAY FOR INSTANCING 
+        /*
+        this can be used with the GUI a grass menu 
+        its a heap array so the array can be changed at run time
+        struct GrassConfig
+        {
+            number of grass
+        };
+        
+        */
 
         Terrain(int gridX, int gridZ);
         ~Terrain();
-
 
         // Method from java video
         void Generate();

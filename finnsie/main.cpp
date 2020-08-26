@@ -32,8 +32,6 @@ float lastX = SCREEN_WIDTH / 2.0f;
 float lastY = SCREEN_HEIGHT / 2.0f;
 bool firstMouse = true;
 
-float g_playerXPos = 0;
-float g_velocity = 300.0f;
 int64_t g_perfCountFrequency;
 
 struct Timer

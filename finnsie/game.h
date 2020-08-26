@@ -3,7 +3,7 @@
 
 #include "camera.h"
 #include "gui.h"
-#include "renderer.h"
+#include "cube_map.h"
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -11,17 +11,6 @@
 
 namespace finnsie {
     
-    // I don't think the cubemap needs to be a class
-    // you could make multiple cubemaps and cycle through them!
-    // better to pass this one around
-    struct Cubemap
-    {
-        // delete these buffers
-        unsigned int VAO;
-        unsigned int VBO;
-        unsigned int textureID;
-    };
-
 	class Game
 	{
     public:
@@ -48,6 +37,7 @@ namespace finnsie {
 		
 		Cubemap cubemap;
 
+        // Shader[]
         Shader modelShader;
         Shader normalShader;
         Shader waterShader;
