@@ -9,7 +9,6 @@
 #include <assimp/postprocess.h>
 
 #include "mesh.h"
-#include "gui.h"
 
 #include <string>
 #include <fstream>

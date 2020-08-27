@@ -37,6 +37,26 @@ namespace finnsie {
 	}
     
 	// This begin render will happen before the model vector is looped through
+		//internal void
+	//	UseProgramBegin(zbias_program* Prog, render_setup* Setup, f32 AlphaThreshold)
+	//{
+	//	UseProgramBegin(&Prog->Common);
+
+	//	glUniformMatrix4fv(Prog->TransformID, 1, GL_TRUE, Setup->Proj.E[0]);
+	//	glUniform3fv(Prog->CameraP, 1, Setup->CameraP.E);
+	//	glUniform3fv(Prog->FogDirection, 1, Setup->FogDirection.E);
+	//	glUniform3fv(Prog->FogColor, 1, Setup->FogColor.E);
+	//	glUniform1f(Prog->FogStartDistance, Setup->FogStartDistance);
+	//	glUniform1f(Prog->FogEndDistance, Setup->FogEndDistance);
+	//	glUniform1f(Prog->ClipAlphaStartDistance, Setup->ClipAlphaStartDistance);
+	//	glUniform1f(Prog->ClipAlphaEndDistance, Setup->ClipAlphaEndDistance);
+	//	glUniform1f(Prog->AlphaThreshold, AlphaThreshold);
+	//	glUniform3fv(Prog->VoxelMinCorner, 1, Setup->VoxelMinCorner.E);
+	//	glUniform3fv(Prog->VoxelInvTotalDim, 1, Setup->VoxelInvTotalDim.E);
+	//}
+	// TODO(CK):
+	// I like this idea
+	// Do all of the glUniforms up front!!!
 	void Renderer::BeginRender(Camera& cam)
 	{
 		this->projection = glm::perspective(glm::radians(cam.Zoom),
@@ -45,6 +65,9 @@ namespace finnsie {
 		this->view = cam.GetViewMatrix();
 		this->camPos = cam.Position;
 	}
+
+
+
     
     void FirstPass() 
     {
@@ -518,19 +541,32 @@ namespace finnsie {
 		}
 		return;
 	}
-    
-	void Renderer::DrawTerrain(Terrain* terr, Shader* shader)
+	
+	void Renderer::drawGrass(Terrain* terr, Shader* grassShader)
 	{
-		glUseProgram(shader->id);
+		glUseProgram(grassShader->id);
+		// now set the sampler to the correct texture unit
+		glUniform1i(glGetUniformLocation(grassShader->id, "texture_diffuse1"), 0);
+		// and finally bind the texture		
+		//glBindTexture(GL_TEXTURE_2D, terr->textureId);
+		//glBindTexture(GL_TEXTURE_2D, terr->grass.textures_loaded[0].id); 
+		// just give the grass its own texture id fuck that
 
-		glUniformMatrix4fv(GetLoc(shader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(GetLoc(shader, "view"), 1, GL_FALSE, glm::value_ptr(view));
 
-		glUniform3fv(GetLoc(shader, "lightPos"), 1, &g_lamp[0]);
-		glUniform3fv(GetLoc(shader, "viewPos"), 1, &camPos[0]);
+	}
+
+	void Renderer::DrawTerrain(Terrain* terr, Shader* terrShader, Shader* grassShader)
+	{
+		glUseProgram(terrShader->id);
+
+		glUniformMatrix4fv(GetLoc(terrShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(GetLoc(terrShader, "view"), 1, GL_FALSE, glm::value_ptr(view));
+
+		glUniform3fv(GetLoc(terrShader, "lightPos"), 1, &g_lamp[0]);
+		glUniform3fv(GetLoc(terrShader, "viewPos"), 1, &camPos[0]);
 
 		// now set the sampler to the correct texture unit
-		glUniform1i(glGetUniformLocation(shader->id, "texture_diffuse1"), 0);
+		glUniform1i(glGetUniformLocation(terrShader->id, "texture_diffuse1"), 0);
 		// and finally bind the texture		
 		glBindTexture(GL_TEXTURE_2D, terr->textureId);
 
@@ -561,7 +597,7 @@ namespace finnsie {
 		matModel = matModel * matScale;
 		
 		
-		glUniformMatrix4fv(GetLoc(shader, "model"), 1, GL_FALSE, glm::value_ptr(matModel));
+		glUniformMatrix4fv(GetLoc(terrShader, "model"), 1, GL_FALSE, glm::value_ptr(matModel));
 
 		// Wireframe
 		//if (terr->wireFrame)
@@ -581,6 +617,8 @@ namespace finnsie {
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, 0);
 
+
+		//drawGrass()
 	}
 
 	void Renderer::EndRender()

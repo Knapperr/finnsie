@@ -101,7 +101,11 @@ int main(int argc, char** argv)
 		std::cout << "Failed to initialize GLAD\n";
 		return EXIT_FAILURE;
 	}
-    
+	// Check OpenGL properties
+	printf("Vendor:   %s\n", glGetString(GL_VENDOR));
+	printf("Renderer: %s\n", glGetString(GL_RENDERER));
+	printf("Version:  %s\n", glGetString(GL_VERSION));
+
 	// NOTE: OpenGL error checks have been omitted for brevity
 	// OpenGL Configurations - after loading glad -
 	glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);

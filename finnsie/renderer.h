@@ -12,7 +12,7 @@
 namespace finnsie {
 
 	class Renderer {
-        public:
+    public:
 		Renderer();
 		~Renderer();
 		void BeginRender(Camera& cam);
@@ -20,11 +20,11 @@ namespace finnsie {
 		void DrawWater(WaterObject* water, Shader waterShader);
 		void DrawDirWater(WaterObject* dirWater, Shader waterShader);
         void DrawSphere(GameObject& obj, Shader binnShader);
-		void DrawTerrain(Terrain* terr, Shader* shader);
+		void DrawTerrain(Terrain* terr, Shader* terrShader, Shader* grassShader);
 		void EndRender();
 		void Shutdown();
         
-        private:        
+    private:        
 		glm::vec3 lampPos;
 		glm::vec3 lightPos;
 		glm::vec3 camPos;
@@ -42,6 +42,7 @@ namespace finnsie {
 		bool drawingNormals;
         
 		void startShader(unsigned int shaderId, int modelLoc, int projLoc, int viewLoc);
+		void drawGrass(Terrain* terr, Shader* shader);
 	};
     
 }

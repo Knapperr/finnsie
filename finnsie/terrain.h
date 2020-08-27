@@ -1,9 +1,9 @@
 #ifndef TERRAIN_H
 #define TERRAIN_H
 
-#include "gl_common.h"
 #include <glm/glm.hpp>
 
+#include "game_object.h"
 #include "camera.h"
 
 namespace finnsie {
@@ -23,13 +23,14 @@ namespace finnsie {
     // Tile Chunks
     // Terrain needs a grid for pathfinding... and other things as well like placing items 
     // collision detection? stuff like that
-
-    
+    class Model;
     struct Grass
     {
-        // array for positions[] instancing
+        glm::mat4* matrices;
+        Model model;
+        int amount;
+        int textureId;
     };
-
 
     // TODO(CK): Just like handmade we need a coord system for the terain
     class Terrain
@@ -48,17 +49,7 @@ namespace finnsie {
         // initialized twice
         // I don't think I need this.. i guess if the vertices change?
         FVertex* vertices;
-
-        // TODO(CK): GRASS ARRAY FOR INSTANCING 
-        /*
-        this can be used with the GUI a grass menu 
-        its a heap array so the array can be changed at run time
-        struct GrassConfig
-        {
-            number of grass
-        };
-        
-        */
+        Grass grass;
 
         Terrain(int gridX, int gridZ);
         ~Terrain();

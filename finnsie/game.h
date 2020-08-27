@@ -1,8 +1,6 @@
 #ifndef GAME_HG_
 #define GAME_HG_
 
-#include "camera.h"
-#include "gui.h"
 #include "cube_map.h"
 
 #include <glm/vec3.hpp>
@@ -26,9 +24,13 @@ namespace finnsie {
 		bool leftMousePressed;
 
 		GLFWwindow* window;
-		Camera *camera;
-		Renderer *renderer;
 		Gui *gui;
+		
+		Renderer *renderer;
+		Camera *camera;
+		// Terrain 
+		// Lights
+
         
     private:
         WaterObject* testSphere;
@@ -42,7 +44,8 @@ namespace finnsie {
         Shader normalShader;
         Shader waterShader;
         Shader waterDirShader;
-        Shader binnShader;
+        Shader binnShader; // used for terrain for now
+		Shader grassShader;
 		Shader cubemapShader;
 
 		void processCamera(float dt);

@@ -1,7 +1,6 @@
 #ifndef MESH_HG_
 #define MESH_HG_
 
-#include "global.h"
 #include "shader_manager.h"
 
 #include <glm/gtc/matrix_transform.hpp>

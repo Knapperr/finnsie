@@ -124,6 +124,13 @@ namespace finnsie {
                                                          "shaders/cubemap_frag.glsl",
                                                          NULL);
         
+        this->grassShader =
+            ::finnsie::g_resourceManager->GenerateShader(007,
+                                                         "shaders/grass_vert.glsl",
+                                                         "shaders/grass_frag.glsl",
+                                                         NULL);
+
+
         g_terrain = new Terrain(0, 0);
         g_terrain->Generate();
         g_terrain->GenerateGrass();
@@ -196,7 +203,7 @@ namespace finnsie {
             }
         }
         // draw above water so you can see underneath
-        renderer->DrawTerrain(g_terrain, &this->binnShader);
+        renderer->DrawTerrain(g_terrain, &this->binnShader, &this->grassShader);
         //this->terrain.Render(&this->binnShader, this->camera);
 		
         renderer->DrawWater(distortWater, waterShader);
