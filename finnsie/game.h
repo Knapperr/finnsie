@@ -29,7 +29,7 @@ namespace finnsie {
 		Renderer *renderer;
 		Camera *camera;
 
-		// Terrain 
+		Terrain *terrain;
 		// Lights
 
         WaterObject* testSphere;
@@ -37,6 +37,10 @@ namespace finnsie {
 		WaterObject* dirWater;
 		
 		Cubemap cubemap;
+
+	private:
+
+
 
         // Shader[]
 		// TODO(CK):
@@ -49,6 +53,8 @@ namespace finnsie {
 		Shader grassShader;
 		Shader cubemapShader;
 
+		void initObjects();
+		void initShaders();
 		void processCamera(float dt);
 	};
 

@@ -16,12 +16,9 @@ namespace finnsie {
 		this->activeModelShaderId = -1;
 		this->camPos = glm::vec3(1.0f);
 		
-
 		this->lampPos = glm::vec3(1.2f, 1.0f, 2.0f);
 		this->projection = glm::mat4(1.0f);
 		this->view = glm::mat4(1.0f);
-        
-		this->drawingNormals = false;
         
 		// TODO(CK): CLEAN UP
 		// FOR LIGHTING
@@ -36,27 +33,6 @@ namespace finnsie {
 		glDeleteBuffers(1, &this->VBO);
 	}
     
-	// This begin render will happen before the model vector is looped through
-		//internal void
-	//	UseProgramBegin(zbias_program* Prog, render_setup* Setup, f32 AlphaThreshold)
-	//{
-	//	UseProgramBegin(&Prog->Common);
-
-	//	glUniformMatrix4fv(Prog->TransformID, 1, GL_TRUE, Setup->Proj.E[0]);
-	//	glUniform3fv(Prog->CameraP, 1, Setup->CameraP.E);
-	//	glUniform3fv(Prog->FogDirection, 1, Setup->FogDirection.E);
-	//	glUniform3fv(Prog->FogColor, 1, Setup->FogColor.E);
-	//	glUniform1f(Prog->FogStartDistance, Setup->FogStartDistance);
-	//	glUniform1f(Prog->FogEndDistance, Setup->FogEndDistance);
-	//	glUniform1f(Prog->ClipAlphaStartDistance, Setup->ClipAlphaStartDistance);
-	//	glUniform1f(Prog->ClipAlphaEndDistance, Setup->ClipAlphaEndDistance);
-	//	glUniform1f(Prog->AlphaThreshold, AlphaThreshold);
-	//	glUniform3fv(Prog->VoxelMinCorner, 1, Setup->VoxelMinCorner.E);
-	//	glUniform3fv(Prog->VoxelInvTotalDim, 1, Setup->VoxelInvTotalDim.E);
-	//}
-	// TODO(CK):
-	// I like this idea
-	// Do all of the glUniforms up front!!!
 	void Renderer::BeginRender(Camera& cam)
 	{
 		this->projection = glm::perspective(glm::radians(cam.Zoom),
@@ -65,97 +41,12 @@ namespace finnsie {
 		this->view = cam.GetViewMatrix();
 		this->camPos = cam.Position;
 	}
-
-    void FirstPass() 
-    {
-		// We need to pick the active shader here based off of 
-		// the models setting?
-		
-		//if (obj->showNormals)
-		//{
-		//	glUseProgram(modelShader.id);
-		//	glUniformMatrix4fv(GetLoc(&modelShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-		//	glUniformMatrix4fv(GetLoc(&modelShader, "view"), 1, GL_FALSE, glm::value_ptr(view));
-		//	this->activeModelShaderId = modelShader.id;
-		//	this->activeModelLoc = GetLoc(&modelShader, "model");
-		//}
-		//else
-		//{
-		//	glUseProgram(normalShader.id);
-		//	glUniformMatrix4fv(GetLoc(&normalShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-		//	glUniformMatrix4fv(GetLoc(&normalShader, "view"), 1, GL_FALSE, glm::value_ptr(view));
-		//	this->activeModelShaderId = normalShader.id;
-		//	this->activeModelLoc = GetLoc(&normalShader, "model");
-
-		//}
-
-		//if (obj.viewNormals && !drawingNormals)
-		//{
-		//	// Normals are only drawn on the next draw call
-		//	drawingNormals = true;
-		//	DrawModel(obj, modelShader, normalShader);
-		//	drawingNormals = false;
-		//}
-    }
     
-	void Renderer::DrawModel(GameObject& obj, Shader modelShader, Shader normalShader)
+	void Renderer::DrawModel(GameObject& obj, Shader modelShader)
 	{
-        // TODO(CK): Change this remove start shader function remove these locations
-        // the locations are inside of the shaders we don't need to store them here or 
-        // in the game
-        // probably get rid of the normal shader.. ???? do we really need it? 
-        // or can i just combine that technique inside of the modelshader and 
-        // just chnage the way i draw off of a bool uniform?? ya do that
-        
-		
-        // TODO(CK): We don't do this setting it here we do a function at the beginning
-        // that does a pass and grabs the shader we are going to use
-        // we could do:
-        
-        /*
-		Shader *drawShader = BasePass(); <- returns a Shader*
-
-		Shader* BasePass(*obj)
-		{
-		 if (obj.drawNormals)
-		{
-		 return shaders[1];
-		}
-		normal shader in here maybe? i still like game passing shaders
-			 that was a shader can be made on the game side
-		at the same time the renderer can just have its own shaders like before
-		if its functional though how does it "keep" shaders is there just an array that lives
-		in here and stays updated
-		}
-
-
-		then if we have a pointer to the shader we want to use
-
-
-		also we can loop through the shader and activate all of its attributes maybe
-		not the time and lighting (right now) we can also just say if (time exists then set it)
-
-		the Shader uniforms needs a char *name .. it does have a string 
-*/
-
-		// make function or move to "First pass"
-		if (!drawingNormals)
-		{
-			glUseProgram(modelShader.id);
-			glUniformMatrix4fv(GetLoc(&modelShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-			glUniformMatrix4fv(GetLoc(&modelShader, "view"), 1, GL_FALSE, glm::value_ptr(view));
-			this->activeModelShaderId = modelShader.id;
-			this->activeModelLoc = GetLoc(&modelShader, "model");
-		}
-		else
-		{
-			glUseProgram(normalShader.id);
-			glUniformMatrix4fv(GetLoc(&normalShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-			glUniformMatrix4fv(GetLoc(&normalShader, "view"), 1, GL_FALSE, glm::value_ptr(view));
-			this->activeModelShaderId = normalShader.id;
-			this->activeModelLoc = GetLoc(&normalShader, "model");
-
-		}
+		glUseProgram(modelShader.id);
+		glUniformMatrix4fv(GetLoc(&modelShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(GetLoc(&modelShader, "view"), 1, GL_FALSE, glm::value_ptr(view));
 
 		for (unsigned int i = 0; i < obj.model->meshes.size(); i++)
 		{
@@ -181,8 +72,8 @@ namespace finnsie {
 					number = std::to_string(heightNr++);
                 
 				// now set the sampler to the correct texture unit
-				glUniform1i(glGetUniformLocation(activeModelShaderId, (name + number).c_str()), j);
-				// and finally bind the texture		
+				glUniform1i(glGetUniformLocation(modelShader.id, (name + number).c_str()), j);
+				// and finally bind the texture
 				glBindTexture(GL_TEXTURE_2D, obj.model->meshes[i].textures[j].id);
 			}
 			
@@ -212,7 +103,7 @@ namespace finnsie {
                                             glm::vec3(obj.scale, obj.scale, obj.scale));
             
 			matModel = matModel * matScale;
-			glUniformMatrix4fv(activeModelLoc, 1, GL_FALSE, glm::value_ptr(matModel));
+			glUniformMatrix4fv(GetLoc(&modelShader, "model"), 1, GL_FALSE, glm::value_ptr(matModel));
             
 			/*
 			// INVERSE WAS FROM GRAPHICS CLASS
@@ -238,14 +129,6 @@ namespace finnsie {
 			// NOTE(CK): bind texture must be AFTER glActiveTexture or it will not unbind properly
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, 0);
-		}
-        
-		if (obj.viewNormals && !drawingNormals)
-		{
-			// Normals are only drawn on the next draw call
-			drawingNormals = true;
-			DrawModel(obj, modelShader, normalShader);
-			drawingNormals = false;
 		}
 	}
     
@@ -350,7 +233,6 @@ namespace finnsie {
     
 	void Renderer::DrawWater(WaterObject* water, Shader waterShader)
 	{
-		//startShader(waterShader.id, watModelLoc, watProjLoc, watViewLoc);
 		glUseProgram(waterShader.id);
 		glUniformMatrix4fv(GetLoc(&waterShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(GetLoc(&waterShader, "view"), 1, GL_FALSE, glm::value_ptr(view));
@@ -656,19 +538,9 @@ namespace finnsie {
 		return;
 	}
     
-	void Renderer::startShader(unsigned int shaderId, int modelLoc, int projLoc, int viewLoc)
-	{
-		glUseProgram(shaderId);
-		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-        
-		this->activeModelShaderId = shaderId;
-		this->activeModelLoc = modelLoc;
-	}
     
 	void Renderer::Shutdown()
 	{
-		delete ::finnsie::g_resourceManager;
-	}
-        
+		return;
+	}        
 }

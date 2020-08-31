@@ -186,15 +186,15 @@ namespace finnsie {
 	{
 		ImGui::Begin("TERRAIN", p_open);
 
-		ImGui::Checkbox("wire frame", &g_terrain->wireFrame);
+		ImGui::Checkbox("wire frame", &g_Game->terrain->wireFrame);
 
-		ImGui::SliderFloat("X", &g_terrain->x, -1500.0f, 1500.0f);
-		ImGui::SliderFloat("Z", &g_terrain->z, -1500.0f, 1500.0f);
-		ImGui::SliderInt("Grass Amount", &g_terrain->grass.amount, 0.0f, 100000.0f);
+		ImGui::SliderFloat("X", &g_Game->terrain->x, -1500.0f, 1500.0f);
+		ImGui::SliderFloat("Z", &g_Game->terrain->z, -1500.0f, 1500.0f);
+		ImGui::SliderInt("Grass Amount", &g_Game->terrain->grass.amount, 0.0f, 100000.0f);
 		
 		if (ImGui::SmallButton("Generate Grass"))
 		{
-			g_terrain->GenerateGrass();
+			g_Game->terrain->GenerateGrass();
 		}
 
 

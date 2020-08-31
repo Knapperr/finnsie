@@ -14,7 +14,6 @@ namespace finnsie {
     extern ResourceManager* g_resourceManager;
     extern std::vector<GameObject*> g_objects;
     extern glm::vec3 g_lamp;
-    extern Terrain* g_terrain;
     
 #define PI32 3.14159265359f
 #define local_persist static 
