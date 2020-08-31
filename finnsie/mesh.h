@@ -17,8 +17,6 @@ namespace finnsie {
 		glm::vec3 bitangent;
 	};
     
-	// TODO(CK): MOVE TO GLOBAL.cpp ???
-	// or use the texture_manager.h
 	struct Texture
 	{
 		unsigned int id;

@@ -19,13 +19,6 @@
 
 namespace finnsie {
 
-	struct gui_state
-	{
-		float *cameraSpeed = 0; // TODO(CK): JUST UPDATE DIRECTLY set to the camera object's speed
-		float gameDeltaTime = 0;
-	};
-    
-	// TODO(CK): Remove replace with local function
 	struct objFile
 	{
 		std::string path;
@@ -36,16 +29,14 @@ namespace finnsie {
     
 	class Gui
 	{
-        public:
-		void Init(GLFWwindow& window, float& cameraSpeed);
+    public:
+		void Init(GLFWwindow& window);
 		void Update();
 		bool Active();
 		void Render();
 		void Shutdown();
         
-		gui_state state;
-        
-        private:
+    private:
 		bool showDemoWindow = false;
 		bool showWaterWindow = false;
 		bool showModelWindow = false;
@@ -63,7 +54,7 @@ namespace finnsie {
 		void getFolders(std::string folder);
 		
 		void distortedWaterControls();
-        void directionalWaterControls();
+		void directionalWaterControls();
                 
 
 	};

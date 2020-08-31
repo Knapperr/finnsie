@@ -66,12 +66,36 @@ namespace finnsie {
 		this->camPos = cam.Position;
 	}
 
-
-
-    
     void FirstPass() 
     {
-        
+		// We need to pick the active shader here based off of 
+		// the models setting?
+		
+		//if (obj->showNormals)
+		//{
+		//	glUseProgram(modelShader.id);
+		//	glUniformMatrix4fv(GetLoc(&modelShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+		//	glUniformMatrix4fv(GetLoc(&modelShader, "view"), 1, GL_FALSE, glm::value_ptr(view));
+		//	this->activeModelShaderId = modelShader.id;
+		//	this->activeModelLoc = GetLoc(&modelShader, "model");
+		//}
+		//else
+		//{
+		//	glUseProgram(normalShader.id);
+		//	glUniformMatrix4fv(GetLoc(&normalShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+		//	glUniformMatrix4fv(GetLoc(&normalShader, "view"), 1, GL_FALSE, glm::value_ptr(view));
+		//	this->activeModelShaderId = normalShader.id;
+		//	this->activeModelLoc = GetLoc(&normalShader, "model");
+
+		//}
+
+		//if (obj.viewNormals && !drawingNormals)
+		//{
+		//	// Normals are only drawn on the next draw call
+		//	drawingNormals = true;
+		//	DrawModel(obj, modelShader, normalShader);
+		//	drawingNormals = false;
+		//}
     }
     
 	void Renderer::DrawModel(GameObject& obj, Shader modelShader, Shader normalShader)
@@ -216,8 +240,6 @@ namespace finnsie {
 			glBindTexture(GL_TEXTURE_2D, 0);
 		}
         
-		// TODO(CK): Not sure if this is proper. Look up how to do this properly
-		// maybe move this logic into the game again.. if (drawNormals then call with the shader id
 		if (obj.viewNormals && !drawingNormals)
 		{
 			// Normals are only drawn on the next draw call

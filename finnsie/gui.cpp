@@ -8,7 +8,7 @@ namespace fs = std::filesystem;
 
 namespace finnsie {
     
-	void Gui::Init(GLFWwindow& window, float& cameraSpeed)
+	void Gui::Init(GLFWwindow& window)
 	{
 		const char* glsl_version = "#version 330";
         
@@ -32,17 +32,10 @@ namespace finnsie {
 		showDemoWindow = false;
 		showAnotherWindow = false;
         
-		// initialize memory
-		state = {};
 		// Grab obj files in the folders
 		getFolders("objects");
 		// could use this and then create a glm::vec4 from this field to change colour in the game
 		//ImVec4 clearColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f); <-- can use a vec4 to control colours 
-        
-        
-		// NOTE(CK): set the camera pointer
-		this->state.cameraSpeed = &cameraSpeed;
-        
 	}
     
 	bool Gui::Active()
@@ -53,53 +46,7 @@ namespace finnsie {
 		else 
 			return false;
 	}
-    
-	/*
-								Examples
-		================================================================
-		ImGui::Text("This is text");
-		ImGui::SliderFloat("Player Velocity", &playerVelocity, 300.0f, 800.0f);
-		ImGui::Text("application average %.3f ms/frame (%.1f FPS", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-		ImGui::Text("Delta Time from game %.2f ms/frame", (double)state.gameDeltaTime * 1000.0f);
-
-		// Color buttons, demonstrate using PushID() to add unique identifier in the ID stack, and changing style.
-		for (int i = 0; i < 7; i++)
-		{
-			if (i > 0)
-				ImGui::SameLine();
-			ImGui::PushID(i);
-			ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(i/7.0f, 0.6f, 0.6f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(i/7.0f, 0.7f, 0.7f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(i/7.0f, 0.8f, 0.8f));
-			ImGui::Button("Click");
-			ImGui::PopStyleColor(3);
-			ImGui::PopID();
-		}
-
-		// DROP DOWN COMBOBOX EXAMPLE
-		static ImGuiComboFlags flags = 0;
-		static const char* item_current = objPaths[0].name.c_str();            // Here our selection is a single pointer stored outside the object.
-		static std::string item_current_path = objPaths[0].path.c_str();
-		if (ImGui::BeginCombo("models", item_current, flags)) // The second parameter is the label previewed before opening the combo.
-		{
-			for (int n = 0; n < objPaths.size(); n++)
-			{
-				bool is_selected = (item_current == objPaths[n].name.c_str());
-				if (ImGui::Selectable(objPaths[n].name.c_str(), is_selected))
-				{
-					item_current = objPaths[n].name.c_str();
-				}
-				if (is_selected)
-				{
-					ImGui::SetItemDefaultFocus();   // Set the initial focus when opening the combo (scrolling + for keyboard navigation support in the upcoming navigation branch)
-				}
-			}
-			ImGui::EndCombo();
-		}
-		=================================================================
-	*/
-    
-    
+        
 	void Gui::Update()
 	{
 		ImGui_ImplOpenGL3_NewFrame();
@@ -128,9 +75,9 @@ namespace finnsie {
 			ImGui::SameLine();
 			ImGui::Checkbox("Terrain", &showTerrainWindow);
 			
-			ImGui::SliderFloat("Camera Speed", this->state.cameraSpeed, 0.0f, 100.0f);
+			ImGui::SliderFloat("Camera Speed", &g_Game->camera->MovementSpeed, 0.0f, 100.0f);
+			ImGui::Checkbox("Lock Camera", &g_Game->camera->LockedY);
             
-            // TODO(CK): LIGHTING MENU
 			ImGui::SliderFloat("Light X", &g_lamp.x, -1500.0f, 1500.0f);
 			ImGui::SliderFloat("Light Y", &g_lamp.y, -1500.0f, 1500.0f);
 			ImGui::SliderFloat("Light Z", &g_lamp.z, -1500.0f, 1500.0f);
@@ -159,7 +106,6 @@ namespace finnsie {
 				selected = i;
 			}
 		}
-		// TODO(CK): Creating an empty object
 		ImGui::Separator();
 		if (ImGui::Button("New Model"))
 		{
@@ -345,9 +291,6 @@ namespace finnsie {
 		ImGui::DestroyContext();
 	}
     
-	// Run on init
-	// TODO(CK): Get rid of C++17 nonsense
-	// Get folders based off of folder (objects , primitves) 
 	void Gui::getFolders(std::string folder)
 	{ 
 		objFile obj = {};

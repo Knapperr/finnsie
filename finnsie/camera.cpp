@@ -18,13 +18,19 @@ namespace finnsie {
 			Position -= Right * velocity;
 		if (direction == Camera_Movement::RIGHT)
 			Position += Right * velocity;
-		if (direction == Camera_Movement::UP)
-			Position.y += 1.0f * velocity;
-		if (direction == Camera_Movement::DOWN)
-			Position.y -= 1.0f * velocity;
 
-		// make sure the user stays at the ground level
-		//Position.y = 6.0f; // <-- this one-liner keeps the user at the ground level (xz plane)
+		if (!LockedY)
+		{
+			if (direction == Camera_Movement::UP)
+				Position.y += 1.0f * velocity;
+			if (direction == Camera_Movement::DOWN)
+				Position.y -= 1.0f * velocity;
+		}
+		else
+		{
+			// Stay at the ground level
+			Position.y = 5.2f;
+		}
 	}
 
 	// Processes input received from a mouse input system. Expects the offset value in both the x and y direction.

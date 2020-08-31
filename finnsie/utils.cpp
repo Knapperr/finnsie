@@ -84,7 +84,6 @@ namespace finnsie {
 		return true;
 	}
 
-	// TODO(CK): Temp function for loading all of the texture to the quad
 	bool LoadTexture(int index)  
 	{
 		// CREATE A BASIC SHAPE LOADER replace ASSIMP

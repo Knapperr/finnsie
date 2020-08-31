@@ -39,6 +39,8 @@ namespace finnsie {
 		Cubemap cubemap;
 
         // Shader[]
+		// TODO(CK):
+		// Put into resource manager
         Shader modelShader;
         Shader normalShader;
         Shader waterShader;

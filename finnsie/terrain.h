@@ -7,11 +7,14 @@
 #include "camera.h"
 
 namespace finnsie {
-    // TODO(CK):
-    // Look at Brackeys: https://www.youtube.com/watch?v=64NblGkAabk&t=4s
-    // this is probably a more sane way to generate and it will
-    // actually teach you
-    // USE THE VERT from the model move to global change name to *FVertex* finnsie vertex
+    // TODO(CK): 
+        // Tile Chunks
+        // Terrain needs a grid for pathfinding... and other things as well like placing items 
+        // collision detection? stuff like that
+        
+        // Just like handmade we need a coord system for the terain
+
+    // TODO(CK): move to finnsie_types file or something
     struct FVertex
     {
         glm::vec3 position;
@@ -19,10 +22,6 @@ namespace finnsie {
         glm::vec2 texCoords;
     };
 
-    // TODO(CK): 
-    // Tile Chunks
-    // Terrain needs a grid for pathfinding... and other things as well like placing items 
-    // collision detection? stuff like that
     struct Grass
     {
         glm::mat4* matrices;
@@ -31,7 +30,6 @@ namespace finnsie {
         int textureId;
     };
 
-    // TODO(CK): Just like handmade we need a coord system for the terain
     class Terrain
     {
     public:
@@ -53,10 +51,8 @@ namespace finnsie {
         Terrain(int gridX, int gridZ);
         ~Terrain();
 
-        // Method from java video
         void Generate();
         void GenerateGrass();
-
     };
 
 }

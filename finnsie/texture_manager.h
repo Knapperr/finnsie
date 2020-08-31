@@ -2,8 +2,6 @@
 #define TEXTURE_MANAGER_HG_
 
 namespace finnsie {
-
-	// TODO(CK): Change to normal texture
 	struct Texture2D
 	{
 		unsigned int id;

@@ -9,15 +9,11 @@ namespace finnsie {
 
     // GLOBALS
     // ==================================
-
     // Game inits resource manager
     ResourceManager* g_resourceManager;
 
-    // TODO(CK): Figure out lights in game
-    // keep in their own vector for awhile?
-
-    // TODO(CK): Make the game global that way
-    // the gui can just access the game directly
+    // TODO(CK): Make these part of the game class
+    // the game is now global instead
     glm::vec3 g_lamp;
     Terrain* g_terrain;
 
@@ -90,8 +86,7 @@ namespace finnsie {
         //text.type = "texture_diffuse";
         //text.path = diffusePath;
         //testSphere->model->meshes[0].textures.push_back(text);
-        
-        
+
         // Shaders 
 		this->modelShader = 
             ::finnsie::g_resourceManager->GenerateShader(001, 
@@ -130,70 +125,30 @@ namespace finnsie {
                                                          "shaders/grass_frag.glsl",
                                                          NULL);
 
-
         g_terrain = new Terrain(0, 0);
         g_terrain->Generate();
         g_terrain->GenerateGrass();
 
 
         this->cubemap = {};
-        //std::cout << this << std::endl;
         SetupCubemap(&this->cubemap);
 
-
-        this->gui->Init(*this->window, camera->MovementSpeed);
-
-
+        this->gui->Init(*this->window);
 	}
     
     // TODO(CK): pass the input from main to here
 	void Game::Update(float dt)
 	{
-        // TODO(CK): Pass water for now... find a way to update
-        // the game data directly... get lighting info directly too
 		gui->Update();
         
 		if (leftMousePressed)
 		{
 			processCamera(dt);
 		}
-        
-
-        // TODO(CK): Move this out
-        // apply gravity to sphere
-        if (debugRightMousePressed && !debugSphereStopped)
-        {
-            /*glm::vec2 force = glm::vec2(0, testSphere->mass * -9.81f);
-            glm::vec2 acceleration = glm::vec2(force.x / testSphere->mass, force.y / testSphere->mass);
-            testSphere->velocity.x += acceleration.x * dt;
-            testSphere->velocity.y += acceleration.y * dt;
-            testSphere->pos.x += testSphere->velocity.x * dt;
-            testSphere->pos.y += testSphere->velocity.y * dt;*/
-            
-            AddAcc(&testSphere->rb, dt);
-            testSphere->pos.x += testSphere->rb.velocity.x * dt;
-            testSphere->pos.y += testSphere->rb.velocity.y * dt;
-            
-            
-        }
-        
-        // stop the sphere so it doesn't fall forever...
-        if (testSphere->pos.y < -30.0f)
-        {
-            debugSphereStopped = true;
-        }
-        if (debugSphereStopped)
-        {
-            // stop gravity now allow ball to roll on this imaginary plane?
-            //testSphere->rb.velocity += 
-            //testSphere->pos.y = -testSphere->pos.y;
-            //testSphere->rb.velocity.y = -testSphere->rb.velocity.y;
-        }
 	}
     
 	void Game::Render()
 	{
-		// TODO(CK): Use game camera (can switch to gameCamera here)
 		renderer->BeginRender(*camera); 
 
         for (unsigned int i = 0; i < g_objects.size(); i++)
@@ -266,7 +221,6 @@ namespace finnsie {
 	void Game::ProcessMouseButtons(int button, int action, int mods)
 	{
 		// NOTE(CK): (hack?)
-        // TODO(CK): Need to not allow changing camera speed while gui is active
 		// This interacts with the gui well because if the mouse button is held down
 		// the gui wont register to the mouse
 		if (!gui->Active() && button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
@@ -279,12 +233,7 @@ namespace finnsie {
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 			leftMousePressed = false;
 		}
-        
-        // TODO(CK): ! DEBUG TEST
-        if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
-        {
-            debugRightMousePressed = true;
-        }
+       
 	}
     
 	void Game::Shutdown()

@@ -34,7 +34,7 @@ namespace finnsie {
 	// An abstract camera class that processes input and calculates the corresponding Euler Angles, Vectors and Matrices for use in OpenGL
 	class Camera
 	{
-        public:
+    public:
 		// Camera Attributes
 		glm::vec3 Position;
 		glm::vec3 Front;
@@ -48,6 +48,8 @@ namespace finnsie {
 		float MovementSpeed;
 		float MouseSensitivity;
 		float Zoom;
+
+		bool LockedY;
         
 		// Constructor with vectors
 		Camera(glm::vec3 position = glm::vec3(-80.0f, 15.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH)
@@ -56,6 +58,7 @@ namespace finnsie {
 			, MouseSensitivity(SENSITIVITY)
 			, Zoom(ZOOM)
 		{
+			LockedY = false;
 			Position = position;
 			WorldUp = up;
 			Yaw = yaw;
@@ -69,6 +72,7 @@ namespace finnsie {
 			, MouseSensitivity(SENSITIVITY)
 			, Zoom(ZOOM)
 		{
+			LockedY = false;
 			Position = glm::vec3(posX, posY, posZ);
 			WorldUp = glm::vec3(upX, upY, upZ);
 			Yaw = yaw;
@@ -85,7 +89,7 @@ namespace finnsie {
 		// Processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
 		void ProcessMouseScroll(float yoffset);
         
-        private:
+    private:
 		// Calculates the front vector from the Camera's (updated) Euler Angles
 		void updateCameraVectors();
 	};

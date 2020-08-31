@@ -1,9 +1,8 @@
 #include "gl_common.h"
 
-#include <glm/vec3.hpp> // glm::vec3
-#include <glm/vec4.hpp> // glm::vec4
-#include <glm/mat4x4.hpp> // glm::mat4
-// glm::translate, glm::rotate, glm::scale, glm::perspective
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
+#include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp> 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -11,14 +10,13 @@
 #include "gui.h"
 
 #include <windows.h>
-#include <mmsystem.h> // timeBeginPerdod TODO(CK): Look into this should be included with windows.h?
+#include <mmsystem.h> // timeBeginPerdod
 #include <stdio.h>
 #include <stdint.h>
 #include <iostream>
 
 using namespace finnsie;
 
-// TODO(CK): move to game
 inline LARGE_INTEGER GetWallClock(void);
 inline float GetSecondsElapsed(LARGE_INTEGER start, LARGE_INTEGER end);
 void processInput(GLFWwindow* window, int key, int action, int scancode, int mods);
@@ -74,7 +72,7 @@ int main(int argc, char** argv)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	// NOTE: Only works on major 3 and minor 3
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	//glfwWindowHint(GLFW_RESIZABLE, GL_FALSE); // TODO(CK): This Turns off Vsync ???
+	//glfwWindowHint(GLFW_RESIZABLE, GL_FALSE); // NOTE(CK): This Turns off Vsync ???
     
 	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Finnsie", NULL, NULL);
 	if (!window)
@@ -212,7 +210,6 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	lastX = (float)xpos;
 	lastY = (float)ypos;
     
-	// TODO(CK): Put this into the game class as well
 	if (g_Game->leftMousePressed)
 	{
 		g_Game->camera->ProcessMouseMovement(xoffset, yoffset);

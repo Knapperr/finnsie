@@ -89,17 +89,10 @@ namespace finnsie {
                 indices[index++] = bottomRight;
             }
         }
-        
         unsigned int ebo;
         glGenVertexArrays(1, &this->VAO);
         glGenBuffers(1, &VBO);
         glGenBuffers(1, &ebo);
-
-        // TODO(CK):
-        // Having all of these buffers is probably bad
-        // I am sure you could easily just use 1 array and fill it up with all of this data
-        // or just use a vector with the Vert structure for the data that is the proper way...
-        // REFACTOR
 
         glBindVertexArray(this->VAO);
 
