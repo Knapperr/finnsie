@@ -23,12 +23,11 @@ namespace finnsie {
     // Tile Chunks
     // Terrain needs a grid for pathfinding... and other things as well like placing items 
     // collision detection? stuff like that
-    class Model;
     struct Grass
     {
         glm::mat4* matrices;
         Model model;
-        int amount;
+        int amount = 10000;
         int textureId;
     };
 

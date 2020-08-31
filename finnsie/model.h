@@ -26,7 +26,7 @@ namespace finnsie {
     
 	class Model
 	{
-        public:
+    public:
 		texture_vec textures_loaded; 
 		mesh_vec meshes;
 		std::string directory;
@@ -46,7 +46,7 @@ namespace finnsie {
 		}
         
         
-        private:
+    private:
 		void loadModel(std::string const& path)
 		{
 			// read file via ASSIMP

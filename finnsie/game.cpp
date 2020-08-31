@@ -137,6 +137,7 @@ namespace finnsie {
 
 
         this->cubemap = {};
+        //std::cout << this << std::endl;
         SetupCubemap(&this->cubemap);
 
 
@@ -150,7 +151,7 @@ namespace finnsie {
 	{
         // TODO(CK): Pass water for now... find a way to update
         // the game data directly... get lighting info directly too
-		gui->Update(*distortWater, *dirWater);
+		gui->Update();
         
 		if (leftMousePressed)
 		{

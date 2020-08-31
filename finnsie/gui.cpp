@@ -2,6 +2,8 @@
 #include <iostream>
 #include <filesystem>
 
+#include "game.h"
+
 namespace fs = std::filesystem;
 
 namespace finnsie {
@@ -98,7 +100,7 @@ namespace finnsie {
 	*/
     
     
-	void Gui::Update(WaterObject& disWater, WaterObject& dirWater)
+	void Gui::Update()
 	{
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
@@ -108,7 +110,7 @@ namespace finnsie {
 		if (showDemoWindow)
 			ImGui::ShowDemoWindow(&showDemoWindow);
 		if (showWaterWindow)
-			waterWindow(&showWaterWindow, disWater, dirWater);
+			waterWindow(&showWaterWindow, *g_Game->distortWater, *g_Game->dirWater);
 		if (showModelWindow)
 			modelWindow(&showModelWindow);
 		if (showTerrainWindow)
@@ -242,6 +244,13 @@ namespace finnsie {
 
 		ImGui::SliderFloat("X", &g_terrain->x, -1500.0f, 1500.0f);
 		ImGui::SliderFloat("Z", &g_terrain->z, -1500.0f, 1500.0f);
+		ImGui::SliderInt("Grass Amount", &g_terrain->grass.amount, 0.0f, 100000.0f);
+		
+		if (ImGui::SmallButton("Generate Grass"))
+		{
+			g_terrain->GenerateGrass();
+		}
+
 
 		ImGui::End();
 	}

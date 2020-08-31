@@ -33,6 +33,7 @@ namespace finnsie {
 
     Terrain::~Terrain()
     {
+        delete[] grass.matrices;
         delete[] vertices;
         glDeleteVertexArrays(1, &this->VAO);
         glDeleteBuffers(1, &this->VBO);
@@ -144,47 +145,51 @@ namespace finnsie {
     #define ArrayCount(Array) (sizeof(Array) / sizeof((Array)[0]))
     void Terrain::GenerateGrass()
     {
-        this->grass = {};
-        this->grass.amount = 10000;
-        this->grass.model = Model("content/objects/Grass/sht_grass.obj");
-        grass.matrices = new glm::mat4[this->grass.amount];
 
-
+        if (this->grass.matrices == NULL)
+        {
+            this->grass = {};
+            this->grass.model = Model("content/objects/grass_star/Grass.obj");
+            // TODO(CK): Need a getter for texture id
+            this->grass.textureId = this->grass.model.textures_loaded[0].id;
+            grass.matrices = new glm::mat4[this->grass.amount];
+        }
+        else
+        {
+            delete[] grass.matrices;
+            grass.matrices = new glm::mat4[this->grass.amount];
+        }
 
         srand(time(NULL));
-
-        srand(glfwGetTime()); // initialize random seed	
-        float radius = 150.0;
-        float offset = 25.0f;
-        for (unsigned int i = 0; i < this->grass.amount; i += 3)
+        // TODO(CK): Shouldn't increment by 3 this is buggy
+        for (unsigned int i = 0; i < this->grass.amount; i+=3)
         {
             glm::mat4 model = glm::mat4(1.0f);
             // 1. translation: displace along circle with 'radius' in range [-offset, offset]
-            float angle = (float)i / (float)this->grass.amount * 360.0f;
-            float displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
-            float x = sin(angle) * radius + displacement;
-            displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
-            float y = displacement * 0.4f; // keep height of asteroid field smaller compared to width of x and z
-            displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
-            float z = cos(angle) * radius + displacement;
+            float x = rand() % 380 + 10;
+            float y = 0;
+            float z = rand() % 380 + 10;
             model = glm::translate(model, glm::vec3(x, y, z));
 
             // 2. scale: Scale between 0.05 and 0.25f
-            float scale = (rand() % 20) / 100.0f + 0.05;
+            float scale = 1.0f;
             model = glm::scale(model, glm::vec3(scale));
-
-            // 3. rotation: add random rotation around a (semi)randomly picked rotation axis vector
-            float rotAngle = (rand() % 360);
-            model = glm::rotate(model, rotAngle, glm::vec3(0.4f, 0.6f, 0.8f));
             
             // 4. now add to list of matrices
             this->grass.matrices[i] = model;
 
-            model = glm::rotate(model, rotAngle + 180, glm::vec3(0.4f, 0.6f, 0.8f));
-            this->grass.matrices[i + 1] = model;
+            if (i < (this->grass.amount - 3))
+            {
+                float rotAngle = 40.0f;
+                model = glm::rotate(model, rotAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+                assert((i + 1) < this->grass.amount);
+                this->grass.matrices[i + 1] = model;
 
-            model = glm::rotate(model, rotAngle + 180, glm::vec3(0.4f, 0.6f, 0.8f));
-            this->grass.matrices[i + 2] = model;
+                rotAngle = 135.0f;
+                model = glm::rotate(model, rotAngle, glm::vec3(0.0f, -1.0f, 0.0f));
+                assert((i + 2) < this->grass.amount);
+                this->grass.matrices[i + 2] = model;
+            }
         }
 
         // configure instanced array
@@ -195,48 +200,26 @@ namespace finnsie {
 
         for (unsigned int i = 0; i < this->grass.model.meshes.size(); i++)
         {
+            unsigned int VAO = grass.model.meshes[i].VAO;
+            glBindVertexArray(VAO);
+            glEnableVertexAttribArray(3);
+            glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
+
+            glEnableVertexAttribArray(4);
+            glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
+
+            glEnableVertexAttribArray(5);
+            glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 * sizeof(glm::vec4)));
+
+            glEnableVertexAttribArray(6);
+            glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
+
+            glVertexAttribDivisor(3, 1);
+            glVertexAttribDivisor(4, 1);
+            glVertexAttribDivisor(5, 1);
+            glVertexAttribDivisor(6, 1);
+
+            glBindVertexArray(0);
         }
-
-        // TODO(CK): This is the worst way to do this...
-        // we need a grid system on top of the terrain 
-        // the grid locations need to be decently sized
-        //int modelIndex = 0;
-        //// positions are in vertices
-        //for (int i = 0; i < (VERTEX_COUNT*VERTEX_COUNT); ++i)
-        //{
-        //    // TEST
-        //    if (i >= 0 && i < 30)
-        //    {
-        //        // Use a raw array of grass to render and instance it onto the gpu
-        //        // also randomize positions
-        //        CreateEmptyObject();
-        //        CreateEmptyObject();
-        //        CreateEmptyObject();
-        //        LoadEmptyObject(modelIndex, "grass", "content/objects/Grass/sht_grass.obj");
-        //        LoadEmptyObject(modelIndex+1, "grass", "content/objects/Grass/sht_grass.obj");
-        //        LoadEmptyObject(modelIndex+2, "grass", "content/objects/Grass/sht_grass.obj");
-
-        //        int x = rand() % 10 + this->vertices[i].position.x;
-        //        int z = rand() % 5 + this->vertices[i].position.z;
-
-        //        g_objects[modelIndex]->pos.x = (float)x;
-        //        g_objects[modelIndex]->pos.y = 0;
-        //        g_objects[modelIndex]->pos.z = (float)z;
-        //        g_objects[modelIndex]->scale = 0.3f;
-        //        g_objects[modelIndex+1]->pos.x = (float)x;
-        //        g_objects[modelIndex+1]->pos.y = 0;
-        //        g_objects[modelIndex+1]->pos.z = (float)z;
-        //        g_objects[modelIndex+1]->scale = 0.3f;
-        //        g_objects[modelIndex+2]->pos.x = (float)x;
-        //        g_objects[modelIndex+2]->pos.y = 0;
-        //        g_objects[modelIndex+2]->pos.z = (float)z;
-        //        g_objects[modelIndex+2]->scale = 0.3f;
-        //        g_objects[modelIndex+1]->orientation = glm::vec3(0.0f, 1.0f, 0.0f);
-        //        g_objects[modelIndex+2]->orientation = glm::vec3(0.0f, 0.5f, 0.0f);
-
-        //        modelIndex += 3;
-        //    }
-        //}
     }
-
 };

@@ -28,7 +28,7 @@ namespace finnsie {
     
 	class Mesh
 	{
-        public:
+    public:
 		std::vector<Vertex> vertices;
 		std::vector<unsigned int> indices;
 		std::vector<Texture> textures;
@@ -86,7 +86,7 @@ namespace finnsie {
 			glBindTexture(GL_TEXTURE_2D, 0);
 		}
         
-        private:
+     private:
 		unsigned int VBO, EBO;
 		void setupMesh()
 		{

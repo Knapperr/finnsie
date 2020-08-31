@@ -26,7 +26,7 @@ void processInput(GLFWwindow* window, int key, int action, int scancode, int mod
 const unsigned int SCREEN_WIDTH = 1440;
 const unsigned int SCREEN_HEIGHT = 900;
 
-Game* game = NULL;
+Game* finnsie::g_Game = NULL;
 
 float lastX = SCREEN_WIDTH / 2.0f;
 float lastY = SCREEN_HEIGHT / 2.0f;
@@ -114,7 +114,7 @@ int main(int argc, char** argv)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
-	game = new Game(*window);
+	g_Game = new Game(*window);
     
 	// Get wall clock speed
 	LARGE_INTEGER lastCounter = GetWallClock();
@@ -152,8 +152,8 @@ int main(int argc, char** argv)
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // blue 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		game->Update(timer.dt);
-		game->Render();
+		g_Game->Update(timer.dt);
+		g_Game->Render();
         
 		glfwSwapBuffers(window);
 		
@@ -175,8 +175,8 @@ int main(int argc, char** argv)
 		//printf("%.02fms/f %.02ff/s %.02fmc/f\n", msPerFrame, FPS, MCPF);
 	}
 	// NOTE(CK): CLEAN UP
-	game->Shutdown();
-	delete game;
+	g_Game->Shutdown();
+	delete g_Game;
 	glfwDestroyWindow(window);
 	glfwTerminate();
     
@@ -187,12 +187,12 @@ int main(int argc, char** argv)
 void processInput(GLFWwindow* window, int key, int action, int scancode, int mods)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) { glfwSetWindowShouldClose(window, true); }
-	game->ProcessInput(key, action, scancode, mods, timer.dt);
+	g_Game->ProcessInput(key, action, scancode, mods, timer.dt);
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
-	game->ProcessMouseButtons(button, action, mods);
+	g_Game->ProcessMouseButtons(button, action, mods);
 }
 
 // glfw: whenever the mouse moves, this callback is called
@@ -213,9 +213,9 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	lastY = (float)ypos;
     
 	// TODO(CK): Put this into the game class as well
-	if (game->leftMousePressed)
+	if (g_Game->leftMousePressed)
 	{
-		game->camera->ProcessMouseMovement(xoffset, yoffset);
+		g_Game->camera->ProcessMouseMovement(xoffset, yoffset);
 	}
 }
 
@@ -224,9 +224,9 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 // TODO(CK): Move callbacks to seperate file?
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-    if (!game->gui->Active())
+    if (!g_Game->gui->Active())
     {
-        game->camera->ProcessMouseScroll((float)yoffset);
+        g_Game->camera->ProcessMouseScroll((float)yoffset);
     }
 }
 

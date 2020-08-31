@@ -3,6 +3,8 @@
 
 #include "renderer.h"
 
+#include "gl_common.h"
+
 namespace finnsie {
 
     struct Cubemap

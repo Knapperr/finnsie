@@ -28,11 +28,10 @@ namespace finnsie {
 		
 		Renderer *renderer;
 		Camera *camera;
+
 		// Terrain 
 		// Lights
 
-        
-    private:
         WaterObject* testSphere;
         WaterObject* distortWater;
 		WaterObject* dirWater;
@@ -50,6 +49,10 @@ namespace finnsie {
 
 		void processCamera(float dt);
 	};
+
+
+	// Easier access for GUI
+	extern Game *g_Game;
 }
 
 #endif

@@ -545,14 +545,22 @@ namespace finnsie {
 	void Renderer::drawGrass(Terrain* terr, Shader* grassShader)
 	{
 		glUseProgram(grassShader->id);
+		glUniformMatrix4fv(GetLoc(grassShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(GetLoc(grassShader, "view"), 1, GL_FALSE, glm::value_ptr(view));
+		
+
 		// now set the sampler to the correct texture unit
 		glUniform1i(glGetUniformLocation(grassShader->id, "texture_diffuse1"), 0);
 		// and finally bind the texture		
-		//glBindTexture(GL_TEXTURE_2D, terr->textureId);
-		//glBindTexture(GL_TEXTURE_2D, terr->grass.textures_loaded[0].id); 
-		// just give the grass its own texture id fuck that
-
-
+		glBindTexture(GL_TEXTURE_2D, terr->grass.textureId);
+		
+		for (unsigned int i = 0; i < terr->grass.model.meshes.size(); ++i)
+		{
+			glBindVertexArray(terr->grass.model.meshes[i].VAO);
+			glDrawElementsInstanced(GL_TRIANGLES, terr->grass.model.meshes[i].indices.size(),
+									GL_UNSIGNED_INT, 0, terr->grass.amount);
+			glBindVertexArray(0);
+		}
 	}
 
 	void Renderer::DrawTerrain(Terrain* terr, Shader* terrShader, Shader* grassShader)
@@ -618,7 +626,7 @@ namespace finnsie {
 		glBindTexture(GL_TEXTURE_2D, 0);
 
 
-		//drawGrass()
+		drawGrass(terr, grassShader);
 	}
 
 	void Renderer::EndRender()

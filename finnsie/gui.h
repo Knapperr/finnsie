@@ -41,7 +41,7 @@ namespace finnsie {
 	{
         public:
 		void Init(GLFWwindow& window, float& cameraSpeed);
-		void Update(WaterObject& disWater, WaterObject& dirWater);
+		void Update();
 		bool Active();
 		void Render();
 		void Shutdown();
