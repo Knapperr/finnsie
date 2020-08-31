@@ -18,10 +18,7 @@
 #include "utils.h"
 
 namespace finnsie {
-	// forward decl
-	class WaterObject;
-    class GameObject;
-    
+
 	struct gui_state
 	{
 		float *cameraSpeed = 0; // TODO(CK): JUST UPDATE DIRECTLY set to the camera object's speed
@@ -60,13 +57,13 @@ namespace finnsie {
 		std::vector<objFile> objPaths;
 		
 		void terrainWindow(bool* p_open);
-		void waterWindow(bool* p_open, WaterObject& disWater, WaterObject& dirWater);
+		void waterWindow(bool* p_open);
 		void modelWindow(bool* p_open);
 		// TODO(CK): Remove replace with local function
 		void getFolders(std::string folder);
 		
-		void distortedWaterControls(WaterObject& disWater);
-        void directionalWaterControls(WaterObject& dirWater);
+		void distortedWaterControls();
+        void directionalWaterControls();
                 
 
 	};

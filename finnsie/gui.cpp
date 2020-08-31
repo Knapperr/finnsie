@@ -110,7 +110,7 @@ namespace finnsie {
 		if (showDemoWindow)
 			ImGui::ShowDemoWindow(&showDemoWindow);
 		if (showWaterWindow)
-			waterWindow(&showWaterWindow, *g_Game->distortWater, *g_Game->dirWater);
+			waterWindow(&showWaterWindow);
 		if (showModelWindow)
 			modelWindow(&showModelWindow);
 		if (showTerrainWindow)
@@ -255,7 +255,7 @@ namespace finnsie {
 		ImGui::End();
 	}
 
-	void Gui::waterWindow(bool* p_open, WaterObject& disWater, WaterObject& dirWater)
+	void Gui::waterWindow(bool* p_open)
 	{
 		ImGui::Begin("WATER", p_open);
         
@@ -266,63 +266,63 @@ namespace finnsie {
         
 		if (e == 0)
 		{
-			distortedWaterControls(disWater);
+			distortedWaterControls();
 		}
         else if (e == 1)
         {
-            directionalWaterControls(dirWater);
+            directionalWaterControls();
         }
         
 		ImGui::End();
 	}
     
-	void Gui::distortedWaterControls(WaterObject& disWater)
+	void Gui::distortedWaterControls()
 	{
         
-		ImGui::DragFloat("ujump", &disWater.uJump,
+		ImGui::DragFloat("ujump", &g_Game->distortWater->uJump,
                          0.001f, 0.0f, 0.25f, "%.02f");
-		ImGui::DragFloat("vjump", &disWater.vJump,
+		ImGui::DragFloat("vjump", &g_Game->distortWater->vJump,
                          0.001f, 0.0f, 0.25f, "%.02f");
 		ImGui::Separator();
         
-		ImGui::DragFloat("Tiling", &disWater.tiling,
+		ImGui::DragFloat("Tiling", &g_Game->distortWater->tiling,
                          0.1f, 0.0f, 10.0f, "%.01f"); // 3.0
-		ImGui::DragFloat("Speed", &disWater.speed,
+		ImGui::DragFloat("Speed", &g_Game->distortWater->speed,
                          0.01f, 0.0f, 2.0f, "%.01f"); // 0.5
 		ImGui::Separator();
         
-		ImGui::DragFloat("Flow Strength", &disWater.flowStrength,
+		ImGui::DragFloat("Flow Strength", &g_Game->distortWater->flowStrength,
                          0.001f, 0.0f, 0.5f, "%.02f"); // 0.1
-		ImGui::DragFloat("Flow Offset", &disWater.flowOffset,
+		ImGui::DragFloat("Flow Offset", &g_Game->distortWater->flowOffset,
                          0.001f, -1.5f, 2.0f, "%.02f");
 		ImGui::Separator();
         
-		ImGui::SliderFloat("Height Scale", &disWater.heightScale,
+		ImGui::SliderFloat("Height Scale", &g_Game->distortWater->heightScale,
                            0.0f, 5.0f); // 0.1
-		ImGui::SliderFloat("Height Scale Modulated", &disWater.heightScaleModulated,
+		ImGui::SliderFloat("Height Scale Modulated", &g_Game->distortWater->heightScaleModulated,
                            0.0f, 20.0f); // 9.0
 	}
     
-    void Gui::directionalWaterControls(WaterObject& dirWater)
+    void Gui::directionalWaterControls()
     {
-		ImGui::DragFloat("Tiling", &dirWater.tiling,
+		ImGui::DragFloat("Tiling", &g_Game->dirWater->tiling,
                          0.1f, 0.0f, 10.0f, "%.01f"); // 3.0
-		ImGui::DragFloat("Speed", &dirWater.speed,
+		ImGui::DragFloat("Speed", &g_Game->dirWater->speed,
                          0.01f, 0.0f, 2.0f, "%.01f"); // 0.5
 		ImGui::Separator();
         
-		ImGui::DragFloat("Flow Strength", &dirWater.flowStrength,
+		ImGui::DragFloat("Flow Strength", &g_Game->dirWater->flowStrength,
                          0.001f, 0.0f, 0.5f, "%.02f"); // 0.1
 		ImGui::Separator();
         
-		ImGui::SliderFloat("Height Scale", &dirWater.heightScale,
+		ImGui::SliderFloat("Height Scale", &g_Game->dirWater->heightScale,
                            0.0f, 5.0f); // 0.1
-		ImGui::SliderFloat("Height Scale Modulated", &dirWater.heightScaleModulated,
+		ImGui::SliderFloat("Height Scale Modulated", &g_Game->dirWater->heightScaleModulated,
                            0.0f, 20.0f); // 9.0
         
-		ImGui::SliderFloat("gridResolution", &dirWater.gridResolution, 0.0f, 40.0f); // 10.0
-		ImGui::SliderFloat("TilingModulated", &dirWater.tilingModulated, 0.0f, 80.0f); // 50
-		ImGui::Checkbox("dualGrid", &dirWater.dualGrid);
+		ImGui::SliderFloat("gridResolution", &g_Game->dirWater->gridResolution, 0.0f, 40.0f); // 10.0
+		ImGui::SliderFloat("TilingModulated", &g_Game->dirWater->tilingModulated, 0.0f, 80.0f); // 50
+		ImGui::Checkbox("dualGrid", &g_Game->dirWater->dualGrid);
     }
         
 	void Gui::Render()
