@@ -42,6 +42,14 @@ namespace finnsie {
 		this->camPos = cam.Position;
 	}
     
+	void Draw(GameObject* obj, Shader shader)
+	{
+		glUseProgram(shader.id);
+
+		// TODO(CK): Go through each shaders uniform and activate
+
+	}
+
 	void Renderer::DrawModel(GameObject& obj, Shader modelShader)
 	{
 		glUseProgram(modelShader.id);

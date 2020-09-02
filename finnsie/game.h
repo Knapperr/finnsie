@@ -9,12 +9,29 @@
 
 namespace finnsie {
     
+	struct Input
+	{
+		bool up;
+		bool down;
+		bool left;
+		bool right;
+		bool forward;
+		bool back;
+	};
+
 	class Game
 	{
     public:
 		Game(GLFWwindow& wnd);
-		void Render();
 		void Update(float dt);
+		void Render();
+
+		// TODO(CK): Pull the gui out of the game
+		// we have logic though in the gui that relies on 
+		// the game 
+		void GuiUpdate();
+		void GuiRender();
+		
 		void ProcessInput(int key, int action, int scancode, int mods, float dt);
 		void ProcessMouseButtons(int button, int action, int mods);
 		void Shutdown();

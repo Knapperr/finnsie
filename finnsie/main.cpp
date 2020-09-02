@@ -17,8 +17,6 @@
 
 using namespace finnsie;
 
-inline LARGE_INTEGER GetWallClock(void);
-inline float GetSecondsElapsed(LARGE_INTEGER start, LARGE_INTEGER end);
 void processInput(GLFWwindow* window, int key, int action, int scancode, int mods);
 
 const unsigned int SCREEN_WIDTH = 1440;
@@ -32,11 +30,22 @@ bool firstMouse = true;
 
 int64_t g_perfCountFrequency;
 
+//struct Timer
+//{
+//	float dt;
+//	float lastFrame;
+//};
+
 struct Timer
 {
-	float dt;
-	float lastFrame;
+	uint64_t diff;
+	uint64_t milliseconds;
+	double fixed_dt;
+	double last;
+	double elapsed;
+	double previousElapsed;
 };
+
 global_variable Timer timer;
 
 static void error_callback(int error, const char* description);
@@ -46,28 +55,28 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void gamepad_callback(int jid, int event);
 //static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
-int main(int argc, char** argv)
+inline LARGE_INTEGER Win32GetWallClock(void)
 {
-	// Delta time -- (Handmade Hero Day 573 as reference)
-	LARGE_INTEGER perfCountFrequencyResult;
-	QueryPerformanceFrequency(&perfCountFrequencyResult);
-	g_perfCountFrequency = perfCountFrequencyResult.QuadPart;
-    
-	// TODO(CK): unresolved external for timeBeginPeriod?
-	// NOTE(casey): Set the Windows scheduler granularity to 1ms
-	// so that our Sleep() can be more granular.
-	//UINT DesiredSchedulerMS = 1;
-	//bool32 SleepIsGranular = (timeBeginPeriod(DesiredSchedulerMS) == TIMERR_NOERROR);
-    
-	//---------------------------------------------------------------------
-	// glfw init and config
-	// --------------------------------------------------------------------
-	glfwSetErrorCallback(error_callback);
-    
+	LARGE_INTEGER result;
+	QueryPerformanceCounter(&result);
+	return result;
+}
+
+inline float Win32GetSecondsElapsed(LARGE_INTEGER start, LARGE_INTEGER end)
+{
+	float result = ((float)(end.QuadPart - start.QuadPart) /
+					(float)g_perfCountFrequency);
+	return result;
+}
+
+
+int main(int argc, char** argv)
+{   
 	if (!glfwInit())
 	{
 		exit(EXIT_FAILURE);
 	}
+
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	// NOTE: Only works on major 3 and minor 3
@@ -82,30 +91,29 @@ int main(int argc, char** argv)
 	}
 	glfwMakeContextCurrent(window);
 	
-	// TODO(CK): Set this to 0 but it was using a ton of GPU and CPU 
-	// This may be giving me WAY more consistent frames
+	// NOTE(CK): This was set to 0 but it was using a ton of GPU and CPU 
 	glfwSwapInterval(1); 
 
+	glfwSetErrorCallback(error_callback);
 	glfwSetKeyCallback(window, processInput);
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 	//glfwSetJoystickCallback(gamepad_callback);
     
-	// glad: load all OpenGL function pointers
-	// ---------------------------------------
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		std::cout << "Failed to initialize GLAD\n";
 		return EXIT_FAILURE;
 	}
+
 	// Check OpenGL properties
 	printf("Vendor:   %s\n", glGetString(GL_VENDOR));
 	printf("Renderer: %s\n", glGetString(GL_RENDERER));
 	printf("Version:  %s\n", glGetString(GL_VERSION));
 
+	// TODO(CK): Look into this what error checks do i need to do?
 	// NOTE: OpenGL error checks have been omitted for brevity
-	// OpenGL Configurations - after loading glad -
 	glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 	//glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
@@ -113,11 +121,47 @@ int main(int argc, char** argv)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
 	g_Game = new Game(*window);
+
+	// TODO(CK): Ill have to go through this update loop and 
+	// really clean it up.
+
+	// NOTE(tyler): this is for delta time averaging
+	//		I know you can and should use a ring buffer for this, but I didn't want to include dependencies in this sample code
+	// https://github.com/TylerGlaiel/FrameTimingControl/blob/master/frame_timer.cpp
+	double updateRate = 60;
+	int updateMultiplicity = 1;
+
+	LARGE_INTEGER perfCountFrequencyResult;
+	QueryPerformanceFrequency(&perfCountFrequencyResult);
+
+	// fixed update
+	timer.fixed_dt = 1.0 / updateRate;
+	int64_t desiredFrameTime = perfCountFrequencyResult.QuadPart / updateRate;
+
+	//these are to snap deltaTime to vsync values if it's close enough
+	int64_t vsyncMaxError = perfCountFrequencyResult.QuadPart * .0002;
+	int64_t time60hz = perfCountFrequencyResult.QuadPart / 60;
+	int64_t snapFrequencies[] = { time60hz, // 60fps
+								  time60hz * 2,      //30fps
+								  time60hz * 3,      //20fps
+								  time60hz * 4,      //15fps
+								 (time60hz + 1) / 2,  //120fps //120hz, 240hz, or higher need to round up, so that adding 120hz twice guaranteed is at least the same as adding time_60hz once
+								 // (time_60hz+2)/3,  //180fps //that's where the +1 and +2 come from in those equations
+								 // (time_60hz+3)/4,  //240fps //I do not want to snap to anything higher than 120 in my engine, but I left the math in here anyway
+	};
+
+	const int timeHistoryCount = 4;
+	int64_t timeAverager[timeHistoryCount] = { desiredFrameTime, desiredFrameTime, desiredFrameTime, desiredFrameTime };
+
+	bool resync = true;
     
 	// Get wall clock speed
-	LARGE_INTEGER lastCounter = GetWallClock();
-	uint64_t lastCycleCount = __rdtsc();
-    
+	LARGE_INTEGER clock = Win32GetWallClock();
+	int64_t prevFrameTime = clock.QuadPart;
+	int64_t frameAccumulator = 0;
+	//uint64_t lastCycleCount = __rdtsc();
+
+
 	while (!glfwWindowShouldClose(window))
 	{
 		// NOTE(CK): Gamepad
@@ -140,37 +184,79 @@ int main(int argc, char** argv)
         
 		glfwPollEvents();
         
-		// delta time
-		float currentFrame = (float)glfwGetTime();
-		timer.dt = currentFrame - timer.lastFrame;
-		timer.lastFrame = currentFrame;
+		clock = Win32GetWallClock();
+		int64_t currFrameTime = clock.QuadPart;
+		int64_t deltaTime = currFrameTime - prevFrameTime;
+		prevFrameTime = currFrameTime;
         
+		//handle unexpected timer anomalies (overflow, extra slow frames, etc)
+		if (deltaTime > desiredFrameTime * 8)
+		{
+			//ignore extra-slow frames
+			deltaTime = desiredFrameTime;
+		}
+		if (deltaTime < 0)
+		{
+			deltaTime = 0;
+		}
+
+		//vsync time snapping
+		for (int64_t snap : snapFrequencies)
+		{
+			if (std::abs(deltaTime - snap) < vsyncMaxError)
+			{
+				deltaTime = snap;
+				break;
+			}
+		}
+
+		// delta time averaging
+		for (int i = 0; i < timeHistoryCount - 1; ++i)
+		{
+			timeAverager[i] = timeAverager[i + 1];
+		}
+		timeAverager[timeHistoryCount - 1] = deltaTime;
+		deltaTime = 0;
+		for (int i = 0; i < timeHistoryCount; i++)
+		{
+			deltaTime += timeAverager[i];
+		}
+		deltaTime /= timeHistoryCount;
+
+		frameAccumulator += deltaTime;
+
+		//spiral of death protection
+		if (frameAccumulator > desiredFrameTime * 8)
+		{
+			resync = true;
+		}
+
+		// if requested 
+		if (resync)
+		{
+			frameAccumulator = 0;
+			deltaTime = desiredFrameTime;
+			resync = false;
+		}
+
 		// Process the input & move the player
-		//glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // blue 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		g_Game->Update(timer.dt);
+		while (frameAccumulator >= desiredFrameTime * updateMultiplicity)
+		{
+			for (int i = 0; i < updateMultiplicity; ++i)
+			{
+				g_Game->Update(timer.fixed_dt);
+				frameAccumulator -= desiredFrameTime;
+			}
+		}
+
 		g_Game->Render();
+		g_Game->GuiUpdate();
+		g_Game->GuiRender();
         
 		glfwSwapBuffers(window);
-		
-		// TODO(CK): Figure out where to put this
-		LARGE_INTEGER endCounter = GetWallClock();
-		double msPerFrame = 1000.0 * GetSecondsElapsed(lastCounter, endCounter);
-		lastCounter = endCounter;
-        
-		// end cycles
-		uint64_t endCycleCount = __rdtsc();
-		uint64_t cyclesElapsed = endCycleCount - lastCycleCount;
-		lastCycleCount = endCycleCount;
-        
-		double FPS = 0.0f;
-		// mega cycles per frame
-		double MCPF = (real64)(cyclesElapsed / (1000.0f * 1000.0f));
-        
-		// NOTE(CK): INCONSISTENT FRAMES LIKE HANDMADE]
-		//printf("%.02fms/f %.02ff/s %.02fmc/f\n", msPerFrame, FPS, MCPF);
 	}
 	// NOTE(CK): CLEAN UP
 	g_Game->Shutdown();
@@ -185,7 +271,7 @@ int main(int argc, char** argv)
 void processInput(GLFWwindow* window, int key, int action, int scancode, int mods)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) { glfwSetWindowShouldClose(window, true); }
-	g_Game->ProcessInput(key, action, scancode, mods, timer.dt);
+	g_Game->ProcessInput(key, action, scancode, mods, timer.fixed_dt);
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
@@ -242,18 +328,4 @@ void gamepad_callback(int jid, int event)
 static void error_callback(int error, const char* description)
 {
 	fprintf(stderr, "Error: %s\n", description);
-}
-
-inline LARGE_INTEGER GetWallClock(void)
-{
-	LARGE_INTEGER result;
-	QueryPerformanceCounter(&result);
-	return result;
-}
-
-inline float GetSecondsElapsed(LARGE_INTEGER start, LARGE_INTEGER end)
-{
-	float result = ((float)(end.QuadPart - start.QuadPart) /
-                    (float)g_perfCountFrequency);
-	return result;
 }

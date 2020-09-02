@@ -56,7 +56,6 @@ namespace finnsie {
 		void distortedWaterControls();
 		void directionalWaterControls();
                 
-
 	};
 }
 

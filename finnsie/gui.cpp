@@ -190,13 +190,12 @@ namespace finnsie {
 
 		ImGui::SliderFloat("X", &g_Game->terrain->x, -1500.0f, 1500.0f);
 		ImGui::SliderFloat("Z", &g_Game->terrain->z, -1500.0f, 1500.0f);
-		ImGui::SliderInt("Grass Amount", &g_Game->terrain->grass.amount, 0.0f, 100000.0f);
+		ImGui::SliderInt("Grass Amount", &g_Game->terrain->grass.amount, 0, 100000);
 		
 		if (ImGui::SmallButton("Generate Grass"))
 		{
 			g_Game->terrain->GenerateGrass();
 		}
-
 
 		ImGui::End();
 	}

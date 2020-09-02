@@ -22,7 +22,7 @@ namespace finnsie {
         
 		::finnsie::g_resourceManager = new ResourceManager();
         g_lamp = glm::vec3(1.0f);
-        g_lamp.x = -148.0f;
+        g_lamp.x = 224.0f;
         g_lamp.y = 55.38f;
 
 		this->window = &wnd;
@@ -47,16 +47,28 @@ namespace finnsie {
         this->gui->Init(*this->window);
 	}
     
+    void Game::GuiUpdate()
+    {
+        gui->Update();
+    }
+
     // TODO(CK): pass the input from main to here
 	void Game::Update(float dt)
-	{
-		gui->Update();
-        
+	{        
 		if (leftMousePressed)
 		{
 			processCamera(dt);
 		}
+
+        testSphere->pos.x = g_lamp.x;
+        testSphere->pos.y = g_lamp.y;
+        testSphere->pos.z = g_lamp.z;
 	}
+
+    void Game::GuiRender()
+    {
+        gui->Render();
+    }
     
 	void Game::Render()
 	{
@@ -80,7 +92,6 @@ namespace finnsie {
         DrawCubemap(&this->cubemap, &this->cubemapShader, this->camera);
 
 		renderer->EndRender();
-		gui->Render();
 	}
     
 	void Game::ProcessInput(int key, int action, int scancode, int mods, float dt)
@@ -107,26 +118,6 @@ namespace finnsie {
         { 
             testSphere->pos.z -= 28 * dt;
         }
-        
-		/*
-		if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
-		{
-			// Change to (!cameraMode) - camera mode else guimode
-			if (mode == Mode::CAMERA)
-			{
-				mode = Mode::GUI;
-				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-				std::cout << "normal\n";
-
-			}
-			else
-			{
-				mode = Mode::CAMERA;
-				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-				std::cout << "disabled\n";
-			}
-		}
-		*/
 	}
     
 	void Game::ProcessMouseButtons(int button, int action, int mods)
@@ -159,7 +150,7 @@ namespace finnsie {
 		delete distortWater;
 		delete dirWater;
         delete testSphere;
-        
+
 		delete camera;
 		gui->Shutdown();
 		delete gui;
