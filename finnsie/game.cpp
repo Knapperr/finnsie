@@ -28,9 +28,24 @@ namespace finnsie {
         this->debugRightMousePressed = false;
 		this->debugSphereStopped = false;
 		
-        initObjects();
-        initShaders();
+        ResourceManager::Init();
+        this->state = {};
 
+        // Get the current shaders we are actively using
+        // NOTE(CK): my current thinking behind this is that 
+        // the map may grow to be fairly large. If this map gets too big
+        // then the access time will grow larger and larger. it makes more 
+        // sense to grab the shaders that we need right now
+        
+        // this works so far
+        // grab the group size and use that for this array size
+        // then when we are in good shape and can delete and renew 
+        // this shader array everytime the scene changes
+        state.shaders = new Shader[1];
+        state.shaders[0] = *ResourceManager::GetShader("model");
+
+        initObjects();
+        
         terrain = new Terrain(0, 0);
         terrain->Generate();
         terrain->GenerateGrass();
@@ -72,7 +87,7 @@ namespace finnsie {
         {
             if (g_objects[i]->model != NULL)
             {
-                renderer->DrawModel(*g_objects[i], *ResourceManager::GetShader("model"));
+                renderer->DrawModel(*g_objects[i], state.shaders[0]);
             }
         }
         // draw above water so you can see underneath
@@ -204,50 +219,5 @@ namespace finnsie {
         testSphere->heightScale = 0.1f;
         testSphere->heightScaleModulated = 8.0f;
         LoadDistortedWater(testSphere->model);
-    }
-
-    // TODO(CK): Put in the resource_manager
-    
-    // resource_manger->Init(); 
-    // this inits all resources from a resource file?
-    // reads the file and generates shaders and textures based off of that
-
-    // This can be pulled out 
-    void Game::initShaders()
-    {
-        // Shaders 
-        ResourceManager::GenerateShader("model",
-                                        "shaders/model_vert.glsl",
-                                        "shaders/model_frag.glsl",
-                                        NULL);
-
-        ResourceManager::GenerateShader("normal",
-                                        "shaders/onlynormals_model_vert.glsl",
-                                        "shaders/onlynormals_model_frag.glsl",
-                                        "shaders/onlynormals_model_geo.glsl");
-
-        ResourceManager::GenerateShader("waterDis",
-                                        "shaders/waterdistortion_vert.glsl",
-                                        "shaders/waterdistortion_frag.glsl",
-                                        NULL);
-        ResourceManager::GenerateShader("waterDir",
-                                        "shaders/waterdirection_vert.glsl",
-                                        "shaders/waterdirection_frag.glsl",
-                                        NULL);
-
-        ResourceManager::GenerateShader("binn",
-                                        "shaders/blinnphong_vert.glsl",
-                                        "shaders/blinnphong_frag.glsl",
-                                        NULL);
-
-        ResourceManager::GenerateShader("cubemap",
-                                        "shaders/cubemap_vert.glsl",
-                                        "shaders/cubemap_frag.glsl",
-                                        NULL);
-
-        ResourceManager::GenerateShader("grass",
-                                        "shaders/grass_vert.glsl",
-                                        "shaders/grass_frag.glsl",
-                                        NULL);
     }
 }

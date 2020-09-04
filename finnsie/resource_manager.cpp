@@ -8,8 +8,59 @@
 namespace finnsie {
 	
 	// Init static variables
-	std::map <int, Texture2D> ResourceManager::textures;
-	std::map <std::string, Shader> ResourceManager::shaders;
+	std::unordered_map <int, Texture2D> ResourceManager::textures;
+	std::unordered_map <std::string, Shader> ResourceManager::shaders;
+
+	void ResourceManager::Init()
+	{
+		// TODO(CK):
+		/*
+			Read through a resource file that 
+			has shader name and file names in it
+		
+			also has texture information in it as well
+
+			after this information has been collected you
+			generate all the shaders and textures in the 
+			file into the resource manager
+
+		*/
+
+		GenerateShader("model",
+					"shaders/model_vert.glsl",
+					"shaders/model_frag.glsl",
+					NULL);
+
+		GenerateShader("normal",
+					"shaders/onlynormals_model_vert.glsl",
+					"shaders/onlynormals_model_frag.glsl",
+					"shaders/onlynormals_model_geo.glsl");
+
+		GenerateShader("waterDis",
+					"shaders/waterdistortion_vert.glsl",
+					"shaders/waterdistortion_frag.glsl",
+					NULL);
+
+		GenerateShader("waterDir",
+					"shaders/waterdirection_vert.glsl",
+					"shaders/waterdirection_frag.glsl",
+					NULL);
+
+		GenerateShader("binn",
+					"shaders/blinnphong_vert.glsl",
+					"shaders/blinnphong_frag.glsl",
+					NULL);
+
+		GenerateShader("cubemap",
+					"shaders/cubemap_vert.glsl",
+					"shaders/cubemap_frag.glsl",
+					NULL);
+
+		GenerateShader("grass",
+					"shaders/grass_vert.glsl",
+					"shaders/grass_frag.glsl",
+					NULL);
+	}
 
 	Texture2D ResourceManager::GenerateTexture(int lookupId, const char* file, bool alpha)
 	{
@@ -33,11 +84,7 @@ namespace finnsie {
 	Shader* ResourceManager::GetShader(std::string lookup)
 	{
 		Shader *shader = &shaders[lookup];
-		if (shader->name != lookup)
-		{
-			LOG_WARN("Shader not found");
-			return shader;
-		}
+		assert(shader->name == lookup);
 		return shader;	
 	}
     
