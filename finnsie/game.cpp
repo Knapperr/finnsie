@@ -7,13 +7,6 @@
 
 namespace finnsie {
 
-
-
-    // GLOBALS
-    // ==================================
-    // Game inits resource manager
-    ResourceManager* g_resourceManager;
-
     // TODO(CK): Make these part of the game class
     // the game is now global instead
     glm::vec3 g_lamp;
@@ -22,7 +15,6 @@ namespace finnsie {
 	{
 		LOG("Game Init");
         
-        g_resourceManager = new ResourceManager();
         g_lamp = glm::vec3(1.0f);
         g_lamp.x = 224.0f;
         g_lamp.y = 55.38f;
@@ -80,18 +72,18 @@ namespace finnsie {
         {
             if (g_objects[i]->model != NULL)
             {
-                renderer->DrawModel(*g_objects[i], g_resourceManager->GetShader("model"));
+                renderer->DrawModel(*g_objects[i], *ResourceManager::GetShader("model"));
             }
         }
         // draw above water so you can see underneath
-        renderer->DrawTerrain(terrain, &g_resourceManager->GetShader("binn"), &g_resourceManager->GetShader("grass"));
+        renderer->DrawTerrain(terrain, ResourceManager::GetShader("binn"), ResourceManager::GetShader("grass"));
         //this->terrain.Render(&this->binnShader, this->camera);
 		
-        renderer->DrawWater(distortWater, g_resourceManager->GetShader("waterDis"));
+        renderer->DrawWater(distortWater, *ResourceManager::GetShader("waterDis"));
 		//renderer->DrawDirWater(dirWater, waterDirShader);
-        renderer->DrawWater(testSphere, g_resourceManager->GetShader("waterDis"));
+        renderer->DrawWater(testSphere, *ResourceManager::GetShader("waterDis"));
         
-        DrawCubemap(&this->cubemap, &g_resourceManager->GetShader("cubemap"), this->camera);
+        DrawCubemap(&this->cubemap, ResourceManager::GetShader("cubemap"), this->camera);
 
 		renderer->EndRender();
 	}
@@ -100,8 +92,8 @@ namespace finnsie {
 	{
         if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
         {
-            Reload(&g_resourceManager->GetShader("binn"));
-            Reload(&g_resourceManager->GetShader("waterDis"));
+            Reload(ResourceManager::GetShader("binn"));
+            Reload(ResourceManager::GetShader("waterDis"));
         }
         
         if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) 
@@ -142,8 +134,8 @@ namespace finnsie {
     
 	void Game::Shutdown()
 	{
-        delete ::finnsie::g_resourceManager;
 
+        ResourceManager::Shutdown();
         DestroyCubemap(&this->cubemap);
 
         renderer->Shutdown();
@@ -214,39 +206,46 @@ namespace finnsie {
         LoadDistortedWater(testSphere->model);
     }
 
+    // TODO(CK): Put in the resource_manager
+    
+    // resource_manger->Init(); 
+    // this inits all resources from a resource file?
+    // reads the file and generates shaders and textures based off of that
+
+    // This can be pulled out 
     void Game::initShaders()
     {
         // Shaders 
-        g_resourceManager->GenerateShader("model",
+        ResourceManager::GenerateShader("model",
                                         "shaders/model_vert.glsl",
                                         "shaders/model_frag.glsl",
                                         NULL);
 
-        g_resourceManager->GenerateShader("normal",
+        ResourceManager::GenerateShader("normal",
                                         "shaders/onlynormals_model_vert.glsl",
                                         "shaders/onlynormals_model_frag.glsl",
                                         "shaders/onlynormals_model_geo.glsl");
 
-        g_resourceManager->GenerateShader("waterDis",
+        ResourceManager::GenerateShader("waterDis",
                                         "shaders/waterdistortion_vert.glsl",
                                         "shaders/waterdistortion_frag.glsl",
                                         NULL);
-        g_resourceManager->GenerateShader("waterDir",
+        ResourceManager::GenerateShader("waterDir",
                                         "shaders/waterdirection_vert.glsl",
                                         "shaders/waterdirection_frag.glsl",
                                         NULL);
 
-        g_resourceManager->GenerateShader("binn",
+        ResourceManager::GenerateShader("binn",
                                         "shaders/blinnphong_vert.glsl",
                                         "shaders/blinnphong_frag.glsl",
                                         NULL);
 
-        g_resourceManager->GenerateShader("cubemap",
+        ResourceManager::GenerateShader("cubemap",
                                         "shaders/cubemap_vert.glsl",
                                         "shaders/cubemap_frag.glsl",
                                         NULL);
 
-        g_resourceManager->GenerateShader("grass",
+        ResourceManager::GenerateShader("grass",
                                         "shaders/grass_vert.glsl",
                                         "shaders/grass_frag.glsl",
                                         NULL);

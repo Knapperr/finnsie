@@ -7,11 +7,8 @@
 
 #include "log.h"
 #include "terrain.h"
-#include "resource_manager.h"
 
 namespace finnsie {
-
-    extern ResourceManager* g_resourceManager;
     extern std::vector<GameObject*> g_objects;
     extern glm::vec3 g_lamp;
     

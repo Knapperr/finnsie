@@ -3,8 +3,14 @@
 #include <stb_image/stb_image.h>
 #include <iostream>
 
+#include "log.h"
+
 namespace finnsie {
 	
+	// Init static variables
+	std::map <int, Texture2D> ResourceManager::textures;
+	std::map <std::string, Shader> ResourceManager::shaders;
+
 	Texture2D ResourceManager::GenerateTexture(int lookupId, const char* file, bool alpha)
 	{
 		textures[lookupId] = loadTextureFromFile(file, alpha);
@@ -14,22 +20,28 @@ namespace finnsie {
 	Shader ResourceManager::GenerateShader(std::string lookup, const char* vertName, const char* fragName, const char* geoName)
 	{
 		Shader shader = {};
-		BuildShader(&shader, vertName, fragName, geoName);
+		BuildShader(&shader, lookup, vertName, fragName, geoName);
 		shaders[lookup] = shader;
 		return shaders[lookup];
 	}
     
-	Texture2D& ResourceManager::GetTexture(int lookupId)
+	Texture2D* ResourceManager::GetTexture(int lookupId)
 	{
-		return textures[lookupId];
+		return &textures[lookupId];
 	}
     
-	Shader& ResourceManager::GetShader(std::string lookup)
+	Shader* ResourceManager::GetShader(std::string lookup)
 	{
-		return shaders[lookup];
+		Shader *shader = &shaders[lookup];
+		if (shader->name != lookup)
+		{
+			LOG_WARN("Shader not found");
+			return shader;
+		}
+		return shader;	
 	}
     
-	void ResourceManager::ShutDown()
+	void ResourceManager::Shutdown()
 	{
 		for (auto iter : shaders)
 		{

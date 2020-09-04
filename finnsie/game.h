@@ -2,6 +2,7 @@
 #define GAME_HG_
 
 #include "cube_map.h"
+#include "resource_manager.h"
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>

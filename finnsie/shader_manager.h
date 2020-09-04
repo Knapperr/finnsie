@@ -23,6 +23,7 @@ namespace finnsie {
     struct Shader
     {
         unsigned int id;
+        std::string name;
         // TODO(CK): use raw array
         std::vector<uniform> uniforms;
         const char* vertexText;
@@ -31,7 +32,7 @@ namespace finnsie {
     };
     
     void GetUniforms(Shader* shader);
-    void BuildShader(Shader* shader, const char* vertexFileName, 
+    void BuildShader(Shader* shader, std::string name, const char* vertexFileName, 
                      const char* fragmentFileName, const char* geometryFileName = NULL);
     int GetLoc(Shader* shader, std::string name);
     void Reload(Shader* shader);

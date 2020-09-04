@@ -70,9 +70,10 @@ namespace finnsie {
 		}
 	}
     
-	void BuildShader(Shader* shader, const char* vertexFileName, 
+	void BuildShader(Shader* shader, std::string name, const char* vertexFileName, 
                      const char* fragmentFileName, const char* geometryFileName)
 	{
+		shader->name = name;
         // Set file names
         shader->vertexText = vertexFileName;
         shader->fragmentText = fragmentFileName;
