@@ -56,20 +56,6 @@ namespace finnsie {
 		Cubemap cubemap;
 
 	private:
-
-
-
-        // Shader[]
-		// TODO(CK):
-		// Put into resource manager
-        Shader modelShader;
-        Shader normalShader;
-        Shader waterShader;
-        Shader waterDirShader;
-        Shader binnShader; // used for terrain for now
-		Shader grassShader;
-		Shader cubemapShader;
-
 		void initObjects();
 		void initShaders();
 		void processCamera(float dt);

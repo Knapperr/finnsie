@@ -11,12 +11,12 @@ namespace finnsie {
 		return textures[lookupId];
 	}
 	
-	Shader ResourceManager::GenerateShader(int lookupId, const char* vertName, const char* fragName, const char* geoName)
+	Shader ResourceManager::GenerateShader(std::string lookup, const char* vertName, const char* fragName, const char* geoName)
 	{
 		Shader shader = {};
 		BuildShader(&shader, vertName, fragName, geoName);
-		shaders[lookupId] = shader;
-		return shaders[lookupId];
+		shaders[lookup] = shader;
+		return shaders[lookup];
 	}
     
 	Texture2D& ResourceManager::GetTexture(int lookupId)
@@ -24,9 +24,9 @@ namespace finnsie {
 		return textures[lookupId];
 	}
     
-	Shader& ResourceManager::GetShader(int lookupId)
+	Shader& ResourceManager::GetShader(std::string lookup)
 	{
-		return shaders[lookupId];
+		return shaders[lookup];
 	}
     
 	void ResourceManager::ShutDown()
