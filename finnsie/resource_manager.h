@@ -21,6 +21,8 @@ namespace finnsie {
 		static Texture2D* GetTexture(int lookupId);
 		static Shader* GetShader(std::string lookup);
         
+		static int GetShaderCount();
+
 		static void Shutdown();
         
     private:

@@ -40,6 +40,7 @@ namespace finnsie {
         float x;
         float z;
         bool wireFrame;
+        bool drawTexture;
 
         // TODO(CK): Bad practice?
         // if default constructor gets called this breaks because its being
@@ -47,6 +48,8 @@ namespace finnsie {
         // I don't think I need this.. i guess if the vertices change?
         FVertex* vertices;
         Grass grass;
+        Shader shader;
+        Shader grassShader;
 
         Terrain(int gridX, int gridZ);
         ~Terrain();

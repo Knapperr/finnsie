@@ -29,20 +29,10 @@ namespace finnsie {
 		this->debugSphereStopped = false;
 		
         ResourceManager::Init();
-        this->state = {};
 
-        // Get the current shaders we are actively using
-        // NOTE(CK): my current thinking behind this is that 
-        // the map may grow to be fairly large. If this map gets too big
-        // then the access time will grow larger and larger. it makes more 
-        // sense to grab the shaders that we need right now
-        
-        // this works so far
-        // grab the group size and use that for this array size
-        // then when we are in good shape and can delete and renew 
-        // this shader array everytime the scene changes
-        state.shaders = new Shader[1];
-        state.shaders[0] = *ResourceManager::GetShader("model");
+        modelShader = *ResourceManager::GetShader("model");
+        disWaterShader = *ResourceManager::GetShader("waterDis");
+        dirWaterShader = *ResourceManager::GetShader("waterDir");
 
         initObjects();
         
@@ -87,13 +77,11 @@ namespace finnsie {
         {
             if (g_objects[i]->model != NULL)
             {
-                renderer->DrawModel(*g_objects[i], state.shaders[0]);
+                renderer->DrawModel(*g_objects[i], modelShader);
             }
         }
         // draw above water so you can see underneath
-        renderer->DrawTerrain(terrain, ResourceManager::GetShader("binn"), ResourceManager::GetShader("grass"));
-        //this->terrain.Render(&this->binnShader, this->camera);
-		
+        renderer->DrawTerrain(terrain);
         renderer->DrawWater(distortWater, *ResourceManager::GetShader("waterDis"));
 		//renderer->DrawDirWater(dirWater, waterDirShader);
         renderer->DrawWater(testSphere, *ResourceManager::GetShader("waterDis"));
@@ -167,12 +155,22 @@ namespace finnsie {
 
 	void Game::processCamera(float dt)
 	{
+        bool speedIncreased = false;
+        if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+        {
+            camera->MovementSpeed *= 2;
+            speedIncreased = true;
+        }
+
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) { camera->ProcessKeyboard(Camera_Movement::FORWARD, dt); }
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) { camera->ProcessKeyboard(Camera_Movement::BACKWARD, dt); }
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) { camera->ProcessKeyboard(Camera_Movement::LEFT, dt); }
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) { camera->ProcessKeyboard(Camera_Movement::RIGHT, dt); }
 		if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) { camera->ProcessKeyboard(Camera_Movement::UP, dt); }
 		if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) { camera->ProcessKeyboard(Camera_Movement::DOWN, dt); }
+
+        if (speedIncreased)
+            camera->MovementSpeed /= 2;
 	}
 
     void Game::initObjects()

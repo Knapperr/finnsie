@@ -20,11 +20,6 @@ namespace finnsie {
 		bool back;
 	};
 
-	struct State
-	{
-		Shader *shaders;
-	};
-
 	class Game
 	{
     public:
@@ -61,11 +56,15 @@ namespace finnsie {
 		
 		Cubemap cubemap;
 
+		// Core shaders
+		Shader modelShader;
+		Shader disWaterShader;
+		Shader dirWaterShader;
+
 	private:
 		void initObjects();
 		void processCamera(float dt);
 
-		State state;
 	};
 
 

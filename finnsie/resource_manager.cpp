@@ -88,6 +88,11 @@ namespace finnsie {
 		return shader;	
 	}
     
+	int ResourceManager::GetShaderCount()
+	{
+		return shaders.size();
+	}
+
 	void ResourceManager::Shutdown()
 	{
 		for (auto iter : shaders)

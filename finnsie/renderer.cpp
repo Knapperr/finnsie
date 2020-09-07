@@ -454,15 +454,15 @@ namespace finnsie {
 		return;
 	}
 	
-	void Renderer::drawGrass(Terrain* terr, Shader* grassShader)
+	void Renderer::drawGrass(Terrain* terr)
 	{
-		glUseProgram(grassShader->id);
-		glUniformMatrix4fv(GetLoc(grassShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(GetLoc(grassShader, "view"), 1, GL_FALSE, glm::value_ptr(view));
+		glUseProgram(terr->grassShader.id);
+		glUniformMatrix4fv(GetLoc(&terr->grassShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(GetLoc(&terr->grassShader, "view"), 1, GL_FALSE, glm::value_ptr(view));
 		
 
 		// now set the sampler to the correct texture unit
-		glUniform1i(glGetUniformLocation(grassShader->id, "texture_diffuse1"), 0);
+		glUniform1i(glGetUniformLocation(terr->grassShader.id, "texture_diffuse1"), 0);
 		// and finally bind the texture		
 		glBindTexture(GL_TEXTURE_2D, terr->grass.textureId);
 		
@@ -475,21 +475,22 @@ namespace finnsie {
 		}
 	}
 
-	void Renderer::DrawTerrain(Terrain* terr, Shader* terrShader, Shader* grassShader)
+	void Renderer::DrawTerrain(Terrain* terr)
 	{
-		glUseProgram(terrShader->id);
+		glUseProgram(terr->shader.id);
 
-		glUniformMatrix4fv(GetLoc(terrShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(GetLoc(terrShader, "view"), 1, GL_FALSE, glm::value_ptr(view));
+		glUniformMatrix4fv(GetLoc(&terr->shader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(GetLoc(&terr->shader, "view"), 1, GL_FALSE, glm::value_ptr(view));
 
-		glUniform3fv(GetLoc(terrShader, "lightPos"), 1, &g_lamp[0]);
-		glUniform3fv(GetLoc(terrShader, "viewPos"), 1, &camPos[0]);
+		glUniform3fv(GetLoc(&terr->shader, "lightPos"), 1, &g_lamp[0]);
+		glUniform3fv(GetLoc(&terr->shader, "viewPos"), 1, &camPos[0]);
 
-		// now set the sampler to the correct texture unit
-		glUniform1i(glGetUniformLocation(terrShader->id, "texture_diffuse1"), 0);
-		// and finally bind the texture		
-		glBindTexture(GL_TEXTURE_2D, terr->textureId);
-
+		// set the sampler to the correct texture unit
+		glUniform1i(glGetUniformLocation(terr->shader.id, "texture_diffuse1"), 0);
+		if (terr->drawTexture)
+		{
+			glBindTexture(GL_TEXTURE_2D, terr->textureId);
+		}
 		glm::mat4 matModel = glm::mat4(1.0f);
 
 		glm::mat4 matTranslate = glm::translate(glm::mat4(1.0f),
@@ -517,7 +518,7 @@ namespace finnsie {
 		matModel = matModel * matScale;
 		
 		
-		glUniformMatrix4fv(GetLoc(terrShader, "model"), 1, GL_FALSE, glm::value_ptr(matModel));
+		glUniformMatrix4fv(GetLoc(&terr->shader, "model"), 1, GL_FALSE, glm::value_ptr(matModel));
 
 		// Wireframe
 		//if (terr->wireFrame)
@@ -538,7 +539,7 @@ namespace finnsie {
 		glBindTexture(GL_TEXTURE_2D, 0);
 
 
-		drawGrass(terr, grassShader);
+		drawGrass(terr);
 	}
 
 	void Renderer::EndRender()

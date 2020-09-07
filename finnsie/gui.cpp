@@ -187,6 +187,8 @@ namespace finnsie {
 		ImGui::Begin("TERRAIN", p_open);
 
 		ImGui::Checkbox("wire frame", &g_Game->terrain->wireFrame);
+		ImGui::Checkbox("draw texture", &g_Game->terrain->drawTexture);
+
 
 		ImGui::SliderFloat("X", &g_Game->terrain->x, -1500.0f, 1500.0f);
 		ImGui::SliderFloat("Z", &g_Game->terrain->z, -1500.0f, 1500.0f);

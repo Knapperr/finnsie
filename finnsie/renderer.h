@@ -21,7 +21,7 @@ namespace finnsie {
 		void DrawWater(WaterObject* water, Shader waterShader);
 		void DrawDirWater(WaterObject* dirWater, Shader waterShader);
         void DrawSphere(GameObject& obj, Shader binnShader);
-		void DrawTerrain(Terrain* terr, Shader* terrShader, Shader* grassShader);
+		void DrawTerrain(Terrain* terr);
 		void EndRender();
 		void Shutdown();
         
@@ -40,7 +40,7 @@ namespace finnsie {
 		unsigned int activeModelShaderId;
 		int activeModelLoc;
 
-		void drawGrass(Terrain* terr, Shader* shader);
+		void drawGrass(Terrain* terr);
 	};
     
 }

@@ -9,6 +9,8 @@
 #include "utils.h"
 #include "gl_common.h"
 
+#include "resource_manager.h"
+
 namespace finnsie {
 
     Terrain::Terrain(int gridX, int gridZ)
@@ -19,16 +21,19 @@ namespace finnsie {
         this->VAO = 0;
         this->VBO = 0;
         this->indicesLength = 0;
-        this->textureId = 0;
 
         this->wireFrame = false;
+        this->drawTexture = true;
 
         this->vertices = new FVertex[VERTEX_COUNT * VERTEX_COUNT];
 
         // Load a texture 
         std::string textPath = "content/textures/terr/grass.jpg";
         std::string textDir = textPath.substr(0, textPath.find_last_of('/'));
-        textureId = LoadTextureFile("grass.jpg", textDir, false);
+        this->textureId = LoadTextureFile("grass.jpg", textDir, false);
+
+        this->shader = *ResourceManager::GetShader("binn");
+        this->grassShader = *ResourceManager::GetShader("grass");
     }
 
     Terrain::~Terrain()
