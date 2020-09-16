@@ -42,12 +42,37 @@ namespace finnsie {
 		this->camPos = cam.Position;
 	}
     
-	void Draw(GameObject* obj, Shader shader)
+	void Draw(GameObject* obj)
 	{
-		glUseProgram(shader.id);
+		//glUseProgram(shader.id);
 
 		// TODO(CK): Go through each shaders uniform and activate
+		// Use the shader directly that way if a different shader 
+		// is used the uniforms will be called.. could have some
+		// sort of activate uniform call that can be overriden
+		// and tweaked if a special shader is used
+		// there has to be a way i can call like:
+		/*
+			uniform == gameobject attribute
+			glUniformMatrix4fv ()
+			if you have a uniform type attached
+			to it you can figure out which glUniform too call
+			Shader could have a function that is:
+				
+				Uniform(&shader);
 
+				this call has a switch in it
+				switch (uniforms[i].type)
+				{
+					"float" 
+					"int" - glUniform1i();
+					"matrix" - glUniformMatrix4fv
+					"texture" - glUniform1i(glGetUniformLocation(modelShader.id, (name + number).c_str()), j);
+				}
+		
+			There might be an easier way to do this im not sure..
+			probably better to pass a matching struct from shader to c++ 
+		*/
 	}
 
 	void Renderer::DrawModel(GameObject& obj, Shader modelShader)
@@ -456,13 +481,13 @@ namespace finnsie {
 	
 	void Renderer::drawGrass(Terrain* terr)
 	{
-		glUseProgram(terr->grassShader.id);
-		glUniformMatrix4fv(GetLoc(&terr->grassShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(GetLoc(&terr->grassShader, "view"), 1, GL_FALSE, glm::value_ptr(view));
+		glUseProgram(terr->grassShader->id);
+		glUniformMatrix4fv(GetLoc(terr->grassShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(GetLoc(terr->grassShader, "view"), 1, GL_FALSE, glm::value_ptr(view));
 		
 
 		// now set the sampler to the correct texture unit
-		glUniform1i(glGetUniformLocation(terr->grassShader.id, "texture_diffuse1"), 0);
+		glUniform1i(glGetUniformLocation(terr->grassShader->id, "texture_diffuse1"), 0);
 		// and finally bind the texture		
 		glBindTexture(GL_TEXTURE_2D, terr->grass.textureId);
 		
@@ -477,16 +502,16 @@ namespace finnsie {
 
 	void Renderer::DrawTerrain(Terrain* terr)
 	{
-		glUseProgram(terr->shader.id);
+		glUseProgram(terr->shader->id);
 
-		glUniformMatrix4fv(GetLoc(&terr->shader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(GetLoc(&terr->shader, "view"), 1, GL_FALSE, glm::value_ptr(view));
+		glUniformMatrix4fv(GetLoc(terr->shader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(GetLoc(terr->shader, "view"), 1, GL_FALSE, glm::value_ptr(view));
 
-		glUniform3fv(GetLoc(&terr->shader, "lightPos"), 1, &g_lamp[0]);
-		glUniform3fv(GetLoc(&terr->shader, "viewPos"), 1, &camPos[0]);
+		glUniform3fv(GetLoc(terr->shader, "lightPos"), 1, &g_lamp[0]);
+		glUniform3fv(GetLoc(terr->shader, "viewPos"), 1, &camPos[0]);
 
 		// set the sampler to the correct texture unit
-		glUniform1i(glGetUniformLocation(terr->shader.id, "texture_diffuse1"), 0);
+		glUniform1i(glGetUniformLocation(terr->shader->id, "texture_diffuse1"), 0);
 		if (terr->drawTexture)
 		{
 			glBindTexture(GL_TEXTURE_2D, terr->textureId);
@@ -518,7 +543,7 @@ namespace finnsie {
 		matModel = matModel * matScale;
 		
 		
-		glUniformMatrix4fv(GetLoc(&terr->shader, "model"), 1, GL_FALSE, glm::value_ptr(matModel));
+		glUniformMatrix4fv(GetLoc(terr->shader, "model"), 1, GL_FALSE, glm::value_ptr(matModel));
 
 		// Wireframe
 		//if (terr->wireFrame)

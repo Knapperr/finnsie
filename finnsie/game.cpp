@@ -17,7 +17,7 @@ namespace finnsie {
         
         g_lamp = glm::vec3(1.0f);
         g_lamp.x = 224.0f;
-        g_lamp.y = 55.38f;
+        g_lamp.y = 557.38f;
 
 		this->window = &wnd;
 		this->gui = new Gui();
@@ -30,9 +30,10 @@ namespace finnsie {
 		
         ResourceManager::Init();
 
-        modelShader = *ResourceManager::GetShader("model");
-        disWaterShader = *ResourceManager::GetShader("waterDis");
-        dirWaterShader = *ResourceManager::GetShader("waterDir");
+        modelShader = ResourceManager::GetShader("model");
+        disWaterShader = ResourceManager::GetShader("waterDis");
+        dirWaterShader = ResourceManager::GetShader("waterDir");
+        lightShader = ResourceManager::GetShader("light");
 
         initObjects();
         
@@ -59,9 +60,9 @@ namespace finnsie {
 			processCamera(dt);
 		}
 
-        testSphere->pos.x = g_lamp.x;
-        testSphere->pos.y = g_lamp.y;
-        testSphere->pos.z = g_lamp.z;
+        light->pos.x = g_lamp.x;
+        light->pos.y = g_lamp.y;
+        light->pos.z = g_lamp.z;
 	}
 
     void Game::GuiRender()
@@ -77,14 +78,14 @@ namespace finnsie {
         {
             if (g_objects[i]->model != NULL)
             {
-                renderer->DrawModel(*g_objects[i], modelShader);
+                renderer->DrawModel(*g_objects[i], *modelShader);
             }
         }
         // draw above water so you can see underneath
         renderer->DrawTerrain(terrain);
         renderer->DrawWater(distortWater, *ResourceManager::GetShader("waterDis"));
 		//renderer->DrawDirWater(dirWater, waterDirShader);
-        renderer->DrawWater(testSphere, *ResourceManager::GetShader("waterDis"));
+        renderer->DrawModel(*light, *lightShader);
         
         DrawCubemap(&this->cubemap, ResourceManager::GetShader("cubemap"), this->camera);
 
@@ -101,19 +102,19 @@ namespace finnsie {
         
         if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) 
         { 
-            testSphere->pos.x -= 28 * dt;
+            light->pos.x -= 28 * dt;
         }
         if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) 
         { 
-            testSphere->pos.x += 28 * dt;
+            light->pos.x += 28 * dt;
         }
         if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) 
         { 
-            testSphere->pos.z += 28 * dt;
+            light->pos.z += 28 * dt;
         }
         if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) 
         { 
-            testSphere->pos.z -= 28 * dt;
+            light->pos.z -= 28 * dt;
         }
 	}
     
@@ -146,7 +147,7 @@ namespace finnsie {
         
 		delete distortWater;
 		delete dirWater;
-        delete testSphere;
+        delete light;
 
 		delete camera;
 		gui->Shutdown();
@@ -158,7 +159,7 @@ namespace finnsie {
         bool speedIncreased = false;
         if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         {
-            camera->MovementSpeed *= 2;
+            camera->MovementSpeed *= 5;
             speedIncreased = true;
         }
 
@@ -170,7 +171,7 @@ namespace finnsie {
 		if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) { camera->ProcessKeyboard(Camera_Movement::DOWN, dt); }
 
         if (speedIncreased)
-            camera->MovementSpeed /= 2;
+            camera->MovementSpeed /= 5;
 	}
 
     void Game::initObjects()
@@ -181,41 +182,21 @@ namespace finnsie {
                                        glm::vec3(0.0f, 0.0f, 0.0f),
                                        40.0f,
                                        "content/objects/quad/basic_quad.obj");
-        distortWater->tiling = 5.0f;
-        distortWater->speed = 0.3f;
-        distortWater->flowStrength = 0.05f;
-        distortWater->flowOffset = -0.23f;
-        distortWater->heightScale = 0.1f;
-        distortWater->heightScaleModulated = 8.0f;
-        LoadDistortedWater(distortWater->model);
+        LoadDistortedWater(distortWater);
 
         dirWater = new WaterObject("water",
                                    glm::vec3(100.0f, 5.0f, 280.0f),
                                    glm::vec3(0.0f, glm::radians(180.0f), 0.0f),
                                    40.0f,
                                    "content/objects/quad/basic_quad.obj");
-        dirWater->tiling = 10.0f;
-        dirWater->speed = 0.2f;
-        dirWater->flowStrength = 0.07f;
-        dirWater->heightScale = 0.92f;
-        dirWater->heightScaleModulated = 9.0f;
-        dirWater->gridResolution = 30.0f;
-        dirWater->tilingModulated = 50.0f;
-        dirWater->dualGrid = true;
-        LoadDirectionalWater(dirWater->model);
+        LoadDirectionalWater(dirWater);
 
         // Test Sphere for shader learning 
-        testSphere = new WaterObject("sphere",
+        light = new WaterObject("sphere",
                                      glm::vec3(-100.0f, 100.0f, 80.0),
                                      glm::vec3(0.0f, 0.0f, 0.0f),
                                      10.0f,
                                      "content/objects/sphere/sphere.obj");
-        testSphere->tiling = 5.0f;
-        testSphere->speed = 0.3f;
-        testSphere->flowStrength = 0.05f;
-        testSphere->flowOffset = -0.23f;
-        testSphere->heightScale = 0.1f;
-        testSphere->heightScaleModulated = 8.0f;
-        LoadDistortedWater(testSphere->model);
+        LoadDistortedWater(light);
     }
 }

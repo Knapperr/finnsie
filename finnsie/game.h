@@ -50,16 +50,17 @@ namespace finnsie {
 		Terrain *terrain;
 		// Lights
 
-        WaterObject* testSphere;
+        WaterObject* light;
         WaterObject* distortWater;
 		WaterObject* dirWater;
 		
 		Cubemap cubemap;
 
 		// Core shaders
-		Shader modelShader;
-		Shader disWaterShader;
-		Shader dirWaterShader;
+		Shader* modelShader;
+		Shader* disWaterShader;
+		Shader* dirWaterShader;
+		Shader* lightShader;
 
 	private:
 		void initObjects();

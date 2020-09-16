@@ -151,9 +151,9 @@ namespace finnsie {
 					ImGui::SliderFloat("scale", &g_objects[selected]->scale, 0.0f, 30.0f);
 					ImGui::DragFloat("fine scale", &g_objects[selected]->scale, 0.0001f, 0.0f, 30.0f, "%.02f");
                     
-					ImGui::DragFloat("x", &g_objects[selected]->pos.x, 0.001f, -1000.0f, 1000.0f, "%.02f");
-					ImGui::DragFloat("y", &g_objects[selected]->pos.y, 0.001f, -1000.0f, 1000.0f, "%.02f");
-					ImGui::DragFloat("z", &g_objects[selected]->pos.z, 0.001f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::DragFloat("x", &g_objects[selected]->pos.x, 0.1f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::DragFloat("y", &g_objects[selected]->pos.y, 0.1f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::DragFloat("z", &g_objects[selected]->pos.z, 0.1f, -1000.0f, 1000.0f, "%.02f");
 					
 					ImGui::Checkbox("show normals", &g_objects[selected]->viewNormals);
 					ImGui::Checkbox("wire frame", &g_objects[selected]->wireFrame);

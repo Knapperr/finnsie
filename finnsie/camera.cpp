@@ -58,8 +58,12 @@ namespace finnsie {
 	// Processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
 	void Camera::ProcessMouseScroll(float yoffset)
 	{
-		MovementSpeed += yoffset * 2;
+		if (MovementSpeed >= 0)
+			MovementSpeed += yoffset * 2;
+		else
+			MovementSpeed = 1;
 
+		// NOTE(CK): Old zooming code
 		//if (Zoom >= 1.0f && Zoom <= 45.0f)
 		//	Zoom -= yoffset;
 		//if (Zoom <= 1.0f)

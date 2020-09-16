@@ -11,7 +11,7 @@ namespace finnsie {
 	bool LoadTexture(int index);
 	bool UnloadObject(std::string name);
 	bool UnloadObject(int index);
-	void LoadDistortedWater(Model* water);
-	void LoadDirectionalWater(Model* water);
+	void LoadDistortedWater(WaterObject* water);
+	void LoadDirectionalWater(WaterObject* water);
 }
 #endif

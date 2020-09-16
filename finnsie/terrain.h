@@ -48,8 +48,8 @@ namespace finnsie {
         // I don't think I need this.. i guess if the vertices change?
         FVertex* vertices;
         Grass grass;
-        Shader shader;
-        Shader grassShader;
+        Shader* shader;
+        Shader* grassShader;
 
         Terrain(int gridX, int gridZ);
         ~Terrain();

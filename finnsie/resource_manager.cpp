@@ -60,6 +60,11 @@ namespace finnsie {
 					"shaders/grass_vert.glsl",
 					"shaders/grass_frag.glsl",
 					NULL);
+
+		GenerateShader("light",
+					   "shaders/light_vert.glsl",
+					   "shaders/light_frag.glsl",
+					   NULL);
 	}
 
 	Texture2D ResourceManager::GenerateTexture(int lookupId, const char* file, bool alpha)

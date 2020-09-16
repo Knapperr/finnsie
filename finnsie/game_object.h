@@ -18,6 +18,12 @@ namespace finnsie {
 		bool viewNormals;
 		bool wireFrame;
         
+		// TODO(CK):
+		// Game object has its own shader
+		// that can be overridden and changed if needed
+		// this way the draw call can just use whatever
+		// shader is attached to the game object
+		// in the Draw() call in renderer
         RigidBody rb;
         
 		GameObject()

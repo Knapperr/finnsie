@@ -117,8 +117,15 @@ namespace finnsie {
 		return true;
 	}
 
-	void LoadDistortedWater(Model* water)
+	void LoadDistortedWater(WaterObject* water)
 	{
+		water->tiling = 5.0f;
+		water->speed = 0.3f;
+		water->flowStrength = 0.05f;
+		water->flowOffset = -0.23f;
+		water->heightScale = 0.1f;
+		water->heightScaleModulated = 8.0f;
+
 		// CREATE A BASIC SHAPE LOADER replace ASSIMP
 		// WE WILL HAVE TO PUSH THIS TEXTURE TO THE TEXUTES OF THE QUAD 
 		// IN model.h
@@ -143,13 +150,22 @@ namespace finnsie {
 		normaltexture.type = "texture_normal";
 		normaltexture.path = normalpath;
 
-		water->meshes[0].textures.push_back(uvtexture);
-		water->meshes[0].textures.push_back(flowtexture);
-		water->meshes[0].textures.push_back(normaltexture);
+		water->model->meshes[0].textures.push_back(uvtexture);
+		water->model->meshes[0].textures.push_back(flowtexture);
+		water->model->meshes[0].textures.push_back(normaltexture);
 	}
 
-	void LoadDirectionalWater(Model* water)
+	void LoadDirectionalWater(WaterObject* water)
 	{
+		water->tiling = 10.0f;
+		water->speed = 0.2f;
+		water->flowStrength = 0.07f;
+		water->heightScale = 0.92f;
+		water->heightScaleModulated = 9.0f;
+		water->gridResolution = 30.0f;
+		water->tilingModulated = 50.0f;
+		water->dualGrid = true;
+
 		std::string uvpath = "content/textures/water/ripples-derivative-height.png";
 		std::string uvdirectory = uvpath.substr(0, uvpath.find_last_of('/'));
 		Texture uvtexture = {};
@@ -164,8 +180,8 @@ namespace finnsie {
 		flowtexture.type = "texture_normal";
 		flowtexture.path = flowpath;
 
-		water->meshes[0].textures.push_back(uvtexture);
-		water->meshes[0].textures.push_back(flowtexture);
+		water->model->meshes[0].textures.push_back(uvtexture);
+		water->model->meshes[0].textures.push_back(flowtexture);
 	}
 
 	/* NOTE(CK): OG (USE THIS FOR LOADING TEXTURES FROM GUI )

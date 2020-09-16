@@ -32,8 +32,8 @@ namespace finnsie {
         std::string textDir = textPath.substr(0, textPath.find_last_of('/'));
         this->textureId = LoadTextureFile("grass.jpg", textDir, false);
 
-        this->shader = *ResourceManager::GetShader("binn");
-        this->grassShader = *ResourceManager::GetShader("grass");
+        this->shader = ResourceManager::GetShader("binn");
+        this->grassShader = ResourceManager::GetShader("grass");
     }
 
     Terrain::~Terrain()
