@@ -155,6 +155,10 @@ namespace finnsie {
 					ImGui::DragFloat("y", &g_objects[selected]->pos.y, 0.1f, -1000.0f, 1000.0f, "%.02f");
 					ImGui::DragFloat("z", &g_objects[selected]->pos.z, 0.1f, -1000.0f, 1000.0f, "%.02f");
 					
+					ImGui::DragFloat("rot x", &g_objects[selected]->orientation.x, 0.05f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::DragFloat("rot y", &g_objects[selected]->orientation.y, 0.05f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::DragFloat("rot z", &g_objects[selected]->orientation.z, 0.05f, -1000.0f, 1000.0f, "%.02f");
+
 					ImGui::Checkbox("show normals", &g_objects[selected]->viewNormals);
 					ImGui::Checkbox("wire frame", &g_objects[selected]->wireFrame);
 					ImGui::EndTabItem();
