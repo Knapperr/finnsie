@@ -30,12 +30,6 @@ bool firstMouse = true;
 
 int64_t g_perfCountFrequency;
 
-//struct Timer
-//{
-//	float dt;
-//	float lastFrame;
-//};
-
 struct Timer
 {
 	uint64_t diff;
@@ -136,7 +130,7 @@ int main(int argc, char** argv)
 
 	// fixed update
 	timer.fixed_dt = 1.0 / updateRate;
-	int64_t desiredFrameTime = perfCountFrequencyResult.QuadPart / updateRate;
+	int64_t desiredFrameTime = perfCountFrequencyResult.QuadPart / (int64_t)updateRate;
 
 	//these are to snap deltaTime to vsync values if it's close enough
 	int64_t vsyncMaxError = perfCountFrequencyResult.QuadPart * .0002;
@@ -247,7 +241,8 @@ int main(int argc, char** argv)
 		{
 			for (int i = 0; i < updateMultiplicity; ++i)
 			{
-				g_Game->Update(timer.fixed_dt);
+				// TODO(CK): Change double to float?
+				g_Game->Update((float)timer.fixed_dt);
 				frameAccumulator -= desiredFrameTime;
 			}
 		}

@@ -36,6 +36,7 @@ namespace finnsie {
         lightShader = ResourceManager::GetShader("light");
 
         initObjects();
+        pInput = {};
         
         terrain = new Terrain(0, 0);
         terrain->Generate();
@@ -59,6 +60,10 @@ namespace finnsie {
 		{
 			processCamera(dt);
 		}
+        else
+        {
+            processPlayer(dt);
+        }
 
         light->pos.x = g_lamp.x;
         light->pos.y = g_lamp.y;
@@ -87,8 +92,11 @@ namespace finnsie {
 		//renderer->DrawDirWater(dirWater, waterDirShader);
         renderer->DrawModel(*light, *lightShader);
         
-        DrawCubemap(&this->cubemap, ResourceManager::GetShader("cubemap"), this->camera);
+        renderer->DrawSphere(*cube, *ResourceManager::GetShader("binn"));
 
+        renderer->DrawModel(*player, *modelShader);
+
+        DrawCubemap(&this->cubemap, ResourceManager::GetShader("cubemap"), this->camera);
 		renderer->EndRender();
 	}
     
@@ -100,22 +108,33 @@ namespace finnsie {
             Reload(ResourceManager::GetShader("waterDis"));
         }
         
+        // How to use the delta time properly for movement.. is movmenet in a loop?
+        // handmade 
         if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) 
         { 
-            light->pos.x -= 28 * dt;
+            g_lamp.x -= 85 * dt;
         }
         if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) 
         { 
-            light->pos.x += 28 * dt;
+            g_lamp.x += 85 * dt;
         }
         if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) 
-        { 
-            light->pos.z += 28 * dt;
+        {
+            g_lamp.z += 85 * dt;
         }
         if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) 
         { 
-            light->pos.z -= 28 * dt;
+            g_lamp.z -= 85 * dt;
         }
+        if (glfwGetKey(window, GLFW_KEY_PAGE_UP) == GLFW_PRESS)
+        {
+            g_lamp.y += 85 * dt;
+        }
+        if (glfwGetKey(window, GLFW_KEY_PAGE_DOWN) == GLFW_PRESS)
+        {
+            g_lamp.y -= 85 * dt;
+        }
+
 	}
     
 	void Game::ProcessMouseButtons(int button, int action, int mods)
@@ -145,6 +164,7 @@ namespace finnsie {
         renderer->Shutdown();
 		delete renderer;
         
+        delete player;
 		delete distortWater;
 		delete dirWater;
         delete light;
@@ -156,6 +176,8 @@ namespace finnsie {
 
 	void Game::processCamera(float dt)
 	{
+        // Camera Movement
+        // ===========================================================
         bool speedIncreased = false;
         if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         {
@@ -172,7 +194,19 @@ namespace finnsie {
 
         if (speedIncreased)
             camera->MovementSpeed /= 5;
+        // ===========================================================
 	}
+
+    void Game::processPlayer(float dt)
+    {
+        player->ResetInput(&pInput);
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) { pInput.forward = true;}
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) { pInput.backward = true;}
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) { pInput.left = true;}
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) { pInput.right = true;}
+
+        player->Move(pInput, dt);
+    }
 
     void Game::initObjects()
     {
@@ -193,10 +227,22 @@ namespace finnsie {
 
         // Test Sphere for shader learning 
         light = new WaterObject("sphere",
-                                     glm::vec3(-100.0f, 100.0f, 80.0),
-                                     glm::vec3(0.0f, 0.0f, 0.0f),
-                                     10.0f,
-                                     "content/objects/sphere/sphere.obj");
+                                glm::vec3(-100.0f, 100.0f, 80.0),
+                                glm::vec3(0.0f, 0.0f, 0.0f),
+                                10.0f,
+                                "content/objects/sphere/sphere.obj");
         LoadDistortedWater(light);
+
+        cube = new GameObject("cube",
+                              glm::vec3(100.0f, 10.0f, 10.0),
+                              glm::vec3(0.0f, 0.0f, 0.0),
+                              1.0f,
+                              "content/objects/cube/cube.obj");
+
+        player = new Player("player",
+                            glm::vec3(40.0f, 1.0f, 10.0),
+                            glm::vec3(0.0f, 0.0f, 0.0),
+                            5.0f,
+                            "content/objects/Player/Player.obj");
     }
 }

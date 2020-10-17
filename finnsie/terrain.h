@@ -50,7 +50,8 @@ namespace finnsie {
         Grass grass;
         Shader* shader;
         Shader* grassShader;
-
+        
+        // TODO(CK): Run on a separate thread
         Terrain(int gridX, int gridZ);
         ~Terrain();
 

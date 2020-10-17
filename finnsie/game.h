@@ -3,6 +3,7 @@
 
 #include "cube_map.h"
 #include "resource_manager.h"
+#include "player.h"
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -50,10 +51,16 @@ namespace finnsie {
 		Terrain *terrain;
 		// Lights
 
+		Player* player;
+		// TODO(CK): Add controller
+		PlayerInput pInput;
+
         WaterObject* light;
         WaterObject* distortWater;
 		WaterObject* dirWater;
 		
+		GameObject* cube;
+
 		Cubemap cubemap;
 
 		// Core shaders
@@ -65,7 +72,7 @@ namespace finnsie {
 	private:
 		void initObjects();
 		void processCamera(float dt);
-
+		void processPlayer(float dt);
 	};
 
 

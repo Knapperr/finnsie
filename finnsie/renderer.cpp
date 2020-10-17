@@ -53,6 +53,13 @@ namespace finnsie {
 		// and tweaked if a special shader is used
 		// there has to be a way i can call like:
 		/*
+
+			IMPORTANT(ck): Oct 14 2020
+			THIS MIGHT BE BETTER FOR THE SHADER TO HANDLE IT
+			ACTIVATE UNIFORMS OR SOMETHING THAT YOU PASS
+			THE SHADER TOO AND IT IS ALL DEALT WITH IN THERE
+			INSTEAD OF DOING IT IN THIS FUNCTION
+
 			uniform == gameobject attribute
 			glUniformMatrix4fv ()
 			if you have a uniform type attached

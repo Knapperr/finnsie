@@ -24,7 +24,7 @@ namespace finnsie {
 		// this way the draw call can just use whatever
 		// shader is attached to the game object
 		// in the Draw() call in renderer
-        RigidBody rb;
+        // RigidBody rb;
         
 		GameObject()
 		{
@@ -34,8 +34,9 @@ namespace finnsie {
 			this->scale = 1.0;
 			this->viewNormals = false;
 			this->wireFrame = false;
-            this->rb = {};
-            SetupRigidBody(&rb, -9.81f);
+            
+			//this->rb = {};
+            //SetupRigidBody(&rb, -9.81f);
             
             // NOTE(CK): Model will have 0 meshes loaded
             // keep pointer pointing to nothing
@@ -51,8 +52,8 @@ namespace finnsie {
 			this->viewNormals = false;
 			this->wireFrame = false;
             
-            this->rb = {};
-            SetupRigidBody(&rb, -9.81f);
+            //this->rb = {};
+            //SetupRigidBody(&rb, -9.81f);
             
 			// Load the model
 			model = new Model(path);
