@@ -125,17 +125,17 @@ namespace finnsie {
 			matModel = matModel * matTranslate;
             
 			glm::mat4 rotateZ = glm::rotate(glm::mat4(1.0f),
-											obj.orientation.z,
+											glm::radians(obj.orientation.z),
 											glm::vec3(0.0f, 0.0f, 1.0f));
 			matModel = matModel * rotateZ;
             
 			glm::mat4 rotateY = glm::rotate(glm::mat4(1.0f),
-											obj.orientation.y,
+											glm::radians(obj.orientation.y),
 											glm::vec3(0.0f, 1.0f, 0.0f));
 			matModel = matModel * rotateY;
             
 			glm::mat4 rotateX = glm::rotate(glm::mat4(1.0f),
-											obj.orientation.x,
+											glm::radians(obj.orientation.x),
 											glm::vec3(1.0f, 0.0f, 0.0f));
 			matModel = matModel * rotateX;
             

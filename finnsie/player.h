@@ -5,13 +5,6 @@
 
 // NOTE(CK): Reference: https://www.youtube.com/watch?v=d-kuzyCkjoQ
 //		     Thin Matrix
-
-
-// TODO(CK): Figure out how to just make the player a gameobject
-//			 do we inherit from it or something... just get something working
-//			 for now
-
-
 namespace finnsie {
 
 	struct PlayerInput {
@@ -28,12 +21,11 @@ namespace finnsie {
 
 		Player(std::string name, glm::vec3 pos, glm::vec3 orientation, float scale, std::string path);
 
-		float speed = 20.0f;
-		float turnSpeed = 160.0f;
+		float speed = 12.0f;
+		float turnSpeed = 280.0f;
 		float currentSpeed = 0;
 		float currentTurnSpeed = 0;
 		glm::vec3 rotation;
-
 
 		void Move(PlayerInput input, float dt);
 		void CheckInputs(PlayerInput input);

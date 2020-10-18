@@ -13,8 +13,8 @@ namespace finnsie {
 		CheckInputs(input);
 		IncreaseRotation(0, currentTurnSpeed * dt, 0);
 		float distance = currentSpeed * dt;
-		float dx = distance * sinf(glm::radians(rotation.y));
-		float dz = distance * cosf(glm::radians(rotation.y));
+		float dx = distance * sinf(glm::radians(orientation.y));
+		float dz = distance * cosf(glm::radians(orientation.y));
 		IncreasePosition(dx, 0, dz);
 	}
 
@@ -32,7 +32,6 @@ namespace finnsie {
 		{
 			this->currentSpeed = 0;
 		}
-
 
 		if (input.right)
 		{
@@ -58,9 +57,9 @@ namespace finnsie {
 	
 	void Player::IncreaseRotation(float dx, float dy, float dz)
 	{
-		this->rotation.x += dx;
-		this->rotation.y += dy;
-		this->rotation.z += dz;
+		this->orientation.x += dx;
+		this->orientation.y += dy;
+		this->orientation.z += dz;
 	}
 
 	void Player::ResetInput(PlayerInput* input)

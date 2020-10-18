@@ -240,9 +240,9 @@ namespace finnsie {
                               "content/objects/cube/cube.obj");
 
         player = new Player("player",
-                            glm::vec3(40.0f, 1.0f, 10.0),
+                            glm::vec3(40.0f, 0.1f, 10.0),
                             glm::vec3(0.0f, 0.0f, 0.0),
-                            5.0f,
+                            4.0f,
                             "content/objects/Player/Player.obj");
     }
 }
