@@ -168,7 +168,7 @@
     <ClCompile Include="include\imgui\imgui_widgets.cpp" />
     <ClCompile Include="include\stb_image\stb_image.cpp" />
     <ClCompile Include="log.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="glfw_main.cpp" />
     <ClCompile Include="mesh.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="player.cpp" />
@@ -178,6 +178,7 @@
     <ClCompile Include="shader_manager.cpp" />
     <ClCompile Include="terrain.cpp" />
     <ClCompile Include="texture_manager.cpp" />
+    <ClCompile Include="third_person_camera.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -206,6 +207,7 @@
     <ClInclude Include="shader_manager.h" />
     <ClInclude Include="terrain.h" />
     <ClInclude Include="texture_manager.h" />
+    <ClInclude Include="third_person_camera.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

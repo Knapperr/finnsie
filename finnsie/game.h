@@ -4,6 +4,7 @@
 #include "cube_map.h"
 #include "resource_manager.h"
 #include "player.h"
+#include "third_person_camera.h"
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -41,12 +42,14 @@ namespace finnsie {
         bool debugRightMousePressed;
         bool debugSphereStopped;
 		bool leftMousePressed;
+		bool followCameraActive;
 
 		GLFWwindow* window;
 		Gui *gui;
 		
 		Renderer *renderer;
 		Camera *camera;
+		ThirdPersonCamera* followCamera;
 
 		Terrain *terrain;
 		// Lights

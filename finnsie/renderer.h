@@ -2,6 +2,7 @@
 #define RENDERER_HG_
 
 #include "camera.h"
+#include "third_person_camera.h"
 #include "gui.h"
 
 #include <glm/gtc/type_ptr.hpp>
@@ -16,6 +17,7 @@ namespace finnsie {
 		Renderer();
 		~Renderer();
 		void BeginRender(Camera& cam);
+		void BeginRender(ThirdPersonCamera& cam);
 		void Draw(GameObject* obj);
 		void DrawModel(GameObject& obj, Shader modelShader);
 		void DrawWater(WaterObject* water, Shader waterShader);

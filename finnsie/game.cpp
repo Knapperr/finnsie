@@ -37,7 +37,9 @@ namespace finnsie {
 
         initObjects();
         pInput = {};
-        
+        this->followCamera = new ThirdPersonCamera(player);
+        this->followCameraActive = true;
+
         terrain = new Terrain(0, 0);
         terrain->Generate();
         terrain->GenerateGrass();
@@ -65,6 +67,11 @@ namespace finnsie {
             processPlayer(dt);
         }
 
+        if (followCameraActive)
+        {
+            followCamera->Move();
+        }
+
         light->pos.x = g_lamp.x;
         light->pos.y = g_lamp.y;
         light->pos.z = g_lamp.z;
@@ -77,7 +84,15 @@ namespace finnsie {
     
 	void Game::Render()
 	{
-		renderer->BeginRender(*camera); 
+        // TODO(CK): SOLUTION FOR NOW CLEAN UP
+        if (followCameraActive)
+        {
+            renderer->BeginRender(*followCamera);
+        }
+        else
+        {
+		    renderer->BeginRender(*camera); 
+        }
 
         for (unsigned int i = 0; i < g_objects.size(); i++)
         {
@@ -142,7 +157,8 @@ namespace finnsie {
 		// NOTE(CK): (hack?)
 		// This interacts with the gui well because if the mouse button is held down
 		// the gui wont register to the mouse
-		if (!gui->Active() && button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+		if (!gui->Active() && 
+            button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 		{
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 			leftMousePressed = true;
@@ -153,6 +169,16 @@ namespace finnsie {
 			leftMousePressed = false;
 		}
        
+
+
+        if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
+        {
+            debugRightMousePressed = true;
+        }
+        else
+        {
+            debugRightMousePressed = false;
+        }
 	}
     
 	void Game::Shutdown()

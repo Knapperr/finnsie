@@ -41,6 +41,15 @@ namespace finnsie {
 		this->view = cam.GetViewMatrix();
 		this->camPos = cam.Position;
 	}
+
+	void Renderer::BeginRender(ThirdPersonCamera& cam)
+	{
+		this->projection = glm::perspective(glm::radians(cam.distanceFromTarget),
+											(float)1080 / (float)720,
+											1.0f, 1000.0f); // NOTE(CK): near and far clipping distance
+		this->view = cam.ViewMatrix();
+		this->camPos = cam.position;
+	}
     
 	void Draw(GameObject* obj)
 	{

@@ -21,8 +21,8 @@ namespace finnsie {
 
 		Player(std::string name, glm::vec3 pos, glm::vec3 orientation, float scale, std::string path);
 
-		float speed = 12.0f;
-		float turnSpeed = 280.0f;
+		float speed = 18.0f;
+		float turnSpeed = 180.0f;
 		float currentSpeed = 0;
 		float currentTurnSpeed = 0;
 		glm::vec3 rotation;

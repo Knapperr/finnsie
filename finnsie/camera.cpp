@@ -1,6 +1,7 @@
 #include "camera.h"
 
 namespace finnsie {
+
 	glm::mat4 Camera::GetViewMatrix()
 	{
 		return glm::lookAt(Position, Position + Front, Up);
@@ -19,18 +20,10 @@ namespace finnsie {
 		if (direction == Camera_Movement::RIGHT)
 			Position += Right * velocity;
 
-		if (!LockedY)
-		{
-			if (direction == Camera_Movement::UP)
-				Position.y += 1.0f * velocity;
-			if (direction == Camera_Movement::DOWN)
-				Position.y -= 1.0f * velocity;
-		}
-		else
-		{
-			// Stay at the ground level
-			Position.y = 5.2f;
-		}
+		if (direction == Camera_Movement::UP)
+			Position.y += 1.0f * velocity;
+		if (direction == Camera_Movement::DOWN)
+			Position.y -= 1.0f * velocity;
 	}
 
 	// Processes input received from a mouse input system. Expects the offset value in both the x and y direction.
@@ -64,14 +57,23 @@ namespace finnsie {
 			MovementSpeed = 1;
 
 		// NOTE(CK): Old zooming code
-		//if (Zoom >= 1.0f && Zoom <= 45.0f)
-		//	Zoom -= yoffset;
-		//if (Zoom <= 1.0f)
-		//	Zoom = 1.0f;
-		//if (Zoom >= 45.0f)
-		//	Zoom = 45.0f;
+		if (following)
+		{
+			if (Zoom >= 1.0f && Zoom <= 45.0f)
+				Zoom -= yoffset;
+			if (Zoom <= 1.0f)
+				Zoom = 1.0f;
+			if (Zoom >= 45.0f)
+				Zoom = 45.0f;
+		}
+		else
+		{
+			// Reset zoom we aren't following
+			// a target
+			Zoom = 45.0f;
+		}
 	}
-
+	
 	// Calculates the front vector from the Camera's (updated) Euler Angles
 	void Camera::updateCameraVectors()
 	{

@@ -291,9 +291,13 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	lastX = (float)xpos;
 	lastY = (float)ypos;
     
-	if (g_Game->leftMousePressed)
+	if (g_Game->leftMousePressed && !g_Game->followCameraActive)
 	{
 		g_Game->camera->ProcessMouseMovement(xoffset, yoffset);
+	}
+	else
+	{
+		g_Game->followCamera->ProcessMouse(xoffset, yoffset);
 	}
 }
 
@@ -302,10 +306,14 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 // TODO(CK): Move callbacks to seperate file?
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-    if (!g_Game->gui->Active())
+    if (!g_Game->gui->Active() && !g_Game->followCameraActive)
     {
         g_Game->camera->ProcessMouseScroll((float)yoffset);
     }
+	if (g_Game->followCameraActive)
+	{
+		g_Game->followCamera->CalculateZoom((float)yoffset);
+	}
 }
 
 void gamepad_callback(int jid, int event)
