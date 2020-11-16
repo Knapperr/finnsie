@@ -6,6 +6,7 @@
 #include <glm/mat4x4.hpp> 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp> 
+#include <glm/gtc/quaternion.hpp>
 
 namespace finnsie {
 	ThirdPersonCamera::ThirdPersonCamera(GameObject* obj)
@@ -37,15 +38,38 @@ namespace finnsie {
 		// calcpitch
 		// calculateanglearoundplayer
 		// ---------------
-		float horizontalDistance = (float)(distanceFromTarget  * cosf(glm::radians(pitch)));
+		float offsety = 2.0f;
+
+		float horizontalDistance = (float)(distanceFromTarget * cosf(glm::radians(pitch)));
 		float verticalDistance = (float)(distanceFromTarget * sinf(glm::radians(pitch)));
 		float theta = glm::radians(target->orientation.y) + angleAroundTarget;
 		float offsetx = horizontalDistance * sinf(glm::radians(theta));
 		float offsetz = horizontalDistance * cosf(glm::radians(theta));
 		position.x = target->pos.x - offsetx;
 		position.z = target->pos.z - offsetz;
-		position.y = target->pos.y + verticalDistance;
-		this->yaw = 180 - (glm::radians(target->orientation.y) + angleAroundTarget);
+		position.y = (target->pos.y + verticalDistance) + offsety; // need some kind of offset for the target so the camera doesn't point at the floot
+		yaw = 180 - (glm::radians(target->orientation.y) + angleAroundTarget);
+
+		/*
+		if the left button is not being pressed slerp back behind the
+		player camera should always be in some deadzone behind the player
+
+		*/
+		// TODO(ck): SLERP the camera back 
+		// before 
+		//if (!g_Game->leftMousePressed)
+		//{
+		//	glm::quat cameraQuat = glm::quat(position.x, position.y, position.z, 0.0f);
+		//	glm::quat targetQuat = glm::quat(target->pos.x, target->pos.y, target->pos.z, 0.0f);
+		//	glm::quat newQuat = glm::slerp(cameraQuat, targetQuat, 0.3f);
+
+		//	const glm::mat4 inverted = glm::inverse(ViewMatrix());
+		//	glm::vec3 forward = glm::normalize(glm::vec3(inverted[2]));
+		//	glm::vec3 newFwd = newQuat * forward;
+
+		//	position = newFwd;
+		//}
+		
 	}
 	
 
@@ -57,7 +81,7 @@ namespace finnsie {
 
 	void ThirdPersonCamera::CalculateZoom(float yoffset)
 	{
-		float zoom = yoffset * 0.4f;
+		float zoom = yoffset * 0.3f;
 		distanceFromTarget -= zoom;
 	}
 
@@ -67,12 +91,16 @@ namespace finnsie {
 		{
 			float newPitch = yoffset * 0.1f; // sensitivity
 			this->pitch -= newPitch;
+			
+			// Constrain pitch from going under terrain
+			if (this->pitch < CONSTRAINT_PITCH_VAL)
+				this->pitch = CONSTRAINT_PITCH_VAL;
 		}
 	}
 
 	void ThirdPersonCamera::calculateAngleAroundPlayer(float xoffset)
 	{
-		if (g_Game->debugRightMousePressed)
+		if (g_Game->leftMousePressed)
 		{
 			float angle = xoffset * 0.3f; // sensitivity
 			this->angleAroundTarget -= angle;

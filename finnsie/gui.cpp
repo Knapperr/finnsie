@@ -62,11 +62,13 @@ namespace finnsie {
 			modelWindow(&showModelWindow);
 		if (showTerrainWindow)
 			terrainWindow(&showTerrainWindow);
+		if (showPlayerWindow)
+			playerWindow(&showPlayerWindow);
         
 		// Show a simple window that we create ourselves. We use a begin/end pair to create a named window
 		{
 			// Only update the gui if its active
-			ImGui::Begin("DEBUG MENU");
+			ImGui::Begin("DEBUG");
 			ImGui::Checkbox("Demo", &showDemoWindow);
 			ImGui::SameLine();
 			ImGui::Checkbox("Water", &showWaterWindow);
@@ -74,9 +76,12 @@ namespace finnsie {
 			ImGui::Checkbox("Model", &showModelWindow);
 			ImGui::SameLine();
 			ImGui::Checkbox("Terrain", &showTerrainWindow);
+			ImGui::Checkbox("Player", &showPlayerWindow);
+
 			
 			ImGui::SliderFloat("Camera Speed", &g_Game->camera->MovementSpeed, 0.0f, 100.0f);
 			ImGui::Checkbox("Lock Camera", &g_Game->camera->LockedY);
+			ImGui::Checkbox("Follow Player", &g_Game->followCameraActive);
             
 			ImGui::SliderFloat("Light X", &g_lamp.x, -1500.0f, 1500.0f);
 			ImGui::SliderFloat("Light Y", &g_lamp.y, -1500.0f, 1500.0f);
@@ -188,7 +193,7 @@ namespace finnsie {
     
 	void Gui::terrainWindow(bool* p_open)
 	{
-		ImGui::Begin("TERRAIN", p_open);
+		ImGui::Begin("Terrain", p_open);
 
 		ImGui::Checkbox("wire frame", &g_Game->terrain->wireFrame);
 		ImGui::Checkbox("draw texture", &g_Game->terrain->drawTexture);
@@ -208,7 +213,7 @@ namespace finnsie {
 
 	void Gui::waterWindow(bool* p_open)
 	{
-		ImGui::Begin("WATER", p_open);
+		ImGui::Begin("Water", p_open);
         
 		static int e = 0;
 		ImGui::RadioButton("distorted water", &e, 0); 
@@ -276,6 +281,14 @@ namespace finnsie {
 		ImGui::Checkbox("dualGrid", &g_Game->dirWater->dualGrid);
     }
         
+	void Gui::playerWindow(bool* p_open)
+	{
+		ImGui::Begin("Player", p_open);
+		ImGui::DragFloat("Speed", &g_Game->player->speed,
+						 0.001f, 0.1f, 100.0f, "%.02f"); // 0.1
+		ImGui::End();
+	}
+
 	void Gui::Render()
 	{
 		ImGui::Render();

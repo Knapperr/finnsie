@@ -58,17 +58,14 @@ namespace finnsie {
     // TODO(CK): pass the input from main to here
 	void Game::Update(float dt)
 	{        
-		if (leftMousePressed)
+		if (leftMousePressed && !followCameraActive)
 		{
 			processCamera(dt);
 		}
-        else
-        {
-            processPlayer(dt);
-        }
-
+        
         if (followCameraActive)
         {
+            processPlayer(dt);
             followCamera->Move();
         }
 

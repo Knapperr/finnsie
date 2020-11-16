@@ -109,7 +109,7 @@ int main(int argc, char** argv)
 	// TODO(CK): Look into this what error checks do i need to do?
 	// NOTE: OpenGL error checks have been omitted for brevity
 	glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-	//glEnable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -310,7 +310,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
     {
         g_Game->camera->ProcessMouseScroll((float)yoffset);
     }
-	if (g_Game->followCameraActive)
+	else if (g_Game->followCameraActive)
 	{
 		g_Game->followCamera->CalculateZoom((float)yoffset);
 	}

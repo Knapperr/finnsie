@@ -41,15 +41,17 @@ namespace finnsie {
 		bool showWaterWindow = false;
 		bool showModelWindow = false;
 		bool showTerrainWindow = false;
+		bool showPlayerWindow = false;
 		bool showAnotherWindow = false;
 		
 		// TODO(CK): Keep getting all of the folders on start up
-		// make local if you want it to refetch the folders when opening it
+		// make local to function if you want it to refetch the folders when opening it
 		std::vector<objFile> objPaths;
 		
 		void terrainWindow(bool* p_open);
 		void waterWindow(bool* p_open);
 		void modelWindow(bool* p_open);
+		void playerWindow(bool* p_open);
 		// TODO(CK): Remove replace with local function
 		void getFolders(std::string folder);
 		
