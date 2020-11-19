@@ -289,7 +289,7 @@ void processInput(GLFWwindow* window, int key, int action, int scancode, int mod
 	SwapInput();
 }
 
-void processInput(GLFWwindow* window)
+void processMovement(GLFWwindow* window)
 {
 	// TODO(CK): Process more inputs
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) { glfwSetWindowShouldClose(window, true); }
