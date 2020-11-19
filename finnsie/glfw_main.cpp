@@ -266,6 +266,7 @@ int main(int argc, char** argv)
 void processInput(GLFWwindow* window, int key, int action, int scancode, int mods)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) { glfwSetWindowShouldClose(window, true); }
+	// Check for game inptu
 	g_Game->ProcessInput(key, action, scancode, mods, timer.fixed_dt);
 }
 

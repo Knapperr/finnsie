@@ -12,14 +12,49 @@
 
 namespace finnsie {
     
+
+	struct ButtonState
+	{
+		int halfTransitionCount;
+		bool endedDown;
+	};
+
+	struct ControllerInput
+	{
+		bool isConnected;
+		float stickAverageX;
+		float stickAverageY;
+		
+		union
+		{
+			ButtonState buttons[12];
+			struct
+			{
+				ButtonState moveUp;
+				ButtonState moveDown;
+				ButtonState moveLeft;
+				ButtonState moveRight;
+				ButtonState actionUp;
+				ButtonState actionDown;
+				ButtonState actionLeft;
+				ButtonState actionRight;
+				ButtonState leftShoulder;
+				ButtonState rightShoulder;
+				ButtonState back;
+				ButtonState start;
+			};
+		};
+	};
+
 	struct Input
 	{
-		bool up;
-		bool down;
-		bool left;
-		bool right;
-		bool forward;
-		bool back;
+		ButtonState mouseButtons[5];
+		int mouseX;
+		int mouseY;
+		int mouseZ;
+
+		// NOTE(ck): one controlelr for now
+		ControllerInput controller;
 	};
 
 	class Game
