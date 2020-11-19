@@ -27,9 +27,11 @@ namespace finnsie {
 		
 		union
 		{
-			bool buttons[12];
+			bool buttons[14];
 			struct
 			{
+				ButtonState moveForward;
+				ButtonState moveBackward;
 				ButtonState moveUp;
 				ButtonState moveDown;
 				ButtonState moveLeft;
@@ -62,8 +64,43 @@ namespace finnsie {
 	class Game
 	{
     public:
+		bool debugRightMousePressed;
+		bool debugSphereStopped;
+		bool leftMousePressed;
+		bool followCameraActive;
+
+		GLFWwindow* window;
+		Gui* gui;
+
+		Renderer* renderer;
+		Camera* camera;
+		ThirdPersonCamera* followCamera;
+
+		Terrain* terrain;
+		// Lights
+
+		Player* player;
+		// TODO(CK): Add controller
+		PlayerInput pInput;
+
+		WaterObject* light;
+		WaterObject* distortWater;
+		WaterObject* dirWater;
+
+		GameObject* cube;
+
+		Cubemap cubemap;
+
+		// Core shaders
+		Shader* modelShader;
+		Shader* disWaterShader;
+		Shader* dirWaterShader;
+		Shader* lightShader;
+
+		float dt;
+
 		Game(GLFWwindow& wnd);
-		void Update(float dt);
+		void Update(float deltaTime);
 		void Render();
 
 		// TODO(CK): Pull the gui out of the game
@@ -77,43 +114,11 @@ namespace finnsie {
 		void ProcessMouseButtons(Input* input);
 		void ProcessMouseScroll(Input* input);
 		void Shutdown();
-        
-        bool debugRightMousePressed;
-        bool debugSphereStopped;
-		bool leftMousePressed;
-		bool followCameraActive;
-
-		GLFWwindow* window;
-		Gui *gui;
-		
-		Renderer *renderer;
-		Camera *camera;
-		ThirdPersonCamera* followCamera;
-
-		Terrain *terrain;
-		// Lights
-
-		Player* player;
-		// TODO(CK): Add controller
-		PlayerInput pInput;
-
-        WaterObject* light;
-        WaterObject* distortWater;
-		WaterObject* dirWater;
-		
-		GameObject* cube;
-
-		Cubemap cubemap;
-
-		// Core shaders
-		Shader* modelShader;
-		Shader* disWaterShader;
-		Shader* dirWaterShader;
-		Shader* lightShader;
+       
 
 	private:
 		void initObjects();
-		void processCamera(float dt);
+		void processCamera(Input* input);
 		void processPlayer(float dt);
 	};
 

@@ -56,16 +56,12 @@ namespace finnsie {
     }
 
     // TODO(CK): pass the input from main to here
-	void Game::Update(float dt)
-	{        
-		if (leftMousePressed && !followCameraActive)
-		{
-			processCamera(dt);
-		}
-        
+	void Game::Update(float deltaTime)
+	{                
+        this->dt = deltaTime;
         if (followCameraActive)
         {
-            processPlayer(dt);
+            processPlayer(this->dt);
             followCamera->Move();
         }
 
@@ -112,8 +108,15 @@ namespace finnsie {
 		renderer->EndRender();
 	}
     
+
+    // These Process Input & Mouse Functions get called on glfw callbacks
+    // ============================================================================
     void Game::ProcessInput(Input* input)
     {
+        if (leftMousePressed && !followCameraActive)
+        {
+            processCamera(input);
+        }
         return;
     }
         
@@ -193,27 +196,24 @@ namespace finnsie {
     }
 
     // PROCESS INPUT FUNCTION
-	void Game::processCamera(float dt)
+	void Game::processCamera(Input* input)
 	{
-        // Camera Movement
-        // ===========================================================
         bool speedIncreased = false;
-        if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+        if (input->controller.actionUp.endedDown)
         {
             camera->MovementSpeed *= 5;
             speedIncreased = true;
         }
 
-		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) { camera->ProcessKeyboard(Camera_Movement::FORWARD, dt); }
-		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) { camera->ProcessKeyboard(Camera_Movement::BACKWARD, dt); }
-		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) { camera->ProcessKeyboard(Camera_Movement::LEFT, dt); }
-		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) { camera->ProcessKeyboard(Camera_Movement::RIGHT, dt); }
-		if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) { camera->ProcessKeyboard(Camera_Movement::UP, dt); }
-		if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) { camera->ProcessKeyboard(Camera_Movement::DOWN, dt); }
+		if (input->controller.moveForward.endedDown)    { camera->ProcessKeyboard(Camera_Movement::FORWARD, dt); }
+		if (input->controller.moveBackward.endedDown)   { camera->ProcessKeyboard(Camera_Movement::BACKWARD, dt); }
+		if (input->controller.moveLeft.endedDown)       { camera->ProcessKeyboard(Camera_Movement::LEFT, dt); }
+		if (input->controller.moveRight.endedDown)      { camera->ProcessKeyboard(Camera_Movement::RIGHT, dt); }
+		if (input->controller.moveUp.endedDown)         { camera->ProcessKeyboard(Camera_Movement::UP, dt); }
+		if (input->controller.moveDown.endedDown)       { camera->ProcessKeyboard(Camera_Movement::DOWN, dt); }
 
         if (speedIncreased)
             camera->MovementSpeed /= 5;
-        // ===========================================================
 	}
 
     void Game::processPlayer(float dt)

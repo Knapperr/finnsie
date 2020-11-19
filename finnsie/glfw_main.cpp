@@ -276,9 +276,36 @@ void processInput(GLFWwindow* window, int key, int action, int scancode, int mod
 {
 	// TODO(CK): Process more inputs
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) { glfwSetWindowShouldClose(window, true); }
+
+	newInput.controller.actionUp.endedDown      = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
+	newInput.controller.moveForward.endedDown   = glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS;
+	newInput.controller.moveBackward.endedDown  = glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS;
+	newInput.controller.moveLeft.endedDown		= glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS;
+	newInput.controller.moveRight.endedDown		= glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS;
+	newInput.controller.moveUp.endedDown		= glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS;
+	newInput.controller.moveDown.endedDown		= glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS;
+
 	g_Game->ProcessInput(&newInput);
 	SwapInput();
 }
+
+void processInput(GLFWwindow* window)
+{
+	// TODO(CK): Process more inputs
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) { glfwSetWindowShouldClose(window, true); }
+
+	newInput.controller.actionUp.endedDown = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
+	newInput.controller.moveForward.endedDown = glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS;
+	newInput.controller.moveBackward.endedDown = glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS;
+	newInput.controller.moveLeft.endedDown = glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS;
+	newInput.controller.moveRight.endedDown = glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS;
+	newInput.controller.moveUp.endedDown = glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS;
+	newInput.controller.moveDown.endedDown = glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS;
+
+	g_Game->ProcessInput(&newInput);
+	SwapInput();
+}
+
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
