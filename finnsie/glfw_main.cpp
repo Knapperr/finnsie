@@ -23,6 +23,8 @@ const unsigned int SCREEN_WIDTH = 1440;
 const unsigned int SCREEN_HEIGHT = 900;
 
 Game* finnsie::g_Game = NULL;
+Input newInput = {};
+Input oldInput = {};
 
 float lastX = SCREEN_WIDTH / 2.0f;
 float lastY = SCREEN_HEIGHT / 2.0f;
@@ -63,6 +65,12 @@ inline float Win32GetSecondsElapsed(LARGE_INTEGER start, LARGE_INTEGER end)
 	return result;
 }
 
+inline void SwapInput()
+{
+	Input* temp = &newInput;
+	newInput = oldInput;
+	oldInput = *temp;
+}
 
 int main(int argc, char** argv)
 {   
@@ -115,6 +123,8 @@ int main(int argc, char** argv)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
 	g_Game = new Game(*window);
+	newInput = {};
+	oldInput = {};
 
 	// TODO(CK): Ill have to go through this update loop and 
 	// really clean it up.
@@ -154,7 +164,6 @@ int main(int argc, char** argv)
 	int64_t prevFrameTime = clock.QuadPart;
 	int64_t frameAccumulator = 0;
 	//uint64_t lastCycleCount = __rdtsc();
-
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -265,14 +274,19 @@ int main(int argc, char** argv)
 
 void processInput(GLFWwindow* window, int key, int action, int scancode, int mods)
 {
+	// TODO(CK): Process more inputs
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) { glfwSetWindowShouldClose(window, true); }
-	// Check for game inptu
-	g_Game->ProcessInput(key, action, scancode, mods, timer.fixed_dt);
+	g_Game->ProcessInput(&newInput);
+	SwapInput();
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
-	g_Game->ProcessMouseButtons(button, action, mods);
+	// TODO(CK): Process more inputs
+	newInput.mouseButtons[0].endedDown = button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS;
+	newInput.mouseButtons[1].endedDown = button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS;
+	g_Game->ProcessMouseButtons(&newInput);
+	SwapInput();
 }
 
 // glfw: whenever the mouse moves, this callback is called
@@ -291,30 +305,19 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     
 	lastX = (float)xpos;
 	lastY = (float)ypos;
-    
-	if (g_Game->leftMousePressed && !g_Game->followCameraActive)
-	{
-		g_Game->camera->ProcessMouseMovement(xoffset, yoffset);
-	}
-	else
-	{
-		g_Game->followCamera->ProcessMouse(xoffset, yoffset);
-	}
+
+	newInput.mouseX = xoffset;
+	newInput.mouseY = yoffset;
+	g_Game->ProcessMousePosition(&newInput);
+	SwapInput();
 }
 
-// glfw: whenever the mouse scroll wheel scrolls, this callback is called
-// ----------------------------------------------------------------------
-// TODO(CK): Move callbacks to seperate file?
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-    if (!g_Game->gui->Active() && !g_Game->followCameraActive)
-    {
-        g_Game->camera->ProcessMouseScroll((float)yoffset);
-    }
-	else if (g_Game->followCameraActive)
-	{
-		g_Game->followCamera->CalculateZoom((float)yoffset);
-	}
+	newInput.xScrollOffset = (float)xoffset;
+	newInput.yScrollOffset = (float)yoffset;
+	g_Game->ProcessMouseScroll(&newInput);
+	SwapInput();
 }
 
 void gamepad_callback(int jid, int event)
@@ -327,6 +330,7 @@ void gamepad_callback(int jid, int event)
 	{
 		// The joystick was disconnected
 	}
+	SwapInput();
 }
 
 static void error_callback(int error, const char* description)

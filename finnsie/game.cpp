@@ -112,63 +112,34 @@ namespace finnsie {
 		renderer->EndRender();
 	}
     
-	void Game::ProcessInput(int key, int action, int scancode, int mods, float dt)
-	{
-        if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
-        {
-            Reload(ResourceManager::GetShader("binn"));
-            Reload(ResourceManager::GetShader("waterDis"));
-        }
+    void Game::ProcessInput(Input* input)
+    {
+        return;
+    }
         
-        // How to use the delta time properly for movement.. is movmenet in a loop?
-        // handmade 
-        if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) 
-        { 
-            g_lamp.x -= 85 * dt;
-        }
-        if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) 
-        { 
-            g_lamp.x += 85 * dt;
-        }
-        if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) 
+    void Game::ProcessMouseButtons(Input* input)
+    {
+        // NOTE(CK): (hack?)
+        // This interacts with the gui well because if the mouse button is held down
+        // the gui wont register to the mouse
+        if (!gui->Active() && input->mouseButtons[0].endedDown)
         {
-            g_lamp.z += 85 * dt;
+            // TODO(ck): Input mode cant be in the game layer
+            // Create a windows setting struct for options like this
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            // TODO(CK): dont need this leftMousePressed 
+            // change to canProcessCamera or something
+            leftMousePressed = true;
         }
-        if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) 
-        { 
-            g_lamp.z -= 85 * dt;
-        }
-        if (glfwGetKey(window, GLFW_KEY_PAGE_UP) == GLFW_PRESS)
+        else
         {
-            g_lamp.y += 85 * dt;
-        }
-        if (glfwGetKey(window, GLFW_KEY_PAGE_DOWN) == GLFW_PRESS)
-        {
-            g_lamp.y -= 85 * dt;
+            // TODO(ck): Input mode cant be in the game layer
+            // Create a windows setting struct for options like this
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            leftMousePressed = false;
         }
 
-	}
-    
-	void Game::ProcessMouseButtons(int button, int action, int mods)
-	{
-		// NOTE(CK): (hack?)
-		// This interacts with the gui well because if the mouse button is held down
-		// the gui wont register to the mouse
-		if (!gui->Active() && 
-            button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
-		{
-			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-			leftMousePressed = true;
-		}
-		else
-		{
-			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-			leftMousePressed = false;
-		}
-       
-
-
-        if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
+        if (input->mouseButtons[1].endedDown)
         {
             debugRightMousePressed = true;
         }
@@ -176,8 +147,8 @@ namespace finnsie {
         {
             debugRightMousePressed = false;
         }
-	}
-    
+    }
+
 	void Game::Shutdown()
 	{
 
@@ -197,6 +168,31 @@ namespace finnsie {
 		delete gui;
 	}
 
+    void Game::ProcessMousePosition(Input* input)
+    {
+        if (leftMousePressed && !followCameraActive)
+        {
+            camera->ProcessMouseMovement(input->mouseX, input->mouseY);
+        }
+        else
+        {
+            followCamera->ProcessMouse(input->mouseX, input->mouseY);
+        }
+    }
+
+    void Game::ProcessMouseScroll(Input* input)
+    {
+        if (!gui->Active() && !followCameraActive)
+        {
+            camera->ProcessMouseScroll(input->yScrollOffset);
+        }
+        else if (followCameraActive)
+        {
+            followCamera->CalculateZoom(input->yScrollOffset);
+        }
+    }
+
+    // PROCESS INPUT FUNCTION
 	void Game::processCamera(float dt)
 	{
         // Camera Movement

@@ -27,7 +27,7 @@ namespace finnsie {
 		
 		union
 		{
-			ButtonState buttons[12];
+			bool buttons[12];
 			struct
 			{
 				ButtonState moveUp;
@@ -52,6 +52,8 @@ namespace finnsie {
 		int mouseX;
 		int mouseY;
 		int mouseZ;
+		float xScrollOffset;
+		float yScrollOffset;
 
 		// NOTE(ck): one controlelr for now
 		ControllerInput controller;
@@ -70,8 +72,10 @@ namespace finnsie {
 		void GuiUpdate();
 		void GuiRender();
 		
-		void ProcessInput(int key, int action, int scancode, int mods, float dt);
-		void ProcessMouseButtons(int button, int action, int mods);
+		void ProcessInput(Input* input);
+		void ProcessMousePosition(Input* input);
+		void ProcessMouseButtons(Input* input);
+		void ProcessMouseScroll(Input* input);
 		void Shutdown();
         
         bool debugRightMousePressed;
