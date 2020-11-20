@@ -72,6 +72,17 @@ inline void SwapInput()
 	oldInput = *temp;
 }
 
+inline void GetInput(GLFWwindow* window)
+{
+	newInput.controller.actionUp.endedDown = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
+	newInput.controller.moveForward.endedDown = glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS;
+	newInput.controller.moveBackward.endedDown = glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS;
+	newInput.controller.moveLeft.endedDown = glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS;
+	newInput.controller.moveRight.endedDown = glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS;
+	newInput.controller.moveUp.endedDown = glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS;
+	newInput.controller.moveDown.endedDown = glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS;
+}
+
 int main(int argc, char** argv)
 {   
 	if (!glfwInit())
@@ -251,7 +262,9 @@ int main(int argc, char** argv)
 			for (int i = 0; i < updateMultiplicity; ++i)
 			{
 				// TODO(CK): Change double to float?
-				g_Game->Update((float)timer.fixed_dt);
+				GetInput(window);
+				g_Game->Update((float)timer.fixed_dt, &newInput);
+				SwapInput();
 				frameAccumulator -= desiredFrameTime;
 			}
 		}
@@ -276,36 +289,8 @@ void processInput(GLFWwindow* window, int key, int action, int scancode, int mod
 {
 	// TODO(CK): Process more inputs
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) { glfwSetWindowShouldClose(window, true); }
-
-	newInput.controller.actionUp.endedDown      = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
-	newInput.controller.moveForward.endedDown   = glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS;
-	newInput.controller.moveBackward.endedDown  = glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS;
-	newInput.controller.moveLeft.endedDown		= glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS;
-	newInput.controller.moveRight.endedDown		= glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS;
-	newInput.controller.moveUp.endedDown		= glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS;
-	newInput.controller.moveDown.endedDown		= glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS;
-
-	g_Game->ProcessInput(&newInput);
-	SwapInput();
+	return;
 }
-
-void processMovement(GLFWwindow* window)
-{
-	// TODO(CK): Process more inputs
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) { glfwSetWindowShouldClose(window, true); }
-
-	newInput.controller.actionUp.endedDown = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
-	newInput.controller.moveForward.endedDown = glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS;
-	newInput.controller.moveBackward.endedDown = glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS;
-	newInput.controller.moveLeft.endedDown = glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS;
-	newInput.controller.moveRight.endedDown = glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS;
-	newInput.controller.moveUp.endedDown = glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS;
-	newInput.controller.moveDown.endedDown = glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS;
-
-	g_Game->ProcessInput(&newInput);
-	SwapInput();
-}
-
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {

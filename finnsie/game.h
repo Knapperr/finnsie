@@ -80,7 +80,6 @@ namespace finnsie {
 		// Lights
 
 		Player* player;
-		// TODO(CK): Add controller
 		PlayerInput pInput;
 
 		WaterObject* light;
@@ -97,10 +96,8 @@ namespace finnsie {
 		Shader* dirWaterShader;
 		Shader* lightShader;
 
-		float dt;
-
 		Game(GLFWwindow& wnd);
-		void Update(float deltaTime);
+		void Update(float dt, Input* input);
 		void Render();
 
 		// TODO(CK): Pull the gui out of the game
@@ -109,7 +106,7 @@ namespace finnsie {
 		void GuiUpdate();
 		void GuiRender();
 		
-		void ProcessInput(Input* input);
+		void ProcessInput(Input* input, float dt);
 		void ProcessMousePosition(Input* input);
 		void ProcessMouseButtons(Input* input);
 		void ProcessMouseScroll(Input* input);
@@ -118,7 +115,7 @@ namespace finnsie {
 
 	private:
 		void initObjects();
-		void processCamera(Input* input);
+		void processCamera(Input* input, float dt);
 		void processPlayer(float dt);
 	};
 

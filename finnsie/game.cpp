@@ -56,12 +56,12 @@ namespace finnsie {
     }
 
     // TODO(CK): pass the input from main to here
-	void Game::Update(float deltaTime)
+	void Game::Update(float dt, Input* input)
 	{                
-        this->dt = deltaTime;
+        ProcessInput(input, dt);
         if (followCameraActive)
         {
-            processPlayer(this->dt);
+            processPlayer(dt);
             followCamera->Move();
         }
 
@@ -111,11 +111,11 @@ namespace finnsie {
 
     // These Process Input & Mouse Functions get called on glfw callbacks
     // ============================================================================
-    void Game::ProcessInput(Input* input)
+    void Game::ProcessInput(Input* input, float dt)
     {
         if (leftMousePressed && !followCameraActive)
         {
-            processCamera(input);
+            processCamera(input, dt);
         }
         return;
     }
@@ -195,8 +195,7 @@ namespace finnsie {
         }
     }
 
-    // PROCESS INPUT FUNCTION
-	void Game::processCamera(Input* input)
+	void Game::processCamera(Input* input, float dt)
 	{
         bool speedIncreased = false;
         if (input->controller.actionUp.endedDown)
