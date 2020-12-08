@@ -56,7 +56,7 @@ namespace finnsie {
 		float xScrollOffset;
 		float yScrollOffset;
 
-		// NOTE(ck): one controlelr for now
+		// NOTE(ck): one controller for now
 		ControllerInput controller;
 	};
 
@@ -76,20 +76,20 @@ namespace finnsie {
 		ThirdPersonCamera* followCamera;
 
 		Terrain* terrain;
-		// Lights
-
+		
 		Player* player;
 		PlayerInput pInput;
 		std::vector<GameObject*> objects;
 
+		// NOTE(ck): Objects are pulled oot because 
+		// they are used in the GUI
+		// TODO(ck): Write an easy way for GUI to access specific
+		// objects from vector
 		WaterObject* light;
 		WaterObject* distortWater;
 		WaterObject* dirWater;
 
-		GameObject* cube;
-
 		Cubemap cubemap;
-
 
 		Game(GLFWwindow& wnd);
 		void Update(float dt, Input* input);
@@ -104,17 +104,13 @@ namespace finnsie {
 		void ProcessMouseScroll(Input* input);
 		void Shutdown();
        
-
 	private:
 		void initObjects();
 		void processCamera(Input* input, float dt);
 		void processPlayer(float dt);
 	};
 
-
-	// Easier access for GUI
 	extern Game *g_Game;
-
 }
 
 #endif

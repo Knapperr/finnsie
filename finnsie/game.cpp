@@ -119,8 +119,7 @@ namespace finnsie {
                 renderer->Draw(objects[i]);
             }
         }
-
-        renderer->DrawModel(*light);        
+ 
         renderer->DrawModel(*player);
         renderer->DrawTerrain(terrain);
         // TODO(CK): Move to renderer
@@ -180,12 +179,15 @@ namespace finnsie {
 
         renderer->Shutdown();
 		delete renderer;
+
+        // clean up objects
+        for (unsigned int i = 0; i < objects.size(); ++i)
+        {
+            delete objects[i];
+        }
+        objects.clear();
         
         delete player;
-		delete distortWater;
-		delete dirWater;
-        delete light;
-
 		delete camera;
 		gui->Shutdown();
 		delete gui;
@@ -263,7 +265,6 @@ namespace finnsie {
                                    "content/objects/quad/basic_quad.obj");
         LoadDirectionalWater(dirWater);
 
-        // Test Sphere for shader learning 
         light = new WaterObject("sphere",
                                 glm::vec3(-100.0f, 100.0f, 80.0),
                                 glm::vec3(0.0f, 0.0f, 0.0f),
@@ -271,7 +272,7 @@ namespace finnsie {
                                 "content/objects/sphere/sphere.obj");
         LoadDistortedWater(light);
 
-        cube = new GameObject("cube",
+        GameObject* cube = new GameObject("cube",
 
                               glm::vec3(100.0f, 10.0f, 10.0),
                               glm::vec3(0.0f, 0.0f, 0.0),
@@ -286,6 +287,8 @@ namespace finnsie {
 
 
         objects.push_back(distortWater);
+        objects.push_back(dirWater);
         objects.push_back(cube);
+        objects.push_back(light);
     }
 }
