@@ -14,7 +14,35 @@ namespace finnsie {
 	Game::Game(GLFWwindow& wnd)
 	{
 		LOG("Game Init");
+        /*
+        Renderer has a command queue that gets popped. you send a rendercommand through and
+        it switches off of them dispatching to the proper function
+
+        DRAW_WATER
+        DRAW_MODEL
+        DRAW_TERRAIN
+        DRAW_BLINN
         
+        
+        */
+        
+        // GAME NEEDS A WORLD THAT ALL THE OBJECTS ARE IN
+        // NEED A WAY TO DRAW EACH THING GETWATER function .. maybe dont want too many of those or know where they are 
+        // in the structure
+
+        // cause we need to have data for the world like how should terrain and stuff be kept
+        /*
+            could pack the shader in with the object.. the object points to a shader from
+            the resource manager. dont duplicate the shader use the same address that way 
+            its one access point.. a pointer for every object? bad idea?
+
+            The renderer calls game object and a switch checks what the component is and call the 
+            correct draw fhcntion .... Why didn't I think of this before. Could make a gettype function and then it switched off of that 
+            Renderer doesn't need camera it needs the cameras actually data like the matrix... Just send that over instead so camera type 
+            doesn't even matter it doesn't actually care about a camera object just its data 
+        */
+        ResourceManager::Init();
+
         g_lamp = glm::vec3(1.0f);
         g_lamp.x = 224.0f;
         g_lamp.y = 557.38f;
@@ -28,12 +56,6 @@ namespace finnsie {
         this->debugRightMousePressed = false;
 		this->debugSphereStopped = false;
 		
-        ResourceManager::Init();
-
-        modelShader = ResourceManager::GetShader("model");
-        disWaterShader = ResourceManager::GetShader("waterDis");
-        dirWaterShader = ResourceManager::GetShader("waterDir");
-        lightShader = ResourceManager::GetShader("light");
 
         initObjects();
         pInput = {};
@@ -77,33 +99,31 @@ namespace finnsie {
     
 	void Game::Render()
 	{
-        // TODO(CK): SOLUTION FOR NOW CLEAN UP
         if (followCameraActive)
         {
-            renderer->BeginRender(*followCamera);
+            renderer->BeginRender(followCamera->distanceFromTarget, followCamera->ViewMatrix(), followCamera->position);
         }
         else
         {
-		    renderer->BeginRender(*camera); 
+            renderer->BeginRender(camera->Zoom, camera->GetViewMatrix(), camera->Position);; 
         }
 
-        for (unsigned int i = 0; i < g_objects.size(); i++)
+        // TODO(CK):
+        // SORT OBJECTS FIRST
+        
+        // Dispatch objects
+        for (unsigned int i = 0; i < objects.size(); i++)
         {
-            if (g_objects[i]->model != NULL)
+            if (objects[i]->model != NULL)
             {
-                renderer->DrawModel(*g_objects[i], *modelShader);
+                renderer->Draw(objects[i]);
             }
         }
-        // draw above water so you can see underneath
+
+        renderer->DrawModel(*light);        
+        renderer->DrawModel(*player);
         renderer->DrawTerrain(terrain);
-        renderer->DrawWater(distortWater, *ResourceManager::GetShader("waterDis"));
-		//renderer->DrawDirWater(dirWater, waterDirShader);
-        renderer->DrawModel(*light, *lightShader);
-        
-        renderer->DrawSphere(*cube, *ResourceManager::GetShader("binn"));
-
-        renderer->DrawModel(*player, *modelShader);
-
+        // TODO(CK): Move to renderer
         DrawCubemap(&this->cubemap, ResourceManager::GetShader("cubemap"), this->camera);
 		renderer->EndRender();
 	}
@@ -252,6 +272,7 @@ namespace finnsie {
         LoadDistortedWater(light);
 
         cube = new GameObject("cube",
+
                               glm::vec3(100.0f, 10.0f, 10.0),
                               glm::vec3(0.0f, 0.0f, 0.0),
                               1.0f,
@@ -262,5 +283,9 @@ namespace finnsie {
                             glm::vec3(0.0f, 0.0f, 0.0),
                             4.0f,
                             "content/objects/Player/Player.obj");
+
+
+        objects.push_back(distortWater);
+        objects.push_back(cube);
     }
 }

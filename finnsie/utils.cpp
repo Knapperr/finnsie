@@ -5,10 +5,11 @@
 #include <fstream>
 #include <algorithm>
 #include "log.h"
+#include "game.h"
 
 namespace finnsie {
 
-	std::vector<GameObject*> g_objects;
+	Game* g_Game;
 
 	// TODO(CK): TEMP FUNCTION USE RESOURCE MANAGER (Create texture with resource manager and pass it to the function)
 	unsigned int LoadTextureFile(const char* path, const std::string& directory, bool gamma = false)
@@ -66,19 +67,19 @@ namespace finnsie {
 	bool CreateEmptyObject()
 	{
 		GameObject* obj = new GameObject();
-		g_objects.push_back(obj);
+		g_Game->objects.push_back(obj);
 		return true;
 	}
 
 	bool LoadEmptyObject(int index, std::string name, std::string path, float x, float y, float z)
 	{
-		g_objects[index]->name = name;
-		g_objects[index]->pos= glm::vec3(x, y, z),
-		g_objects[index]->orientation = glm::vec3(0.0f, 0.0f, 0.0f),
-		g_objects[index]->scale = 10.0f,
-		g_objects[index]->model = new Model(path);
+		g_Game->objects[index]->name = name;
+		g_Game->objects[index]->pos= glm::vec3(x, y, z),
+		g_Game->objects[index]->orientation = glm::vec3(0.0f, 0.0f, 0.0f),
+		g_Game->objects[index]->scale = 10.0f,
+		g_Game->objects[index]->model = new Model(path);
 
-		if (g_objects[index]->model == NULL)
+		if (g_Game->objects[index]->model == NULL)
 			return false;
 
 		return true;
@@ -111,9 +112,9 @@ namespace finnsie {
 		normaltexture.path = normalpath;
 
 		// NOTE(CK): For now only using this for primitives (can use mesh index 0)
-		g_objects[index]->model->meshes[0].textures.push_back(uvtexture);
-		g_objects[index]->model->meshes[0].textures.push_back(flowtexture);
-		g_objects[index]->model->meshes[0].textures.push_back(normaltexture);
+		g_Game->objects[index]->model->meshes[0].textures.push_back(uvtexture);
+		g_Game->objects[index]->model->meshes[0].textures.push_back(flowtexture);
+		g_Game->objects[index]->model->meshes[0].textures.push_back(normaltexture);
 		return true;
 	}
 
@@ -207,26 +208,26 @@ namespace finnsie {
 	{
 		bool found = false;
 		GameObject* obj;
-		for (unsigned int i = 0; i < g_objects.size(); ++i)
+		for (unsigned int i = 0; i < g_Game->objects.size(); ++i)
 		{
-			if (g_objects[i]->name == name)
+			if (g_Game->objects[i]->name == name)
 			{
-				obj = g_objects[i];
+				obj = g_Game->objects[i];
 				found = true;
 				break;
 			}
 		}
 		if (!found) { return false; }
 
-		g_objects.erase(std::remove(g_objects.begin(), g_objects.end(), obj), g_objects.end());
+		g_Game->objects.erase(std::remove(g_Game->objects.begin(), g_Game->objects.end(), obj), g_Game->objects.end());
 		delete obj;
 		return true;
 	}
 
 	bool UnloadObject(int index)
 	{
-		delete g_objects[index];
-		g_objects.erase(std::remove(g_objects.begin(), g_objects.end(), g_objects[index]), g_objects.end());
+		delete g_Game->objects[index];
+		g_Game->objects.erase(std::remove(g_Game->objects.begin(), g_Game->objects.end(), g_Game->objects[index]), g_Game->objects.end());
 		return true;
 	}
 

@@ -78,9 +78,7 @@ namespace finnsie {
 			ImGui::Checkbox("Terrain", &showTerrainWindow);
 			ImGui::Checkbox("Player", &showPlayerWindow);
 
-			
 			ImGui::SliderFloat("Camera Speed", &g_Game->camera->MovementSpeed, 0.0f, 100.0f);
-			ImGui::Checkbox("Lock Camera", &g_Game->camera->LockedY);
 			ImGui::Checkbox("Follow Player", &g_Game->followCameraActive);
             
 			ImGui::SliderFloat("Light X", &g_lamp.x, -1500.0f, 1500.0f);
@@ -102,10 +100,10 @@ namespace finnsie {
 		// Left pane
 		static unsigned int selected = 0;
 		ImGui::BeginChild("left pane", ImVec2(150, 0), true);
-		for (unsigned int i = 0; i < g_objects.size(); i++)
+		for (unsigned int i = 0; i < g_Game->objects.size(); i++)
 		{
 			char label[128];
-			sprintf_s(label, "%s %d", g_objects[i]->name.c_str(), i);
+			sprintf_s(label, "%s %d", g_Game->objects[i]->name.c_str(), i);
 			if (ImGui::Selectable(label, selected == i))
 			{
 				selected = i;
@@ -120,11 +118,11 @@ namespace finnsie {
 		ImGui::SameLine();
         
 		// Right pane models need to exist
-		if (!g_objects.empty())
+		if (!g_Game->objects.empty())
 		{
 			ImGui::BeginGroup();
 			ImGui::BeginChild("item view", ImVec2(0, -ImGui::GetFrameHeightWithSpacing())); // Leave room for 1 line below us
-			ImGui::Text("%s", g_objects[selected]->name.c_str());
+			ImGui::Text("%s", g_Game->objects[selected]->name.c_str());
             
 			// Modal for loading meshes
 			if (ImGui::Button("Load Mesh.."))
@@ -153,19 +151,19 @@ namespace finnsie {
 				if (ImGui::BeginTabItem("Controls"))
 				{
 					//ImGui::TextWrapped("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ");
-					ImGui::SliderFloat("scale", &g_objects[selected]->scale, 0.0f, 30.0f);
-					ImGui::DragFloat("fine scale", &g_objects[selected]->scale, 0.0001f, 0.0f, 30.0f, "%.02f");
+					ImGui::SliderFloat("scale", &g_Game->objects[selected]->scale, 0.0f, 30.0f);
+					ImGui::DragFloat("fine scale", &g_Game->objects[selected]->scale, 0.0001f, 0.0f, 30.0f, "%.02f");
                     
-					ImGui::DragFloat("x", &g_objects[selected]->pos.x, 0.1f, -1000.0f, 1000.0f, "%.02f");
-					ImGui::DragFloat("y", &g_objects[selected]->pos.y, 0.1f, -1000.0f, 1000.0f, "%.02f");
-					ImGui::DragFloat("z", &g_objects[selected]->pos.z, 0.1f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::DragFloat("x", &g_Game->objects[selected]->pos.x, 0.1f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::DragFloat("y", &g_Game->objects[selected]->pos.y, 0.1f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::DragFloat("z", &g_Game->objects[selected]->pos.z, 0.1f, -1000.0f, 1000.0f, "%.02f");
 					
-					ImGui::DragFloat("rot x", &g_objects[selected]->orientation.x, 0.05f, -1000.0f, 1000.0f, "%.02f");
-					ImGui::DragFloat("rot y", &g_objects[selected]->orientation.y, 0.05f, -1000.0f, 1000.0f, "%.02f");
-					ImGui::DragFloat("rot z", &g_objects[selected]->orientation.z, 0.05f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::DragFloat("rot x", &g_Game->objects[selected]->orientation.x, 0.05f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::DragFloat("rot y", &g_Game->objects[selected]->orientation.y, 0.05f, -1000.0f, 1000.0f, "%.02f");
+					ImGui::DragFloat("rot z", &g_Game->objects[selected]->orientation.z, 0.05f, -1000.0f, 1000.0f, "%.02f");
 
-					ImGui::Checkbox("show normals", &g_objects[selected]->viewNormals);
-					ImGui::Checkbox("wire frame", &g_objects[selected]->wireFrame);
+					ImGui::Checkbox("show normals", &g_Game->objects[selected]->viewNormals);
+					ImGui::Checkbox("wire frame", &g_Game->objects[selected]->wireFrame);
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Details"))
@@ -181,7 +179,7 @@ namespace finnsie {
 				UnloadObject(selected);
 				// Selected is greater than size of vector
 				// don't move down if empty
-				if (selected >= g_objects.size() && !g_objects.empty())
+				if (selected >= g_Game->objects.size() && !g_Game->objects.empty())
 					selected -= 1;
 			}
             

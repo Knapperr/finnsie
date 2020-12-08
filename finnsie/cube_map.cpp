@@ -105,6 +105,9 @@ namespace finnsie {
         cubemap->textureID = LoadCubemapTextures(faces);
     }
 
+    // TODO(CK): Move to renderer:
+    // do not need the camera... we only use the GetViewMatrix
+    // just pass that directly through
     void DrawCubemap(Cubemap* cubemap, Shader* shader, Camera* cam)
     {
         glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content

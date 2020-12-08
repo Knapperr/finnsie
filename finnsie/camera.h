@@ -25,7 +25,7 @@ namespace finnsie {
 		DOWN
 	};
     
-	const float YAW = -90.0f;
+	const float YAW = -10.0f;
 	const float PITCH = 0.0f;
 	const float SENSITIVITY = 0.1f;
 	const float ZOOM = 45.0f;
@@ -55,7 +55,7 @@ namespace finnsie {
 		bool following;
 		float distanceFromTarget;
         
-		Camera(glm::vec3 position = glm::vec3(-80.0f, 15.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH)
+		Camera(glm::vec3 position = glm::vec3(0.0f, 50.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH)
 			: Front(glm::vec3(0.0f, 0.0f, -1.0f))
 			, MovementSpeed(30.5f)
 			, MouseSensitivity(SENSITIVITY)

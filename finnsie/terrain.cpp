@@ -11,6 +11,8 @@
 
 #include "resource_manager.h"
 
+#include "game.h"
+
 namespace finnsie {
 
     Terrain::Terrain(int gridX, int gridZ)
@@ -174,6 +176,8 @@ namespace finnsie {
             model = glm::scale(model, glm::vec3(scale));
             
             // 4. now add to list of matrices
+            
+            // TODO(ck): Need a way to do this using collision detection
             this->grass.matrices[i] = model;
 
             if (i < (this->grass.amount - 3))

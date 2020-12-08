@@ -2,7 +2,6 @@
 #define GAME_HG_
 
 #include "cube_map.h"
-#include "resource_manager.h"
 #include "player.h"
 #include "third_person_camera.h"
 
@@ -81,6 +80,7 @@ namespace finnsie {
 
 		Player* player;
 		PlayerInput pInput;
+		std::vector<GameObject*> objects;
 
 		WaterObject* light;
 		WaterObject* distortWater;
@@ -90,19 +90,11 @@ namespace finnsie {
 
 		Cubemap cubemap;
 
-		// Core shaders
-		Shader* modelShader;
-		Shader* disWaterShader;
-		Shader* dirWaterShader;
-		Shader* lightShader;
 
 		Game(GLFWwindow& wnd);
 		void Update(float dt, Input* input);
 		void Render();
 
-		// TODO(CK): Pull the gui out of the game
-		// we have logic though in the gui that relies on 
-		// the game 
 		void GuiUpdate();
 		void GuiRender();
 		
@@ -122,6 +114,7 @@ namespace finnsie {
 
 	// Easier access for GUI
 	extern Game *g_Game;
+
 }
 
 #endif

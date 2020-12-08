@@ -9,7 +9,6 @@
 #include "terrain.h"
 
 namespace finnsie {
-    extern std::vector<GameObject*> g_objects;
     extern glm::vec3 g_lamp;
     
 #define PI32 3.14159265359f

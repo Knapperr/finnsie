@@ -22,7 +22,7 @@ void processInput(GLFWwindow* window, int key, int action, int scancode, int mod
 const unsigned int SCREEN_WIDTH = 1440;
 const unsigned int SCREEN_HEIGHT = 900;
 
-Game* finnsie::g_Game = NULL;
+//Game* finnsie::g_Game = NULL;
 Input newInput = {};
 Input oldInput = {};
 
@@ -72,6 +72,7 @@ inline void SwapInput()
 	oldInput = *temp;
 }
 
+// Updated every single frame
 inline void GetInput(GLFWwindow* window)
 {
 	newInput.controller.actionUp.endedDown = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
@@ -301,8 +302,6 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 	SwapInput();
 }
 
-// glfw: whenever the mouse moves, this callback is called
-// -------------------------------------------------------
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
 	if (firstMouse)
@@ -313,7 +312,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	}
     
 	float xoffset = (float)xpos - lastX;
-	float yoffset = lastY - (float)ypos; // reversed since y-coordinates go from bottom to top
+	float yoffset = lastY - (float)ypos; // NOTE(ck): reversed since y-coordinates go from bottom to top
     
 	lastX = (float)xpos;
 	lastY = (float)ypos;

@@ -10,24 +10,39 @@
 
 #include "shader_manager.h"
 
+#include "resource_manager.h"
+
 namespace finnsie {
+	
+	enum class RENDER_TYPE {
+		MODEL,
+		WATER,
+		BINN,
+		TERR,
+	};
 
 	class Renderer {
     public:
 		Renderer();
 		~Renderer();
-		void BeginRender(Camera& cam);
-		void BeginRender(ThirdPersonCamera& cam);
+		void BeginRender(float zoom, glm::mat4 viewMatrix, glm::vec3 position);
 		void Draw(GameObject* obj);
-		void DrawModel(GameObject& obj, Shader modelShader);
-		void DrawWater(WaterObject* water, Shader waterShader);
-		void DrawDirWater(WaterObject* dirWater, Shader waterShader);
-        void DrawSphere(GameObject& obj, Shader binnShader);
+		void DrawModel(GameObject& obj);
+		void DrawWater(WaterObject* water);
+		void DrawDirWater(WaterObject* dirWater);
+        void DrawSphere(GameObject& obj);
 		void DrawTerrain(Terrain* terr);
 		void EndRender();
 		void Shutdown();
         
-    private:        
+	private:
+		// Core shaders
+		Shader* modelShader;
+		Shader* waterShader;
+		Shader* binnShader;
+		Shader* dirWaterShader;
+		Shader* lightShader;
+
 		glm::vec3 lampPos;
 		glm::vec3 lightPos;
 		glm::vec3 camPos;
@@ -39,9 +54,6 @@ namespace finnsie {
 		unsigned int cubeVAO;
 		unsigned int lampVAO;
         
-		unsigned int activeModelShaderId;
-		int activeModelLoc;
-
 		void drawGrass(Terrain* terr);
 	};
     

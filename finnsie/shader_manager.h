@@ -13,6 +13,7 @@ namespace finnsie {
         // TODO(CK): Change to char*
 		std::string name;
 		int location;
+
 		uniform(std::string name, int shaderId)
 		{
 			this->name = name;
@@ -35,7 +36,6 @@ namespace finnsie {
     void BuildShader(Shader* shader, std::string name, const char* vertexFileName, 
                      const char* fragmentFileName, const char* geometryFileName = NULL);
     int GetLoc(Shader* shader, std::string name);
-    void Reload(Shader* shader);
 }
 
 #endif

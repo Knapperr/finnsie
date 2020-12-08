@@ -6,96 +6,75 @@
 #include <fstream>
 
 namespace finnsie {
-    
+
 	Renderer::Renderer()
 	{
 		this->VBO = -1;
 		this->cubeVAO = -1;
 		this->lampVAO = -1;
-		this->activeModelLoc = -1;
-		this->activeModelShaderId = -1;
 		this->camPos = glm::vec3(1.0f);
-		
+
 		this->lampPos = glm::vec3(1.2f, 1.0f, 2.0f);
 		this->projection = glm::mat4(1.0f);
 		this->view = glm::mat4(1.0f);
-        
+
 		// TODO(CK): CLEAN UP
 		// FOR LIGHTING
 		// -------------------
 		this->lightPos = glm::vec3(-138.843f, -19.247f, -14.226f);
+
+
+		modelShader = ResourceManager::GetShader("model");
+		waterShader = ResourceManager::GetShader("waterDis");
+		dirWaterShader = ResourceManager::GetShader("waterDir");
+		lightShader = ResourceManager::GetShader("light");
+		binnShader = ResourceManager::GetShader("binn");
 	}
-    
+
 	Renderer::~Renderer()
 	{
 		glDeleteVertexArrays(1, &this->cubeVAO);
 		glDeleteVertexArrays(1, &this->lampVAO);
 		glDeleteBuffers(1, &this->VBO);
 	}
-    
-	void Renderer::BeginRender(Camera& cam)
-	{
-		this->projection = glm::perspective(glm::radians(cam.Zoom),
-                                            (float)1080 / (float)720, 
-											1.0f, 1000.0f); // NOTE(CK): near and far clipping distance
-		this->view = cam.GetViewMatrix();
-		this->camPos = cam.Position;
-	}
 
-	void Renderer::BeginRender(ThirdPersonCamera& cam)
+
+	void Renderer::BeginRender(float zoom, glm::mat4 viewMatrix, glm::vec3 position)
 	{
-		this->projection = glm::perspective(glm::radians(cam.distanceFromTarget),
+		this->projection = glm::perspective(glm::radians(zoom),
+											// TODO(ck): USE WINDOW
+											// CLIPPING
 											(float)1080 / (float)720,
-											1.0f, 1000.0f); // NOTE(CK): near and far clipping distance
-		this->view = cam.ViewMatrix();
-		this->camPos = cam.position;
+											1.0f, 1000.0f); 
+		this->view = viewMatrix;
+		this->camPos = position;
+
 	}
-    
-	void Draw(GameObject* obj)
+	    
+
+	// Main Draw function for objects
+	void Renderer::Draw(GameObject* obj)
 	{
-		//glUseProgram(shader.id);
-
-		// TODO(CK): Go through each shaders uniform and activate
-		// Use the shader directly that way if a different shader 
-		// is used the uniforms will be called.. could have some
-		// sort of activate uniform call that can be overriden
-		// and tweaked if a special shader is used
-		// there has to be a way i can call like:
-		/*
-
-			IMPORTANT(ck): Oct 14 2020
-			THIS MIGHT BE BETTER FOR THE SHADER TO HANDLE IT
-			ACTIVATE UNIFORMS OR SOMETHING THAT YOU PASS
-			THE SHADER TOO AND IT IS ALL DEALT WITH IN THERE
-			INSTEAD OF DOING IT IN THIS FUNCTION
-
-			uniform == gameobject attribute
-			glUniformMatrix4fv ()
-			if you have a uniform type attached
-			to it you can figure out which glUniform too call
-			Shader could have a function that is:
-				
-				Uniform(&shader);
-
-				this call has a switch in it
-				switch (uniforms[i].type)
-				{
-					"float" 
-					"int" - glUniform1i();
-					"matrix" - glUniformMatrix4fv
-					"texture" - glUniform1i(glGetUniformLocation(modelShader.id, (name + number).c_str()), j);
-				}
-		
-			There might be an easier way to do this im not sure..
-			probably better to pass a matching struct from shader to c++ 
-		*/
+		if (obj->name == "water")
+		{
+			WaterObject* waterObj = (WaterObject*)obj;
+			DrawWater(waterObj);
+		}
+		else if (obj->name == "sphere")
+		{
+			DrawSphere(*obj);
+		}
+		else 
+		{
+			DrawModel(*obj);
+		}
 	}
 
-	void Renderer::DrawModel(GameObject& obj, Shader modelShader)
+	void Renderer::DrawModel(GameObject& obj)
 	{
-		glUseProgram(modelShader.id);
-		glUniformMatrix4fv(GetLoc(&modelShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(GetLoc(&modelShader, "view"), 1, GL_FALSE, glm::value_ptr(view));
+		glUseProgram(modelShader->id);
+		glUniformMatrix4fv(GetLoc(modelShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(GetLoc(modelShader, "view"), 1, GL_FALSE, glm::value_ptr(view));
 
 		for (unsigned int i = 0; i < obj.model->meshes.size(); i++)
 		{
@@ -121,7 +100,7 @@ namespace finnsie {
 					number = std::to_string(heightNr++);
                 
 				// now set the sampler to the correct texture unit
-				glUniform1i(glGetUniformLocation(modelShader.id, (name + number).c_str()), j);
+				glUniform1i(glGetUniformLocation(modelShader->id, (name + number).c_str()), j);
 				// and finally bind the texture
 				glBindTexture(GL_TEXTURE_2D, obj.model->meshes[i].textures[j].id);
 			}
@@ -152,7 +131,7 @@ namespace finnsie {
                                             glm::vec3(obj.scale, obj.scale, obj.scale));
             
 			matModel = matModel * matScale;
-			glUniformMatrix4fv(GetLoc(&modelShader, "model"), 1, GL_FALSE, glm::value_ptr(matModel));
+			glUniformMatrix4fv(GetLoc(modelShader, "model"), 1, GL_FALSE, glm::value_ptr(matModel));
             
 			/*
 			// INVERSE WAS FROM GRAPHICS CLASS
@@ -181,12 +160,12 @@ namespace finnsie {
 		}
 	}
     
-    void Renderer::DrawSphere(GameObject& obj, Shader binnShader)
+    void Renderer::DrawSphere(GameObject& obj)
     {
-		glUseProgram(binnShader.id);
-		glUniformMatrix4fv(GetLoc(&binnShader, "projection"),
+		glUseProgram(binnShader->id);
+		glUniformMatrix4fv(GetLoc(binnShader, "projection"),
                            1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(GetLoc(&binnShader, "view"),
+		glUniformMatrix4fv(GetLoc(binnShader, "view"),
                            1, GL_FALSE, glm::value_ptr(view));
         
 		for (unsigned int i = 0; i < obj.model->meshes.size(); i++)
@@ -213,16 +192,16 @@ namespace finnsie {
 					number = std::to_string(heightNr++);
                 
 				// now set the sampler to the correct texture unit
-				glUniform1i(glGetUniformLocation(binnShader.id,
+				glUniform1i(glGetUniformLocation(binnShader->id,
                                                  (name + number).c_str()), j);
 				// and finally bind the texture
 				glBindTexture(GL_TEXTURE_2D, obj.model->meshes[i].textures[j].id);
 			}
             
-            glUniform1f(glGetUniformLocation(binnShader.id, "time"), (float)glfwGetTime());
+            glUniform1f(glGetUniformLocation(binnShader->id, "time"), (float)glfwGetTime());
             
-            glUniform3fv(glGetUniformLocation(binnShader.id, "lightPos"), 1, &g_lamp[0]);
-            glUniform3fv(glGetUniformLocation(binnShader.id, "viewPos"), 1, &camPos[0]);
+            glUniform3fv(glGetUniformLocation(binnShader->id, "lightPos"), 1, &g_lamp[0]);
+            glUniform3fv(glGetUniformLocation(binnShader->id, "viewPos"), 1, &camPos[0]);
 			
 			// Set position, rotation and scale
 			glm::mat4 matModel = glm::mat4(1.0f);
@@ -250,7 +229,7 @@ namespace finnsie {
                                             glm::vec3(obj.scale, obj.scale, obj.scale));
             
 			matModel = matModel * matScale;
-			glUniformMatrix4fv(GetLoc(&binnShader, "model"),
+			glUniformMatrix4fv(GetLoc(binnShader, "model"),
                                1, GL_FALSE, glm::value_ptr(matModel));
             
 			/*
@@ -280,11 +259,11 @@ namespace finnsie {
 		}
     }
     
-	void Renderer::DrawWater(WaterObject* water, Shader waterShader)
+	void Renderer::DrawWater(WaterObject* water)
 	{
-		glUseProgram(waterShader.id);
-		glUniformMatrix4fv(GetLoc(&waterShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(GetLoc(&waterShader, "view"), 1, GL_FALSE, glm::value_ptr(view));
+		glUseProgram(waterShader->id);
+		glUniformMatrix4fv(GetLoc(waterShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(GetLoc(waterShader, "view"), 1, GL_FALSE, glm::value_ptr(view));
 
 		for (unsigned int i = 0; i < water->model->meshes.size(); i++)
 		{
@@ -310,7 +289,7 @@ namespace finnsie {
 					number = std::to_string(heightNr++);
                 
 				// now set the sampler to the correct texture unit
-				glUniform1i(glGetUniformLocation(waterShader.id, (name + number).c_str()), j);
+				glUniform1i(glGetUniformLocation(waterShader->id, (name + number).c_str()), j);
 				// and finally bind the texture		
 				glBindTexture(GL_TEXTURE_2D, water->model->meshes[i].textures[j].id);
 			}
@@ -318,19 +297,19 @@ namespace finnsie {
             
 			// loop through draw info grabbed passed to gui from game. then game passes to renderer
 			// can loop through all uniforms with shader.GetUniforms();
-			glUniform1f(GetLoc(&waterShader, "time"), (float)glfwGetTime());
-			glUniform3fv(GetLoc(&waterShader, "lightPos"), 1, &g_lamp[0]);
-			glUniform3fv(GetLoc(&waterShader, "viewPos"), 1, &camPos[0]);
+			glUniform1f(GetLoc(waterShader, "time"), (float)glfwGetTime());
+			glUniform3fv(GetLoc(waterShader, "lightPos"), 1, &g_lamp[0]);
+			glUniform3fv(GetLoc(waterShader, "viewPos"), 1, &camPos[0]);
 			
 			// TODO(CK): Draw info gets moved to model
-			glUniform1f(GetLoc(&waterShader, "uJump"), water->uJump);
-			glUniform1f(GetLoc(&waterShader, "vJump"), water->vJump);
-			glUniform1f(GetLoc(&waterShader, "tiling"), water->tiling);
-			glUniform1f(GetLoc(&waterShader, "speed"), water->speed);
-			glUniform1f(GetLoc(&waterShader, "flowStrength"), water->flowStrength);
-			glUniform1f(GetLoc(&waterShader, "flowOffset"), water->flowOffset);
-			glUniform1f(GetLoc(&waterShader, "heightScale"), water->heightScale);
-			glUniform1f(GetLoc(&waterShader, "heightScaleModulated"), water->heightScaleModulated);
+			glUniform1f(GetLoc(waterShader, "uJump"), water->uJump);
+			glUniform1f(GetLoc(waterShader, "vJump"), water->vJump);
+			glUniform1f(GetLoc(waterShader, "tiling"), water->tiling);
+			glUniform1f(GetLoc(waterShader, "speed"), water->speed);
+			glUniform1f(GetLoc(waterShader, "flowStrength"), water->flowStrength);
+			glUniform1f(GetLoc(waterShader, "flowOffset"), water->flowOffset);
+			glUniform1f(GetLoc(waterShader, "heightScale"), water->heightScale);
+			glUniform1f(GetLoc(waterShader, "heightScaleModulated"), water->heightScaleModulated);
 			
 			// Set position, rotation and scale
 			glm::mat4 matModel = glm::mat4(1.0f);
@@ -358,7 +337,7 @@ namespace finnsie {
 											glm::vec3(water->scale, water->scale, water->scale));
             
 			matModel = matModel * matScale;
-			glUniformMatrix4fv(GetLoc(&waterShader, "model"),
+			glUniformMatrix4fv(GetLoc(waterShader, "model"),
 							   1, GL_FALSE, glm::value_ptr(matModel));
             
 			/*
@@ -389,11 +368,11 @@ namespace finnsie {
 		return;
 	}
     
-	void Renderer::DrawDirWater(WaterObject* water, Shader waterShader)
+	void Renderer::DrawDirWater(WaterObject* water)
 	{
-		glUseProgram(waterShader.id);
-		glUniformMatrix4fv(GetLoc(&waterShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(GetLoc(&waterShader, "view"), 1, GL_FALSE, glm::value_ptr(view));
+		glUseProgram(waterShader->id);
+		glUniformMatrix4fv(GetLoc(waterShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(GetLoc(waterShader, "view"), 1, GL_FALSE, glm::value_ptr(view));
         
 		for (unsigned int i = 0; i < water->model->meshes.size(); i++)
 		{
@@ -419,23 +398,23 @@ namespace finnsie {
 					number = std::to_string(heightNr++);
                 
 				// now set the sampler to the correct texture unit
-				glUniform1i(glGetUniformLocation(waterShader.id, (name + number).c_str()), j);
+				glUniform1i(glGetUniformLocation(waterShader->id, (name + number).c_str()), j);
 				// and finally bind the texture		
 				glBindTexture(GL_TEXTURE_2D, water->model->meshes[i].textures[j].id);
 			}
                    
-			glUniform1f(GetLoc(&waterShader, "time"), (float)glfwGetTime());
-			glUniform3fv(GetLoc(&waterShader, "lightPos"), 1, &g_lamp[0]);
-			glUniform3fv(GetLoc(&waterShader, "viewPos"), 1, &camPos[0]);
+			glUniform1f(GetLoc(waterShader, "time"), (float)glfwGetTime());
+			glUniform3fv(GetLoc(waterShader, "lightPos"), 1, &g_lamp[0]);
+			glUniform3fv(GetLoc(waterShader, "viewPos"), 1, &camPos[0]);
             
-			glUniform1f(GetLoc(&waterShader, "tiling2"), water->tiling);
-			glUniform1f(GetLoc(&waterShader,"tilingModulated"), water->tilingModulated);
-			glUniform1f(GetLoc(&waterShader,"speed2"), water->speed);
-			glUniform1f(GetLoc(&waterShader,"flowStrength2"), water->flowStrength);
-			glUniform1f(GetLoc(&waterShader,"heightScale2"), water->heightScale);
-			glUniform1f(GetLoc(&waterShader,"heightScaleModulated2"), water->heightScaleModulated);
-			glUniform1f(GetLoc(&waterShader,"gridResolution"), water->gridResolution);
-			glUniform1f(GetLoc(&waterShader,"dualGrid"), water->dualGrid);
+			glUniform1f(GetLoc(waterShader, "tiling2"), water->tiling);
+			glUniform1f(GetLoc(waterShader,"tilingModulated"), water->tilingModulated);
+			glUniform1f(GetLoc(waterShader,"speed2"), water->speed);
+			glUniform1f(GetLoc(waterShader,"flowStrength2"), water->flowStrength);
+			glUniform1f(GetLoc(waterShader,"heightScale2"), water->heightScale);
+			glUniform1f(GetLoc(waterShader,"heightScaleModulated2"), water->heightScaleModulated);
+			glUniform1f(GetLoc(waterShader,"gridResolution"), water->gridResolution);
+			glUniform1f(GetLoc(waterShader,"dualGrid"), water->dualGrid);
             
 			// Set position, rotation and scale
 			glm::mat4 matModel = glm::mat4(1.0f);
@@ -463,7 +442,7 @@ namespace finnsie {
 											glm::vec3(water->scale, water->scale, water->scale));
             
 			matModel = matModel * matScale;
-			glUniformMatrix4fv(GetLoc(&waterShader, "model"),
+			glUniformMatrix4fv(GetLoc(waterShader, "model"),
                                1, GL_FALSE, glm::value_ptr(matModel));
             
 			/*

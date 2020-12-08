@@ -10,7 +10,7 @@ namespace finnsie {
 	{
         public:
 		Model* model = {};
-        
+
 		glm::vec3 pos;
 		glm::vec3 orientation;
 		std::string name;
@@ -34,7 +34,7 @@ namespace finnsie {
 			this->scale = 1.0;
 			this->viewNormals = false;
 			this->wireFrame = false;
-            
+
 			//this->rb = {};
             //SetupRigidBody(&rb, -9.81f);
             
