@@ -79,7 +79,6 @@ namespace finnsie {
 			ImGui::Checkbox("Player", &showPlayerWindow);
 
 			ImGui::SliderFloat("Camera Speed", &g_Game->camera->MovementSpeed, 0.0f, 100.0f);
-			ImGui::Checkbox("Follow Player", &g_Game->followCameraActive);
             
 			ImGui::SliderFloat("Light X", &g_lamp.x, -1500.0f, 1500.0f);
 			ImGui::SliderFloat("Light Y", &g_lamp.y, -1500.0f, 1500.0f);
@@ -151,8 +150,8 @@ namespace finnsie {
 				if (ImGui::BeginTabItem("Controls"))
 				{
 					//ImGui::TextWrapped("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ");
-					ImGui::SliderFloat("scale", &g_Game->objects[selected]->scale, 0.0f, 30.0f);
-					ImGui::DragFloat("fine scale", &g_Game->objects[selected]->scale, 0.0001f, 0.0f, 30.0f, "%.02f");
+					ImGui::SliderFloat("scale", &g_Game->objects[selected]->scale, 0.0f, 200.0f);
+					ImGui::DragFloat("fine scale", &g_Game->objects[selected]->scale, 0.0001f, 0.0f, 200.0f, "%.02f");
                     
 					ImGui::DragFloat("x", &g_Game->objects[selected]->pos.x, 0.1f, -1000.0f, 1000.0f, "%.02f");
 					ImGui::DragFloat("y", &g_Game->objects[selected]->pos.y, 0.1f, -1000.0f, 1000.0f, "%.02f");
@@ -282,6 +281,9 @@ namespace finnsie {
 	void Gui::playerWindow(bool* p_open)
 	{
 		ImGui::Begin("Player", p_open);
+
+		ImGui::Checkbox("Follow", &g_Game->followCameraActive);
+
 		ImGui::DragFloat("Speed", &g_Game->player->speed,
 						 0.001f, 0.1f, 100.0f, "%.02f"); // 0.1
 		ImGui::End();

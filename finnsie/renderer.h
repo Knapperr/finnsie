@@ -4,13 +4,11 @@
 #include "camera.h"
 #include "third_person_camera.h"
 #include "gui.h"
-
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
 #include "shader_manager.h"
-
 #include "resource_manager.h"
+
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace finnsie {
 	

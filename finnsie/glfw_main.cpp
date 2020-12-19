@@ -84,6 +84,11 @@ inline void GetInput(GLFWwindow* window)
 	newInput.controller.moveDown.endedDown = glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS;
 }
 
+void GlfwSettings()
+{
+
+}
+
 int main(int argc, char** argv)
 {   
 	if (!glfwInit())
@@ -163,7 +168,7 @@ int main(int argc, char** argv)
 								  time60hz * 4,      //15fps
 								 (time60hz + 1) / 2,  //120fps //120hz, 240hz, or higher need to round up, so that adding 120hz twice guaranteed is at least the same as adding time_60hz once
 								 // (time_60hz+2)/3,  //180fps //that's where the +1 and +2 come from in those equations
-								 // (time_60hz+3)/4,  //240fps //I do not want to snap to anything higher than 120 in my engine, but I left the math in here anyway
+								 // (time_60hz+3)/4,  //240fps //I do not want to snap to anything higher than 120 in my engine.
 	};
 
 	const int timeHistoryCount = 4;
@@ -276,7 +281,9 @@ int main(int argc, char** argv)
         
 		glfwSwapBuffers(window);
 	}
-	// NOTE(CK): CLEAN UP
+
+
+	// NOTE(ck): CLEAN UP
 	g_Game->Shutdown();
 	delete g_Game;
 	glfwDestroyWindow(window);
