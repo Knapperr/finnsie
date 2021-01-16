@@ -20,8 +20,5 @@ void main()
 	An easy way to visualize your normals is to draw them using lines, 
 	using {position, position + normal} as the start & end points.
 	*/
-	
-	
-	FragColor = texColor;
-    //FragColor = texture(texture_diffuse1, TexCoords);
+    FragColor = texture(texture_diffuse1, TexCoords);
 }

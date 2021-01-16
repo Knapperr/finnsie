@@ -33,12 +33,15 @@ namespace finnsie {
     class Terrain
     {
     public:
+        float x;
+        float z;
         unsigned int VBO;
         unsigned int VAO;
         unsigned int indicesLength;
-        int textureId;
-        float x;
-        float z;
+        
+        const int textureIdCount = 4;
+        int* textureIds;
+        int selectedTextureId;
         bool wireFrame;
         bool drawTexture;
 

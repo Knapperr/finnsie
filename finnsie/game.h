@@ -67,6 +67,7 @@ namespace finnsie {
 		bool debugSphereStopped;
 		bool leftMousePressed;
 		bool followCameraActive;
+		float dt;
 
 		GLFWwindow* window;
 		Gui* gui;

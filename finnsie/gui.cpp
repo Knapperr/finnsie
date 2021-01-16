@@ -37,16 +37,11 @@ namespace finnsie {
 		// could use this and then create a glm::vec4 from this field to change colour in the game
 		//ImVec4 clearColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f); <-- can use a vec4 to control colours 
 	}
-    
-	bool Gui::Active()
-	{
-		ImGuiIO& io = ImGui::GetIO();
-		if (io.WantCaptureMouse)
-			return true;
-		else 
-			return false;
-	}
-        
+    	
+	//
+	// Main Menu
+	//
+
 	void Gui::Update()
 	{
 		ImGui_ImplOpenGL3_NewFrame();
@@ -78,6 +73,7 @@ namespace finnsie {
 			ImGui::Checkbox("Terrain", &showTerrainWindow);
 			ImGui::Checkbox("Player", &showPlayerWindow);
 
+			ImGui::Checkbox("Player Camera", &g_Game->followCameraActive);
 			ImGui::SliderFloat("Camera Speed", &g_Game->camera->MovementSpeed, 0.0f, 100.0f);
             
 			ImGui::SliderFloat("Light X", &g_lamp.x, -1500.0f, 1500.0f);
@@ -93,6 +89,10 @@ namespace finnsie {
 		}
 	}
     
+	//
+	// Model
+	//
+
 	void Gui::modelWindow(bool* p_open)
 	{
 		ImGui::Begin("Model Control", p_open);
@@ -188,6 +188,10 @@ namespace finnsie {
 		ImGui::End();
 	}
     
+	//
+	// Terrain
+	//
+
 	void Gui::terrainWindow(bool* p_open)
 	{
 		ImGui::Begin("Terrain", p_open);
@@ -198,15 +202,31 @@ namespace finnsie {
 
 		ImGui::SliderFloat("X", &g_Game->terrain->x, -1500.0f, 1500.0f);
 		ImGui::SliderFloat("Z", &g_Game->terrain->z, -1500.0f, 1500.0f);
+
+		ImGui::Separator();
+		ImGui::Text("Grass");
+		ImGui::Separator();
 		ImGui::SliderInt("Grass Amount", &g_Game->terrain->grass.amount, 0, 100000);
-		
-		if (ImGui::SmallButton("Generate Grass"))
-		{
-			g_Game->terrain->GenerateGrass();
-		}
+		if (ImGui::SmallButton("Generate Grass")) { g_Game->terrain->GenerateGrass(); }
+		ImGui::Separator();
+
+		ImGui::Text("Texture");
+		ImGui::Separator();
+		if (ImGui::Button("UV")) { g_Game->terrain->selectedTextureId = g_Game->terrain->textureIds[0]; }
+		ImGui::SameLine();
+		if (ImGui::Button("Rock")) { g_Game->terrain->selectedTextureId = g_Game->terrain->textureIds[1]; }
+		ImGui::SameLine();
+		if (ImGui::Button("Grass")) { g_Game->terrain->selectedTextureId = g_Game->terrain->textureIds[2]; }
+		ImGui::SameLine();
+		if (ImGui::Button("Snow")) { g_Game->terrain->selectedTextureId = g_Game->terrain->textureIds[3]; }
+		ImGui::Separator();
 
 		ImGui::End();
 	}
+
+	//
+	// Water
+	//
 
 	void Gui::waterWindow(bool* p_open)
 	{
@@ -277,17 +297,23 @@ namespace finnsie {
 		ImGui::SliderFloat("TilingModulated", &g_Game->dirWater->tilingModulated, 0.0f, 80.0f); // 50
 		ImGui::Checkbox("dualGrid", &g_Game->dirWater->dualGrid);
     }
-        
+     
+	//
+	// Player
+	//
+
 	void Gui::playerWindow(bool* p_open)
 	{
 		ImGui::Begin("Player", p_open);
-
-		ImGui::Checkbox("Follow", &g_Game->followCameraActive);
 
 		ImGui::DragFloat("Speed", &g_Game->player->speed,
 						 0.001f, 0.1f, 100.0f, "%.02f"); // 0.1
 		ImGui::End();
 	}
+
+	//
+	// Render 
+	//
 
 	void Gui::Render()
 	{
@@ -309,6 +335,15 @@ namespace finnsie {
 		ImGui::DestroyContext();
 	}
     
+	bool Gui::Active()
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		if (io.WantCaptureMouse)
+			return true;
+		else
+			return false;
+	}
+
 	void Gui::getFolders(std::string folder)
 	{ 
 		objFile obj = {};

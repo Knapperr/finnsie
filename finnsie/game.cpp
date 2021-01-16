@@ -79,7 +79,8 @@ namespace finnsie {
 
     // TODO(CK): pass the input from main to here
 	void Game::Update(float dt, Input* input)
-	{                
+    {
+        this->dt = dt;
         ProcessInput(input, dt);
         if (followCameraActive)
         {
@@ -252,14 +253,14 @@ namespace finnsie {
     {
         // Water objects
         distortWater = new WaterObject("water",
-                                       glm::vec3(200.0f, 0.5f, 190.0f),
+                                       glm::vec3(200.0f, 0.0f, 190.0f),
                                        glm::vec3(0.0f, 0.0f, 0.0f),
                                        40.0f,
-                                       "content/objects/quad/basic_quad.obj");
+                                       "content/objects/circle/circle.obj");
         LoadDistortedWater(distortWater);
 
         dirWater = new WaterObject("water",
-                                   glm::vec3(100.0f, 5.0f, 280.0f),
+                                   glm::vec3(100.0f, 0.1f, 280.0f),
                                    glm::vec3(0.0f, glm::radians(180.0f), 0.0f),
                                    40.0f,
                                    "content/objects/quad/basic_quad.obj");

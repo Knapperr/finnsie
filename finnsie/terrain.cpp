@@ -29,10 +29,14 @@ namespace finnsie {
 
         this->vertices = new FVertex[VERTEX_COUNT * VERTEX_COUNT];
 
-        // Load a texture 
-        std::string textPath = "content/textures/terr/grass.jpg";
+        this->textureIds = new int[textureIdCount];
+        std::string textPath = "content/textures/terr/";
         std::string textDir = textPath.substr(0, textPath.find_last_of('/'));
-        this->textureId = LoadTextureFile("grass.jpg", textDir, false);
+        this->textureIds[0] = LoadTextureFile("1024multi.png", textDir, false);
+        this->textureIds[1] = LoadTextureFile("rock.png", textDir, false);
+        this->textureIds[2] = LoadTextureFile("grass.jpg", textDir, false);
+        this->textureIds[3] = LoadTextureFile("snow.jpg", textDir, false);
+        this->selectedTextureId = this->textureIds[2];
 
         this->shader = ResourceManager::GetShader("binn");
         this->grassShader = ResourceManager::GetShader("grass");
@@ -42,6 +46,7 @@ namespace finnsie {
     {
         delete[] grass.matrices;
         delete[] vertices;
+        delete[] textureIds;
         glDeleteVertexArrays(1, &this->VAO);
         glDeleteBuffers(1, &this->VBO);
         // TODO(CK): delete index buffer too?
@@ -56,15 +61,18 @@ namespace finnsie {
         this->indicesLength = 6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1);
 
         int index = 0;
-        srand(time(NULL));
         for (int i = 0; i < VERTEX_COUNT; ++i)
         {
             for (int j = 0; j < VERTEX_COUNT; ++j)
             {
                 // Vertices
                 this->vertices[index].position.x = (float)j / ((float)VERTEX_COUNT - 1) * SIZE;
+
                 // TODO(CK): Keep track of these heights?
+                //int yPos = rand() % 200 + 1;
+                //this->vertices[index].position.y = (float)std::sin(yPos);
                 this->vertices[index].position.y = 0;
+
                 this->vertices[index].position.z = (float)i / ((float)VERTEX_COUNT - 1) * SIZE;
 
                 // Normals
@@ -75,6 +83,7 @@ namespace finnsie {
                 // Texture Coords
                 this->vertices[index].texCoords.x = (float)j / ((float)VERTEX_COUNT - 1);
                 this->vertices[index].texCoords.y = (float)i / ((float)VERTEX_COUNT - 1);
+
                 ++index;
             }
         }
@@ -141,8 +150,6 @@ namespace finnsie {
         delete[] indices;
     }
 
-    // TODO(CK): Move somewhere global
-    #define ArrayCount(Array) (sizeof(Array) / sizeof((Array)[0]))
     void Terrain::GenerateGrass()
     {
 

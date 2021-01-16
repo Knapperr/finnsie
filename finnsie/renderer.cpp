@@ -509,7 +509,7 @@ namespace finnsie {
 		glUniform1i(glGetUniformLocation(terr->shader->id, "texture_diffuse1"), 0);
 		if (terr->drawTexture)
 		{
-			glBindTexture(GL_TEXTURE_2D, terr->textureId);
+			glBindTexture(GL_TEXTURE_2D, terr->selectedTextureId);
 		}
 		glm::mat4 matModel = glm::mat4(1.0f);
 
