@@ -14,20 +14,20 @@ namespace finnsie {
         
         // Just like handmade we need a coord system for the terain
 
-    // TODO(CK): move to finnsie_types file or something
-    struct FVertex
-    {
-        glm::vec3 position;
-        glm::vec3 normal;
-        glm::vec2 texCoords;
-    };
-
     struct Grass
     {
         glm::mat4* matrices;
         Model model;
         int amount = 10000;
         int textureId;
+    };
+
+    // TODO(CK): move to finnsie_types file or something
+    struct FVertex
+    {
+        glm::vec3 position;
+        glm::vec3 normal;
+        glm::vec2 texCoords;
     };
 
     class Terrain
@@ -53,13 +53,18 @@ namespace finnsie {
         Grass grass;
         Shader* shader;
         Shader* grassShader;
+        float* heightMap;
         
         // TODO(CK): Run on a separate thread
         Terrain(int gridX, int gridZ);
         ~Terrain();
 
+        float BarryCentric(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec2 pos);
+        float GetHeight(int x, int z);
+        float LookUpHeight(int x, int z);
         void Generate();
         void GenerateGrass();
+
     };
 
 }

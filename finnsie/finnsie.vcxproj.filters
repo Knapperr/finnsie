@@ -93,6 +93,9 @@
     <ClCompile Include="third_person_camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="mouse_picker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h">
@@ -174,6 +177,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="third_person_camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mouse_picker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -44,7 +44,7 @@ namespace finnsie {
 		this->projection = glm::perspective(glm::radians(zoom),
 											// TODO(ck): USE WINDOW
 											// CLIPPING
-											(float)1080 / (float)720,
+											(float)1440 / (float)900,
 											1.0f, 1000.0f); 
 		this->view = viewMatrix;
 		this->camPos = position;
@@ -108,6 +108,8 @@ namespace finnsie {
 			// Set position, rotation and scale
 			glm::mat4 matModel = glm::mat4(1.0f);
             
+			glm::vec4 clipthing = glm::vec4(1.0f);
+
 			glm::mat4 matTranslate = glm::translate(glm::mat4(1.0f),
 													glm::vec3(obj.pos.x, obj.pos.y, obj.pos.z));
 			matModel = matModel * matTranslate;

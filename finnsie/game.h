@@ -53,6 +53,8 @@ namespace finnsie {
 		int mouseX;
 		int mouseY;
 		int mouseZ;
+		float mouseXOffset;
+		float mouseYOffset;
 		float xScrollOffset;
 		float yScrollOffset;
 
@@ -67,7 +69,6 @@ namespace finnsie {
 		bool debugSphereStopped;
 		bool leftMousePressed;
 		bool followCameraActive;
-		float dt;
 
 		GLFWwindow* window;
 		Gui* gui;
@@ -77,7 +78,11 @@ namespace finnsie {
 		ThirdPersonCamera* followCamera;
 
 		Terrain* terrain;
-		
+		// TODO(ck): Hack for the mouse picker going to track mouse pos separate for right now
+		// GLFW input stuff sucks. need to find a way to cleanly deal with it? or change frameworks
+		MousePicker mousePicker;
+		float mouseX, mouseY;
+
 		Player* player;
 		PlayerInput pInput;
 		std::vector<GameObject*> objects;

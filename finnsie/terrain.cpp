@@ -3,8 +3,8 @@
 #include <string>
 #include <glm/gtc/type_ptr.hpp>
 
-#define SIZE 400
-#define VERTEX_COUNT 128
+#define SIZE 512
+#define VERTEX_COUNT 32
 
 #include "utils.h"
 #include "gl_common.h"
@@ -28,6 +28,7 @@ namespace finnsie {
         this->drawTexture = true;
 
         this->vertices = new FVertex[VERTEX_COUNT * VERTEX_COUNT];
+        this->heightMap = new float[VERTEX_COUNT * VERTEX_COUNT];
 
         this->textureIds = new int[textureIdCount];
         std::string textPath = "content/textures/terr/";
@@ -51,6 +52,56 @@ namespace finnsie {
         glDeleteBuffers(1, &this->VBO);
         // TODO(CK): delete index buffer too?
     }
+    
+    // getInterpHeight
+    float Terrain::GetHeight(int x, int z)
+    {
+        float gridSquareSize = (float)SIZE / ((float)VERTEX_COUNT);
+        int gridX = (int)std::floor(x / gridSquareSize);
+        int gridZ = (int)std::floor(z / gridSquareSize);
+
+        if (gridX >= VERTEX_COUNT || gridZ >= VERTEX_COUNT || gridX < 0 || gridZ < 0)
+            return 0;
+
+        float xCoord = ((int)x % (int)gridSquareSize) / gridSquareSize;
+        float zCoord = ((int)z % (int)gridSquareSize) / gridSquareSize;
+        float result;
+
+        if (xCoord <= (1 - zCoord))
+        {
+            result = BarryCentric(glm::vec3(0, LookUpHeight(gridX, gridZ), 0),
+                                  glm::vec3(1, LookUpHeight(gridX + 1, gridZ), 0),
+                                  glm::vec3(0, LookUpHeight(gridX, gridZ + 1), 1),
+                                  glm::vec2(xCoord, zCoord));
+        }
+        else
+        {
+            result = BarryCentric(glm::vec3(1, LookUpHeight(gridX + 1, gridZ), 0),
+                                  glm::vec3(1, LookUpHeight(gridX + 1, gridZ + 1), 1),
+                                  glm::vec3(0, LookUpHeight(gridX, gridZ + 1), 1),
+                                  glm::vec2(xCoord, zCoord));
+        }
+
+        return result;
+    }
+
+    // NOTE(ck): https://github.com/munro98/LandscapeWorld/blob/master/src/Terrain.cpp
+    float Terrain::BarryCentric(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec2 pos)
+    {
+        float det = (p2.z - p3.z) * (p1.x - p3.x) + (p3.x - p2.x) * (p1.z - p3.z);
+        float l1 = ((p2.z - p3.z) * (pos.x - p3.x) + (p3.x - p2.x) * (pos.y - p3.z)) / det;
+        float l2 = ((p3.z - p1.z) * (pos.x - p3.x) + (p1.x - p3.x) * (pos.y - p3.z)) / det;
+        float l3 = 1.0f - l1 - l2;
+        return l1 * p1.y + l2 * p2.y + l3 * p3.y;
+    }
+
+    float Terrain::LookUpHeight(int x, int z)
+    {
+        // NOTE(ck): Mine should be different than this
+        // int i = (x + 1) + ((z + 1) * (VERTEX_COUNT + 3));
+        int i = (x + 1) + ((z + 1) * (VERTEX_COUNT));
+        return heightMap[i];
+    }
 
 #include <time.h>
     void Terrain::Generate()
@@ -68,11 +119,10 @@ namespace finnsie {
                 // Vertices
                 this->vertices[index].position.x = (float)j / ((float)VERTEX_COUNT - 1) * SIZE;
 
-                // TODO(CK): Keep track of these heights?
-                //int yPos = rand() % 200 + 1;
-                //this->vertices[index].position.y = (float)std::sin(yPos);
-                this->vertices[index].position.y = 0;
 
+                this->vertices[index].position.y = 0.0f;
+                this->heightMap[index] = this->vertices[index].position.y;
+                
                 this->vertices[index].position.z = (float)i / ((float)VERTEX_COUNT - 1) * SIZE;
 
                 // Normals
@@ -173,6 +223,8 @@ namespace finnsie {
         {
             glm::mat4 model = glm::mat4(1.0f);
             // 1. translation: displace along circle with 'radius' in range [-offset, offset]
+
+            // TODO(ck): Use blue noise for this
             float x = rand() % 380 + 10;
             float y = 0;
             float z = rand() % 380 + 10;
@@ -183,8 +235,6 @@ namespace finnsie {
             model = glm::scale(model, glm::vec3(scale));
             
             // 4. now add to list of matrices
-            
-            // TODO(ck): Need a way to do this using collision detection
             this->grass.matrices[i] = model;
 
             if (i < (this->grass.amount - 3))

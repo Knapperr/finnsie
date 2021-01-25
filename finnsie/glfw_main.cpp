@@ -324,8 +324,11 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	lastX = (float)xpos;
 	lastY = (float)ypos;
 
-	newInput.mouseX = xoffset;
-	newInput.mouseY = yoffset;
+	// NOTE(ck): Was using the offsets now using the postion
+	newInput.mouseX = (float)xpos;
+	newInput.mouseY = (float)ypos;
+	newInput.mouseXOffset = xoffset;
+	newInput.mouseYOffset = yoffset;
 	g_Game->ProcessMousePosition(&newInput);
 	SwapInput();
 }

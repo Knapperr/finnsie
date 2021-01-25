@@ -14,17 +14,6 @@ namespace finnsie {
 	Game::Game(GLFWwindow& wnd)
 	{
 		LOG("Game Init");
-        /*
-        Renderer has a command queue that gets popped. you send a rendercommand through and
-        it switches off of them dispatching to the proper function
-
-        DRAW_WATER
-        DRAW_MODEL
-        DRAW_TERRAIN
-        DRAW_BLINN
-        
-        
-        */
         
         // GAME NEEDS A WORLD THAT ALL THE OBJECTS ARE IN
         // NEED A WAY TO DRAW EACH THING GETWATER function .. maybe dont want too many of those or know where they are 
@@ -66,6 +55,8 @@ namespace finnsie {
         terrain->Generate();
         terrain->GenerateGrass();
 
+        mousePicker = MousePicker(terrain);
+
         this->cubemap = {};
         SetupCubemap(&this->cubemap);
 
@@ -80,13 +71,17 @@ namespace finnsie {
     // TODO(CK): pass the input from main to here
 	void Game::Update(float dt, Input* input)
     {
-        this->dt = dt;
         ProcessInput(input, dt);
         if (followCameraActive)
         {
             processPlayer(dt);
             followCamera->Move();
         }
+
+        mousePicker.Update(mouseX, mouseY, camera->GetViewMatrix(), renderer->projection, camera->Position);
+        //std::cout << "Ray x: " << mousePicker.currentRay.x << " y: " << mousePicker.currentRay.y << " z: " << mousePicker.currentRay.z << '\n';
+        //std::cout << "Terrain point x: " << mousePicker.currentTerrainPoint.x << " y: " << mousePicker.currentTerrainPoint.y << " z: " << mousePicker.currentTerrainPoint.z << '\n';
+
 
         light->pos.x = g_lamp.x;
         light->pos.y = g_lamp.y;
@@ -100,6 +95,8 @@ namespace finnsie {
     
 	void Game::Render()
 	{
+
+        // TODO(ck): one camera pointer to two different cameras that the player can use
         if (followCameraActive)
         {
             renderer->BeginRender(followCamera->distanceFromTarget, followCamera->ViewMatrix(), followCamera->position);
@@ -136,6 +133,13 @@ namespace finnsie {
         if (leftMousePressed && !followCameraActive)
         {
             processCamera(input, dt);
+        }
+
+
+        if (debugRightMousePressed && !followCameraActive)
+        {
+            mousePicker.currentTerrainPoint.y = 0;
+            distortWater->pos = mousePicker.currentTerrainPoint;
         }
         return;
     }
@@ -198,12 +202,15 @@ namespace finnsie {
     {
         if (leftMousePressed && !followCameraActive)
         {
-            camera->ProcessMouseMovement(input->mouseX, input->mouseY);
+            camera->ProcessMouseMovement(input->mouseXOffset, input->mouseYOffset);
         }
         else
         {
-            followCamera->ProcessMouse(input->mouseX, input->mouseY);
+            followCamera->ProcessMouse(input->mouseXOffset, input->mouseYOffset);
         }
+        // TODO(ck): Hack for now..
+        mouseX = input->mouseX;
+        mouseY = input->mouseY;
     }
 
     void Game::ProcessMouseScroll(Input* input)

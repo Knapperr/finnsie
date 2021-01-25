@@ -72,6 +72,8 @@ namespace finnsie {
 			ImGui::SameLine();
 			ImGui::Checkbox("Terrain", &showTerrainWindow);
 			ImGui::Checkbox("Player", &showPlayerWindow);
+			ImGui::Separator();
+
 
 			ImGui::Checkbox("Player Camera", &g_Game->followCameraActive);
 			ImGui::SliderFloat("Camera Speed", &g_Game->camera->MovementSpeed, 0.0f, 100.0f);

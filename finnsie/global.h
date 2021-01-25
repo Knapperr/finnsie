@@ -6,7 +6,7 @@
 
 
 #include "log.h"
-#include "terrain.h"
+#include "mouse_picker.h"
 
 namespace finnsie {
     extern glm::vec3 g_lamp;

@@ -33,6 +33,8 @@ namespace finnsie {
 		void EndRender();
 		void Shutdown();
         
+		glm::mat4 projection;
+
 	private:
 		// Core shaders
 		Shader* modelShader;
@@ -45,7 +47,7 @@ namespace finnsie {
 		glm::vec3 lightPos;
 		glm::vec3 camPos;
 		
-		glm::mat4 projection;
+
 		glm::mat4 view;
         
 		unsigned int VBO;
