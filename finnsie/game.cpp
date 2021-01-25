@@ -139,7 +139,7 @@ namespace finnsie {
         if (debugRightMousePressed && !followCameraActive)
         {
             mousePicker.currentTerrainPoint.y = 0;
-            distortWater->pos = mousePicker.currentTerrainPoint;
+            currentObject->pos = mousePicker.currentTerrainPoint;
         }
         return;
     }
@@ -293,6 +293,7 @@ namespace finnsie {
                             4.0f,
                             "content/objects/Player/Player.obj");
 
+        currentObject = nullptr;
 
         objects.push_back(distortWater);
         objects.push_back(dirWater);

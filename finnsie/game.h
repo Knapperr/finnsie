@@ -85,6 +85,7 @@ namespace finnsie {
 
 		Player* player;
 		PlayerInput pInput;
+		GameObject* currentObject;
 		std::vector<GameObject*> objects;
 
 		// NOTE(ck): Objects are pulled oot because 

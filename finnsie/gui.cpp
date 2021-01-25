@@ -108,6 +108,7 @@ namespace finnsie {
 			if (ImGui::Selectable(label, selected == i))
 			{
 				selected = i;
+				g_Game->currentObject = g_Game->objects[i];
 			}
 		}
 		ImGui::Separator();
