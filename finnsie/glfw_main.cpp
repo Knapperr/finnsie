@@ -133,10 +133,14 @@ int main(int argc, char** argv)
 
 	// TODO(CK): Look into this what error checks do i need to do?
 	// NOTE: OpenGL error checks have been omitted for brevity
+	// global opengl state
 	glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
+	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+	glDepthFunc(GL_LESS);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
 	g_Game = new Game(*window);

@@ -76,6 +76,19 @@ namespace finnsie {
 		glUniformMatrix4fv(GetLoc(modelShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(GetLoc(modelShader, "view"), 1, GL_FALSE, glm::value_ptr(view));
 
+		// Write to stencil buffer
+		bool selected = true;
+		glUniform1f(GetLoc(modelShader, "selected"), selected);
+		if (selected)
+		{
+			glStencilFunc(GL_ALWAYS, 1, 0xFF);
+			glStencilMask(0xFF);
+		}
+
+
+		// TODO(ck): Put this all into a function RenderModel(&obj or *obj)
+		// ==========================================================================================================
+
 		for (unsigned int i = 0; i < obj.model->meshes.size(); i++)
 		{
 			unsigned int diffuseNr = 1;
@@ -154,11 +167,30 @@ namespace finnsie {
 			glBindVertexArray(obj.model->meshes[i].VAO);
 			glDrawElements(GL_TRIANGLES, obj.model->meshes[i].indices.size(), GL_UNSIGNED_INT, 0);
 			glBindVertexArray(0);
-            
+
 			// Always good practice to set everything back to defaults once configured
 			// NOTE(CK): bind texture must be AFTER glActiveTexture or it will not unbind properly
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, 0);
+
+
+			// ==========================================================================================================
+
+			// 2nd pass stencil buffer
+			if (selected)
+			{
+				glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+				glStencilMask(0x00);
+				glDisable(GL_DEPTH_TEST);
+				glUseProgram(modelShader->id);
+				float scale = 1.1;
+
+				// Need to do the first pass again...
+				// separte the middle of this to a separate function 
+				// that can be called... this is the same issue i had
+				// with the normals.. if its just a function then
+				// i can call it normally again ...
+			}
 		}
 	}
     

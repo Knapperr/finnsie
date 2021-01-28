@@ -141,7 +141,6 @@ namespace finnsie {
             mousePicker.currentTerrainPoint.y = 0;
             currentObject->pos = mousePicker.currentTerrainPoint;
         }
-        return;
     }
         
     void Game::ProcessMouseButtons(Input* input)
@@ -192,6 +191,8 @@ namespace finnsie {
         }
         objects.clear();
         
+        currentObject = nullptr;
+        delete currentObject;
         delete player;
 		delete camera;
 		gui->Shutdown();

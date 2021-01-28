@@ -228,6 +228,7 @@ namespace finnsie {
 	{
 		delete g_Game->objects[index];
 		g_Game->objects.erase(std::remove(g_Game->objects.begin(), g_Game->objects.end(), g_Game->objects[index]), g_Game->objects.end());
+		g_Game->currentObject = nullptr;
 		return true;
 	}
 

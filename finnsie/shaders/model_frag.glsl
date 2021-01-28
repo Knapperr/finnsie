@@ -6,9 +6,16 @@ in vec3 FragPos;
 in vec3 Normal;  
 
 uniform sampler2D texture_diffuse1;
+uniform bool selected;
 
 void main()
 {   
+	if (selected)
+	{
+		FragColor = vec4(0.04, 0.28, 0.26, 1.0);
+		return;
+	}
+
 	// Remove white pixels on texture
 	vec4 texColor = texture(texture_diffuse1, TexCoords);
 	if (texColor.a < 0.1)
