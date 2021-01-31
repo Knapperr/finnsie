@@ -135,12 +135,11 @@ int main(int argc, char** argv)
 	// NOTE: OpenGL error checks have been omitted for brevity
 	// global opengl state
 	glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+	
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND);
-	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 	glDepthFunc(GL_LESS);
+	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
 	g_Game = new Game(*window);
@@ -265,7 +264,7 @@ int main(int argc, char** argv)
 
 		// Process the input & move the player
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // blue 
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		
 		while (frameAccumulator >= desiredFrameTime * updateMultiplicity)
 		{

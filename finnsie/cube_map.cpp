@@ -110,6 +110,7 @@ namespace finnsie {
     // just pass that directly through
     void DrawCubemap(Cubemap* cubemap, Shader* shader, Camera* cam)
     {
+        glStencilMask(0x00);
         glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
         glUseProgram(shader->id);
         glm::mat4 view = glm::mat4(glm::mat3(cam->GetViewMatrix()));

@@ -17,6 +17,7 @@ namespace finnsie {
 		float scale;
 		bool viewNormals;
 		bool wireFrame;
+		bool selected;
         
 		// TODO(CK):
 		// Game object has its own shader
@@ -34,7 +35,7 @@ namespace finnsie {
 			this->scale = 1.0;
 			this->viewNormals = false;
 			this->wireFrame = false;
-
+			this->selected = false;
 			//this->rb = {};
             //SetupRigidBody(&rb, -9.81f);
             
@@ -51,7 +52,8 @@ namespace finnsie {
 			this->scale = scale;
 			this->viewNormals = false;
 			this->wireFrame = false;
-            
+			this->selected = false;
+
             //this->rb = {};
             //SetupRigidBody(&rb, -9.81f);
             

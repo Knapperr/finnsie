@@ -25,6 +25,7 @@ namespace finnsie {
 		~Renderer();
 		void BeginRender(float zoom, glm::mat4 viewMatrix, glm::vec3 position);
 		void Draw(GameObject* obj);
+		void ModelPass(GameObject& obj, bool stencilPass);
 		void DrawModel(GameObject& obj);
 		void DrawWater(WaterObject* water);
 		void DrawDirWater(WaterObject* dirWater);

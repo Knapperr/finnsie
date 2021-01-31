@@ -12,7 +12,7 @@ void main()
 {   
 	if (selected)
 	{
-		FragColor = vec4(0.04, 0.28, 0.26, 1.0);
+		FragColor = vec4(0.06, 0.18, 0.46, 0.8);
 		return;
 	}
 

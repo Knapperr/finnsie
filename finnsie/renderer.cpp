@@ -49,6 +49,9 @@ namespace finnsie {
 		this->view = viewMatrix;
 		this->camPos = position;
 
+
+
+		glStencilMask(0x00);
 	}
 	    
 
@@ -69,25 +72,14 @@ namespace finnsie {
 			DrawModel(*obj);
 		}
 	}
-
+	
 	void Renderer::DrawModel(GameObject& obj)
 	{
 		glUseProgram(modelShader->id);
 		glUniformMatrix4fv(GetLoc(modelShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(GetLoc(modelShader, "view"), 1, GL_FALSE, glm::value_ptr(view));
 
-		// Write to stencil buffer
-		bool selected = true;
-		glUniform1f(GetLoc(modelShader, "selected"), selected);
-		if (selected)
-		{
-			glStencilFunc(GL_ALWAYS, 1, 0xFF);
-			glStencilMask(0xFF);
-		}
-
-
-		// TODO(ck): Put this all into a function RenderModel(&obj or *obj)
-		// ==========================================================================================================
+		glUniform1i(GetLoc(modelShader, "selected"), obj.selected);
 
 		for (unsigned int i = 0; i < obj.model->meshes.size(); i++)
 		{
@@ -173,24 +165,6 @@ namespace finnsie {
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, 0);
 
-
-			// ==========================================================================================================
-
-			// 2nd pass stencil buffer
-			if (selected)
-			{
-				glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-				glStencilMask(0x00);
-				glDisable(GL_DEPTH_TEST);
-				glUseProgram(modelShader->id);
-				float scale = 1.1;
-
-				// Need to do the first pass again...
-				// separte the middle of this to a separate function 
-				// that can be called... this is the same issue i had
-				// with the normals.. if its just a function then
-				// i can call it normally again ...
-			}
 		}
 	}
     
@@ -201,7 +175,9 @@ namespace finnsie {
                            1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(GetLoc(binnShader, "view"),
                            1, GL_FALSE, glm::value_ptr(view));
-        
+     
+		glStencilMask(0x00);
+
 		for (unsigned int i = 0; i < obj.model->meshes.size(); i++)
 		{
 			unsigned int diffuseNr = 1;
@@ -298,6 +274,8 @@ namespace finnsie {
 		glUseProgram(waterShader->id);
 		glUniformMatrix4fv(GetLoc(waterShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(GetLoc(waterShader, "view"), 1, GL_FALSE, glm::value_ptr(view));
+
+		glStencilMask(0x00);
 
 		for (unsigned int i = 0; i < water->model->meshes.size(); i++)
 		{
@@ -514,6 +492,7 @@ namespace finnsie {
 		glUniformMatrix4fv(GetLoc(terr->grassShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(GetLoc(terr->grassShader, "view"), 1, GL_FALSE, glm::value_ptr(view));
 		
+		glStencilMask(0x00);
 
 		// now set the sampler to the correct texture unit
 		glUniform1i(glGetUniformLocation(terr->grassShader->id, "texture_diffuse1"), 0);
@@ -538,6 +517,8 @@ namespace finnsie {
 
 		glUniform3fv(GetLoc(terr->shader, "lightPos"), 1, &g_lamp[0]);
 		glUniform3fv(GetLoc(terr->shader, "viewPos"), 1, &camPos[0]);
+
+		glStencilMask(0x00);
 
 		// set the sampler to the correct texture unit
 		glUniform1i(glGetUniformLocation(terr->shader->id, "texture_diffuse1"), 0);
