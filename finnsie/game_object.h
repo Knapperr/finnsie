@@ -82,6 +82,7 @@ namespace finnsie {
 		float heightScaleModulated = 9.0f;
 		float gridResolution = 10.0f;
 		float tilingModulated = 50.0f;
+		float waveLength = 12.0f;
 		bool dualGrid = false;
         
         

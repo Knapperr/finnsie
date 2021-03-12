@@ -177,7 +177,6 @@ namespace finnsie {
 
 	void Game::Shutdown()
 	{
-
         ResourceManager::Shutdown();
         DestroyCubemap(&this->cubemap);
 
@@ -261,10 +260,10 @@ namespace finnsie {
     {
         // Water objects
         distortWater = new WaterObject("water",
-                                       glm::vec3(200.0f, 0.0f, 190.0f),
+                                       glm::vec3(200.0f, 7.0f, 190.0f),
                                        glm::vec3(0.0f, 0.0f, 0.0f),
                                        40.0f,
-                                       "content/objects/circle/circle.obj");
+                                       "content/objects/plane/plane.obj");
         LoadDistortedWater(distortWater);
 
         dirWater = new WaterObject("water",

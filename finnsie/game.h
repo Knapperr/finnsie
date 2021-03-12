@@ -76,15 +76,19 @@ namespace finnsie {
 		Renderer* renderer;
 		Camera* camera;
 		ThirdPersonCamera* followCamera;
-
-		Terrain* terrain;
+		MousePicker mousePicker;
 		// TODO(ck): Hack for the mouse picker going to track mouse pos separate for right now
 		// GLFW input stuff sucks. need to find a way to cleanly deal with it? or change frameworks
-		MousePicker mousePicker;
 		float mouseX, mouseY;
+		Cubemap cubemap;
 
+
+		// TODO(ck):
+		// Move to world. move player input into player
+		// =================================================
 		Player* player;
 		PlayerInput pInput;
+		Terrain* terrain;
 		GameObject* currentObject;
 		std::vector<GameObject*> objects;
 
@@ -95,8 +99,8 @@ namespace finnsie {
 		WaterObject* light;
 		WaterObject* distortWater;
 		WaterObject* dirWater;
+		// ==================================================
 
-		Cubemap cubemap;
 
 		Game(GLFWwindow& wnd);
 		void Update(float dt, Input* input);

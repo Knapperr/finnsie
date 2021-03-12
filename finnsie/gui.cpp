@@ -280,6 +280,10 @@ namespace finnsie {
                            0.0f, 5.0f); // 0.1
 		ImGui::SliderFloat("Height Scale Modulated", &g_Game->distortWater->heightScaleModulated,
                            0.0f, 20.0f); // 9.0
+		ImGui::Separator();
+		ImGui::SliderFloat("Wave Length", &g_Game->distortWater->waveLength,
+						   0.0f, 50.0f); // 12.0
+
 	}
     
     void Gui::directionalWaterControls()

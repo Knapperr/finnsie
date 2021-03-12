@@ -21,6 +21,7 @@ void main()
 	if (texColor.a < 0.1)
 	{
 		discard;
+		
 	} 
 
 	/*

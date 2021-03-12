@@ -49,9 +49,6 @@ namespace finnsie {
 		this->view = viewMatrix;
 		this->camPos = position;
 
-
-
-		glStencilMask(0x00);
 	}
 	    
 
@@ -275,8 +272,6 @@ namespace finnsie {
 		glUniformMatrix4fv(GetLoc(waterShader, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(GetLoc(waterShader, "view"), 1, GL_FALSE, glm::value_ptr(view));
 
-		glStencilMask(0x00);
-
 		for (unsigned int i = 0; i < water->model->meshes.size(); i++)
 		{
 			unsigned int diffuseNr = 1;
@@ -322,6 +317,7 @@ namespace finnsie {
 			glUniform1f(GetLoc(waterShader, "flowOffset"), water->flowOffset);
 			glUniform1f(GetLoc(waterShader, "heightScale"), water->heightScale);
 			glUniform1f(GetLoc(waterShader, "heightScaleModulated"), water->heightScaleModulated);
+			glUniform1f(GetLoc(waterShader, "waveLength"), water->waveLength);
 			
 			// Set position, rotation and scale
 			glm::mat4 matModel = glm::mat4(1.0f);

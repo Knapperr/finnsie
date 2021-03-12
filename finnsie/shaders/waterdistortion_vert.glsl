@@ -23,14 +23,36 @@ uniform vec3 viewPos;
 uniform sampler2D texture_diffuse1;
 uniform sampler2D texture_normal1;
 
+// water
+uniform float time;
+uniform float waveLength;
+
+#define PI 3.1415926538
+
 void main()
-{    
-    vs_out.FragPos = vec3(model * vec4(aPos, 1.0));
+{
+    // =========================
+    // MORE UNIFORMS
+    float amplitude = 2.0;
+    float speed = 5.0;
+    // =========================
+
+    // Vertex Position
+    vec3 p = vec3(model * vec4(aPos, 1.0));
+    float k = 2 * PI / waveLength;
+    float f = k * (p.x - speed * time);
+    p.y += amplitude * sin(k * (p.x - speed * time));
+    vs_out.FragPos = p;
+    
+
     vs_out.TexCoords = aTexCoords;
 
     mat3 normalMatrix = transpose(inverse(mat3(model)));
-    vec3 T = normalize(normalMatrix * aTangent);
-    vec3 N = normalize(normalMatrix * aNormal);
+    vec3 T = normalize(vec3(1, k * amplitude * cos(f), 0)) * normalize(normalMatrix * aTangent);
+    vec3 N = vec3(-T.y, T.x, 0) * normalize(normalMatrix * aNormal);
+    //vec3 T = normalize(normalMatrix * aTangent);
+    //vec3 N = normalize(normalMatrix * aNormal);
+    
     T = normalize(T - dot(T, N) * N);
     vec3 B = cross(N, T);
 
@@ -39,9 +61,10 @@ void main()
     vs_out.TangentViewPos   = TBN * viewPos;
     vs_out.TangentFragPos   = TBN * vs_out.FragPos;
 
-    gl_Position = projection * view * model * vec4(aPos, 1.0); 
-    // TexCoords = aTexCoords;
-    // Normal = mat3(transpose(inverse(model))) * aNormal;  
-    // FragPos = vec3(model * vec4(aPos, 1.0));
-    // gl_Position = projection * view * vec4(FragPos, 1.0);
+    gl_Position = projection * view * vec4(vs_out.FragPos, 1.0); 
+ 
+    // NOTE(ck): This is for waves i was multiplying the model again when
+    // it was already getting added to vs_out.FragPos.
+    //gl_Position = projection * view * model * vec4(vs_out.FragPos, 1.0); 
+    
 }
